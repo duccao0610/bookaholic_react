@@ -2,10 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import Book from "./models/Book.js";
+import bookRoutes from "./routes/Books.js";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use("/books", bookRoutes);
 
 //Connect MongoDB
 const CONNECTION_URL =
@@ -43,15 +45,3 @@ mongoose.set("useFindAndModify", true);
 // };
 
 // app.post("/book", createBook);
-
-const getBooks = async (req, res) => {
-  try {
-    const books = await Book.find();
-    res.status(200).json(books);
-    console.log(books);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
-
-app.get("/book", getBooks);
