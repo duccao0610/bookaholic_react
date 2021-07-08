@@ -5,7 +5,7 @@ const Home = () => {
   const [booksData, setBooksData] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch("http://192.168.0.102:5000/books")
+    fetch("http://localhost:5000/books")
       .then((res) => res.json())
       .then((resJson) => {
         console.log(resJson);
