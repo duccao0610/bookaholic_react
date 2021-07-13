@@ -10,3 +10,13 @@ export const getBooks = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
+export const getBookDetail = async (req, res) => {
+  try {
+    const book = await Book.find({ _id: req.params.id });
+    res.status(200).json(book);
+    console.log(book);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};

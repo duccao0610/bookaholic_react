@@ -4,10 +4,12 @@ const BookSchema = mongoose.Schema({
   title: String,
   authors: [String],
   categories: [String],
-  rating: {
+  averageRating: {
     type: Number,
     default: 0,
   },
+  reviews: [String],
+  owners: [String],
   cover: String,
   description: String,
 });
