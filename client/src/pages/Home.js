@@ -1,6 +1,6 @@
 import { Tabs, Tab, Spinner, Container, Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import BookOnTrend from "../components/BookOnTrend";
+import BookItem from "../components/BookItem";
 import Activity from "../components/Activity";
 const Home = () => {
   const [booksData, setBooksData] = useState([]);
@@ -54,7 +54,7 @@ const Home = () => {
                         lg={12}
                         xl={6}
                       >
-                        <BookOnTrend book={book}></BookOnTrend>
+                        <BookItem book={book}></BookItem>
                       </Col>
                     ))}
                   </Row>
