@@ -1,6 +1,7 @@
 import { Image } from "react-bootstrap";
 import StarRatings from "react-star-ratings";
-const BookOnTrend = ({ book }) => {
+import { Link } from "react-router-dom";
+const BookItem = ({ book }) => {
   return (
     <div className="rounded d-flex justify-content-start px-md-2 px-3 py-2 mb-lg-4">
       <Image
@@ -9,12 +10,17 @@ const BookOnTrend = ({ book }) => {
         src={book.cover}
         alt={`${book.cover} + image`}
         rounded
-        className="border border-dark"
+        style={{
+          boxShadow:
+            "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px",
+        }}
       />
       <div className="book_info pl-3 d-flex flex-column justify-content-evenly">
-        <div className="fs-5 font-weight-bold text-left text-break ">
-          {book.title}
-        </div>
+        <Link to={"/books/" + book._id} className="text-dark">
+          <div className="fs-5 font-weight-bold text-left text-break ">
+            {book.title}
+          </div>
+        </Link>
         <div className="text-left font-weight-light font-italic">
           {book.authors.map((author) => (
             <span key={`${author} +${book.title}`}>{author}</span>
@@ -56,4 +62,4 @@ const BookOnTrend = ({ book }) => {
   );
 };
 
-export default BookOnTrend;
+export default BookItem;

@@ -1,12 +1,12 @@
-import { Tabs, Tab, Spinner, Container, Row, Col } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
-import BookOnTrend from '../components/BookOnTrend';
-import Activity from '../components/Activity';
+import { Tabs, Tab, Spinner, Container, Row, Col } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import BookItem from "../components/BookItem";
+import Activity from "../components/Activity";
 const Home = () => {
   const [booksData, setBooksData] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch('http://localhost:5000/books')
+    fetch("http://localhost:5000/books")
       .then((res) => res.json())
       .then((resJson) => {
         console.log(resJson);
@@ -45,10 +45,10 @@ const Home = () => {
               />
             </div>
           </Tab>
-          <Tab eventKey='trending' title='Trending'>
-            <div className='tab_trending_content mt-3 text-center'>
+          <Tab eventKey="trending" title="Trending">
+            <div className="tab_trending_content mt-3 text-center">
               {loading ? (
-                <Spinner animation='border' variant='primary' />
+                <Spinner animation="border" variant="primary" />
               ) : (
                 <Container>
                   <Row>
@@ -59,8 +59,9 @@ const Home = () => {
                         sm={12}
                         md={12}
                         lg={12}
-                        xl={6}>
-                        <BookOnTrend book={book}></BookOnTrend>
+                        xl={6}
+                      >
+                        <BookItem book={book}></BookItem>
                       </Col>
                     ))}
                   </Row>
@@ -70,7 +71,7 @@ const Home = () => {
           </Tab>
         </Tabs>
       </div>
-      <div className='bg-danger d-none d-md-inline-block d-lg-inline-block col-md-2 col-lg-2'>
+      <div className="bg-danger d-none d-md-inline-block d-lg-inline-block col-md-2 col-lg-2">
         Right
       </div>
     </div>
