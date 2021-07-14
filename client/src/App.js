@@ -2,6 +2,7 @@ import './App.css';
 import { Navbar, Form, FormControl } from 'react-bootstrap';
 import { Route } from 'react-router-dom';
 import Home from './pages/Home';
+import Profile from './pages/Profile';
 function App() {
   return (
     <div className='App'>
@@ -22,6 +23,7 @@ function App() {
       </Navbar>
       <div className='content'>
         <Route path='/' exact component={Home} />
+        <Route path='/profile' exact component={Profile} />
       </div>
     </div>
   );
