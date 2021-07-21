@@ -7,11 +7,11 @@ const BookRating = ({ ratings }) => {
   return (
     <div
       style={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px" }}
-      className="container rounded border py-2 col-lg-6 d-flex flex-column bg-white"
+      className="container rounded border py-2 d-flex flex-column bg-white"
     >
-      <h5 className="align-self-start">User reviews</h5>
+      <h6 className="align-self-start">User reviews</h6>
       <div className="d-flex">
-        <h2 className="align-self-start">4.7</h2>
+        <h3 className="align-self-start">4.7</h3>
         <div className="d-flex align-items-start ml-1">
           <StarRatings
             rating={4}
@@ -28,9 +28,9 @@ const BookRating = ({ ratings }) => {
       <div className="d-flex flex-column">
         {ratings.map((rating, idx) => {
           return (
-            <div className="row d-flex align-items-center">
+            <div key={idx} className="row d-flex align-items-center">
               <span className="col-1">{ratings.length - idx}</span>
-              <div key={idx} className="col-6 p-0">
+              <div className="col-6 p-0">
                 <ProgressBar
                   striped
                   variant="success"
@@ -38,8 +38,8 @@ const BookRating = ({ ratings }) => {
                   max={100}
                 />
               </div>
-              <span className="col-4 text-left fw-light p-0 pl-1">
-                {rating + " reviews"}
+              <span className="col-4 text-left fw-light p-0 pl-1 text-center">
+                {((rating / total) * 100).toFixed(1) + "%"}
               </span>
             </div>
           );
