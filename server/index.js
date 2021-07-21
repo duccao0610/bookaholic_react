@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 import cors from "cors";
 import Book from "./models/Book.js";
 import bookRoutes from "./routes/Books.js";
-
+import categoryRoutes from "./routes/Categories.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use("/books", bookRoutes);
-
+app.use("/categories", categoryRoutes);
 //Connect MongoDB
 const CONNECTION_URL =
   "mongodb+srv://duccao0610:duccao0610@cluster0.0etmy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
