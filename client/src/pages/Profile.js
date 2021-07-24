@@ -1,28 +1,35 @@
 import { useState } from 'react';
-import Activity from '../components/Activity';
-import PersonalInfo from '../components/PersonalInfo';
 
-const shelves = ['Shelf 1', 'Shelf 2', 'Shelf 3', 'Shelf 4'];
+import { Link } from 'react-router-dom';
+
+import Activity from '../components/Activity';
+import ReactPaginate from 'react-paginate';
+import PersonalInfo from '../components/PersonalInfo';
+import Shelf from '../components/Shelf';
+
+const shelves = [
+  'My fucking custom',
+  'Shelf 2',
+  'Shelf 3',
+  'Shelf 4',
+  'Shelf 5',
+  'Shelf 6',
+  'Shelf 7',
+];
 
 const Profile = () => {
-  const [shelfToShow, setShelfToShow] = useState(3);
-  const [showMoreBtn, setShowMorwBtn] = useState('Show more');
-  const shelvesClone = [...shelves].slice(0, shelfToShow);
+  const shelvesPerGroup = 4;
+  const [activeShelvesGroup, setActiveShelvesGroup] = useState(0);
 
-  const handleShowMoreShelves = () => {
-    if (shelfToShow < shelves.length) {
-      setShelfToShow(shelves.length);
-      setShowMorwBtn('Show less');
-    } else {
-      setShelfToShow(3);
-      setShowMorwBtn('Show more');
-    }
+  const handleClickShelvesList = (clickedGroup) => {
+    console.log(clickedGroup.selected);
+    setActiveShelvesGroup(clickedGroup.selected);
   };
 
-  const handleAddNewShelf = () => {};
+  const goToShelvesPage = () => {};
 
   return (
-    <div className='d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center mx-auto mt-3 px-0'>
+    <div className='d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center container px-0 mt-3'>
       <div id='profile-main-content' className='col-sm-12 col-md-9 col-lg-8'>
         <PersonalInfo
           id='profile-basic-info'
@@ -40,25 +47,39 @@ const Profile = () => {
             id='book-shelves-header'
             className='d-flex justify-content-between align-items-end border-bottom'>
             <div className='text-uppercase fw-bold'>bookshelves</div>
-            <div
+            <Link
               className='btn btn-sm btn-primary mb-1'
-              onClick={handleAddNewShelf}>
-              New shelf
-            </div>
+              to='/profile/shelves'
+              onClick={goToShelvesPage}>
+              Custom my shelves
+            </Link>
           </div>
-          <div className='d-flex flex-column ms-2'>
-            {shelvesClone.map((item) => {
-              return <a>{item}</a>;
-            })}
+          <div className='d-flex my-3'>
+            {[...shelves]
+              .slice(
+                activeShelvesGroup * shelvesPerGroup,
+                activeShelvesGroup * shelvesPerGroup + shelvesPerGroup
+              )
+              .map((item, i) => {
+                return <Shelf key={i} inPage='profile' shelfName={item} />;
+              })}
           </div>
-          <div className='w-100 text-center'>
-            <div
-              className={
-                shelves.length <= 3 ? 'd-none' : 'btn btn-secondary btn-sm'
-              }
-              onClick={handleShowMoreShelves}>
-              {showMoreBtn}
-            </div>
+
+          <div className='w-100 d-flex justify-content-center'>
+            <ReactPaginate
+              pageCount={Math.ceil(shelves.length / shelvesPerGroup)}
+              pageRangeDisplayed={shelvesPerGroup}
+              marginPagesDisplayed={1}
+              containerClassName='d-flex align-items-center'
+              previousClassName='fw-bold py-0 px-2 me-2 btn btn-primary'
+              previousLabel='Prev'
+              nextClassName='fw-bold py-0 px-2 ms-2 btn btn-primary'
+              nextLabel='Next'
+              pageClassName='list-group-item fw-bold py-0 px-2'
+              breakClassName='list-group-item fw-bold py-0 px-2'
+              activeClassName='active'
+              onPageChange={handleClickShelvesList}
+            />
           </div>
         </div>
         <div id='recent-activities'>

@@ -83,7 +83,7 @@ const Activity = ({
           </div>
           <div className='d-flex'>
             <div className='col-1 p-0'>
-              <img className='w-100 mt-1' src={cover} />
+              <img className='w-100 mt-1' src={cover} alt='' />
             </div>
             <div id='activity-content' className='pe-0 col-11'>
               <div>{bookName}</div>

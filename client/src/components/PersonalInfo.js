@@ -10,7 +10,8 @@ const PersonalInfo = ({
   bio,
 }) => {
   switch (inPage) {
-    case 'profile':
+    // Default = profile page
+    default:
       return (
         <div className='d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row'>
           <div className='d-flex flex-column align-items-center'>
@@ -21,7 +22,9 @@ const PersonalInfo = ({
             </div>
           </div>
           <div className='ms-lg-5 w-100'>
-            <h4 className='border-bottom pb-2 text-uppercase'>{nickname}</h4>
+            <h4 className='border-bottom pb-2 text-uppercase text-center'>
+              {nickname}
+            </h4>
             <table className='table table-sm table-borderless align-top'>
               <thead>
                 <tr>
