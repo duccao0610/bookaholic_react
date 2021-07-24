@@ -9,6 +9,7 @@ import { BiBarChart } from "react-icons/bi";
 import Social from "./Social";
 import RelatedGenres from "./RelatedGenres";
 import RelatedBooks from "./RelatedBooks";
+import Activity from "./Activity";
 
 const BookDetail = () => {
   const params = useParams();
@@ -20,15 +21,11 @@ const BookDetail = () => {
   const [relatedBooks, setRelatedBooks] = useState([]);
   const [relatedGenres, setRelatedGenres] = useState([]);
   const handleShowMoreDesc = () => {
-    if (!showMore) {
-      setShowMore(true);
-    } else {
-      setShowMore(false);
-    }
+    setShowMore((prev) => !prev);
   };
 
   const handleShowDetailRating = () => {
-    setShowDetailRating(!showDetailRating);
+    setShowDetailRating((prev) => !prev);
   };
 
   useEffect(() => {
@@ -49,8 +46,8 @@ const BookDetail = () => {
   return (
     <div>
       {loading ? (
-        <div className="text-center mt-4 vh-100">
-          <Spinner animation="border" variant="primary" />
+        <div className="text-center vh-100 ">
+          <Spinner animation="border" variant="primary" className="mt-3" />
         </div>
       ) : book === null ? (
         <div>Not Found</div>
@@ -73,7 +70,10 @@ const BookDetail = () => {
                 <div className="book_detail_authors font-italic fw-light fs-5">
                   <span>by </span>
                   {book.authors.map((author, idx) => (
-                    <span key={idx}>{author + " "}</span>
+                    <span key={idx}>
+                      {author}
+                      {idx === book.authors.length - 1 ? "" : ","}
+                    </span>
                   ))}
                 </div>
                 <div className="d-flex align-items-end row  justify-content-around justify-content-lg-start">
@@ -91,9 +91,11 @@ const BookDetail = () => {
                     style={{ cursor: "pointer" }}
                   >
                     <BiBarChart size="22" color="green" />
-                    <span
+                    <div
                       className="position-relative "
                       onClick={handleShowDetailRating}
+                      onMouseOver={handleShowDetailRating}
+                      onMouseLeave={handleShowDetailRating}
                     >
                       <span className="text-success ">Rating detail</span>
                       {showDetailRating ? (
@@ -108,7 +110,7 @@ const BookDetail = () => {
                           <BookRating ratings={[10, 6, 5, 4, 3]} />
                         </div>
                       ) : null}
-                    </span>
+                    </div>
                   </div>
                   <div className="col-12 col-lg-3 text-left pl-lg-0 fw-bold">
                     {book.reviews.length + " reviews"}
@@ -154,12 +156,39 @@ const BookDetail = () => {
                 </div>
               </div>
             </div>
-            <AddReviewForm />
+            <div className="row mt-5">
+              <h5 className="px-0 py-2 border-bottom mb-3">
+                Community reviews
+              </h5>
+              <div className="p-0">
+                <Activity
+                  inPage="book-detail"
+                  username="Cao Minh Duc"
+                  bookName="Chuoi An Mang A.B.C"
+                  authors={["Agatha Christie", "Someone Else"]}
+                  rating={2}
+                  cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1435375133l/25802987._SY475_.jpg"
+                  review="Khi một sát nhân giết người hàng loạt bí danh ABC chế nhạo Poirot bằng những lá thư úp mở và giết người theo thứ tự chữ cái, Poirot tiến hành một phương pháp điều tra bất thường để truy tìm ABC. Chữ A là bà Ascher ờ Andover, B là Betty Barnard ở Bexhill, C là ngài Carmichael Clarke ở Churston. Qua từng vụ án, kẻ giết người càng tự tin hơn - nhưng để lại một vệt manh mối rõ ràng để chế nhạo Hercule Poirot tài ba có thể lại sai lầm đầu tiên và chí tử."
+                  date="12/07/2021"
+                />
+                <Activity
+                  inPage="book-detail"
+                  username="Cao Minh Duc"
+                  bookName="Chuoi An Mang A.B.C"
+                  authors={["Agatha Christie", "Someone Else"]}
+                  rating={2}
+                  cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1435375133l/25802987._SY475_.jpg"
+                  review="Khi một sát nhân giết người hàng loạt bí danh ABC chế nhạo Poirot bằng những lá thư úp mở và giết người theo thứ tự chữ cái, Poirot tiến hành một phương pháp điều tra bất thường để truy tìm ABC. Chữ A là bà Ascher ờ Andover, B là Betty Barnard ở Bexhill, C là ngài Carmichael Clarke ở Churston. Qua từng vụ án, kẻ giết người càng tự tin hơn - nhưng để lại một vệt manh mối rõ ràng để chế nhạo Hercule Poirot tài ba có thể lại sai lầm đầu tiên và chí tử."
+                  date="12/07/2021"
+                />
+              </div>
+              <AddReviewForm />
+            </div>
           </div>
           <div className="pt-5 d-none d-lg-inline-block col-lg-3  mr-5 vh-100 align-self-lg-start">
             <Social />
             <RelatedBooks books={relatedBooks} />
-            <RelatedGenres genres={relatedGenres} />
+            <RelatedGenres genres={relatedGenres} related />
           </div>
         </div>
       )}

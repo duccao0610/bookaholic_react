@@ -2,18 +2,17 @@ import { Image } from "react-bootstrap";
 import StarRatings from "react-star-ratings";
 import { Link } from "react-router-dom";
 import Tag from "./Tag";
+import "./BookItem.css";
 const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
   return (
     <div
       className={
         onlyImage
           ? onCategory
-            ? "col-4 col-lg-1 mx-lg-4 d-flex justify-content-center mb-3 p-0"
+            ? "col-4 col-md-3 col-lg-2  mr-lg-2 mr-xl-0 d-flex justify-content-center mb-3 p-0"
             : "d-flex justify-content-center"
-          : `rounded d-flex justify-content-start px-md-2 px-3 py-2  ${
-              onSearch
-                ? "d-flex justify-content-start mb-lg-2 w-100"
-                : "mb-lg-4"
+          : `rounded d-flex justify-content-start px-md-2 px-3 py-2 ${
+              onSearch ? "d-flex justify-content-start mb-2 w-100" : "mb-lg-4"
             }`
       }
       style={
@@ -63,7 +62,7 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
         >
           <Link to={"/books/" + book._id} className="text-dark">
             <div
-              className={`font-weight-bold text-left text-break ${
+              className={`title_truncated font-weight-bold text-left text-break ${
                 onSearch ? "" : "fs-5"
               }`}
             >
@@ -74,15 +73,20 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
             className="text-left font-weight-light font-italic"
             style={onSearch ? { fontSize: "12px" } : null}
           >
-            {book.authors.map((author) => (
-              <span key={`${author} +${book.title}`}>{author}</span>
+            {book.authors.map((author, idx) => (
+              <span key={`${author} +${book.title}`}>
+                {author}
+                {idx === book.authors.length - 1 ? "" : ","}
+              </span>
             ))}
           </div>
           {onSearch ? null : (
             <>
-              <div className="categories text-left">
+              <div className="tag_truncated text-left">
                 {book.categories.map((item, idx) => {
-                  return <Tag key={idx} variant={idx} name={item} />;
+                  return idx >= 5 ? null : (
+                    <Tag key={idx} variant={idx} name={item} />
+                  );
                 })}
               </div>
               <div className="ratings text-left">

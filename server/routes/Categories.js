@@ -1,8 +1,8 @@
 import express from "express";
-import { getBookByCategory } from "../controller/Books.js";
+import { getBooksByCategory, getOtherCategories } from "../controller/Books.js";
 
 const router = express.Router();
 
-router.get("/:category", getBookByCategory);
+router.get("/:category", getBooksByCategory, getOtherCategories);
 
 export default router;
