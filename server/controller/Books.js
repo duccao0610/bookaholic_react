@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 
 export const getBooksTrending = async (req, res) => {
   try {
-    const books = await Book.find().limit(10);
+    const books = await Book.find({
+      $expr: { $lt: [0.5, { $rand: {} }] },
+    }).limit(20);
     res.status(200).json(books);
     // console.log(books);
   } catch (error) {
@@ -43,11 +45,11 @@ export const getBookDetail = async (req, res) => {
   }
 };
 
-export const getBookByCategory = async (req, res) => {
+export const getBooksByCategory = async (req, res, next) => {
   try {
     const books = await Book.find({ categories: req.params.category });
-    res.status(200).json(books);
-    console(`${req.params.category}`, books);
+    res.locals.books = books;
+    next();
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -57,11 +59,50 @@ export const getBooksBySearch = async (req, res) => {
   try {
     const regPattern = new RegExp(`${req.params.searchValue}`, "i");
     const books = await Book.find({
-      title: {
-        $regex: regPattern,
-      },
+      $or: [
+        {
+          title: {
+            $regex: regPattern,
+          },
+        },
+        {
+          authors: {
+            $regex: regPattern,
+          },
+        },
+      ],
     }).limit(10);
     res.status(200).json(books);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+export const getOtherCategories = async (req, res) => {
+  try {
+    const otherCategories = await Book.aggregate([
+      {
+        $unwind: { path: "$categories" },
+      },
+      {
+        $group: {
+          _id: "$categories",
+          total: {
+            $sum: 1,
+          },
+        },
+      },
+      { $sort: { total: -1 } },
+      { $limit: 8 },
+    ]);
+
+    const books = res.locals.books;
+    const categoryData = {
+      books: books,
+      otherCategories: otherCategories,
+    };
+
+    res.status(200).json(categoryData);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

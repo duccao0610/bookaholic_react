@@ -2,6 +2,7 @@ import { Tabs, Tab, Spinner, Container, Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
 import BookItem from "../components/BookItem";
 import Activity from "../components/Activity";
+import "./Home.css";
 const Home = () => {
   const [booksData, setBooksData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,13 +26,12 @@ const Home = () => {
         <Tabs
           variant="pills"
           defaultActiveKey="trending"
-          id="uncontrolled-tab-example"
-          className="row"
+          className="row tabs_container "
         >
           <Tab
             eventKey="feeds"
             title="Feeds"
-            tabClassName="d-flex justify-content-center  col-6"
+            tabClassName="d-flex justify-content-center col-6"
           >
             <div className="tab_feeds_content mt-3 w-100 d-flex flex-column">
               <Activity
