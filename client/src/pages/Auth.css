@@ -1,0 +1,70 @@
+.auth_container {
+  background: url("../auth_background.gif") no-repeat center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -ms-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  min-height: 100vh;
+  overflow: scroll;
+  position: relative;
+}
+.auth_container::-webkit-scrollbar {
+  display: none;
+}
+
+.auth_form {
+  position: absolute;
+  width: 350px;
+  height: fit-content;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+  top: 300px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+.auth_heading {
+  padding: 0 10px;
+}
+
+.auth_heading,
+input {
+  background: rgb(0, 0, 0, 0.75);
+}
+
+input {
+  outline: none;
+  border: 0.5px solid white;
+  border-radius: 3px;
+  height: 40px;
+  color: white;
+  padding-left: 10px;
+  width: 100%;
+}
+@media (max-width: 600px) {
+  input {
+    height: 50px;
+  }
+}
+
+input::placeholder {
+  color: white;
+  font-size: 15px;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.btn_auth_form {
+  background: #f9f8f4;
+  border: none;
+  border-radius: 3px;
+  padding: 5px;
+  height: 40px;
+  color: black;
+  font-weight: bold;
+}
+.btn_auth_form:hover {
+  opacity: 0.8;
+}

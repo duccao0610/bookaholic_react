@@ -8,9 +8,9 @@ const AddReviewForm = () => {
     setRating(newRating);
   };
   return (
-    <Form className="mt-3 row">
+    <Form className="mt-3 row mx-1 px-0">
       <Form.Group className="mb-3 p-0" controlId="exampleForm.ControlTextarea1">
-        <Form.Label className="fw-bold fs-5">Reviews: </Form.Label>
+        <Form.Label className="fw-bold fs-5">Write a review </Form.Label>
         <Form.Control
           as="textarea"
           rows={3}
@@ -29,7 +29,8 @@ const AddReviewForm = () => {
         />
       </div>
       <Button
-        className="d-block mt-3 col-3 col-lg-1"
+        className="d-block mt-3 col-3 col-lg-1 px-2"
+        style={{ background: "#5A3434" }}
         variant="primary"
         size="md"
       >

@@ -8,22 +8,27 @@ const RelatedBooks = ({ books }) => {
       items: 5,
     },
     desktop: {
-      breakpoint: { max: 3000, min: 1024 },
+      breakpoint: { max: 3000, min: 990 },
       items: 3,
     },
     tablet: {
-      breakpoint: { max: 1024, min: 500 },
-      items: 2,
+      breakpoint: { max: 990, min: 600 },
+      items: 5,
     },
     mobile: {
-      breakpoint: { max: 500, min: 0 },
+      breakpoint: { max: 600, min: 0 },
       items: 3,
     },
   };
   return (
     <>
       <h5>Related books</h5>
-      <Carousel responsive={responsive} itemClass="p-0" containerClass="py-1">
+      <Carousel
+        customTransition="all 1.5s ease"
+        responsive={responsive}
+        itemClass="p-0"
+        containerClass="py-1"
+      >
         {books.map((book, idx) => {
           return <BookItem key={idx} book={book} onlyImage />;
         })}
