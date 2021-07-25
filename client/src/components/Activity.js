@@ -82,9 +82,9 @@ const Activity = ({
             <BsStarFill className="text-warning " />
             <span className="fw-bold align-middle">{rating}</span>
           </div>
-          <div className="d-flex">
-            <div className="col-1 p-0">
-              <img className="w-100 mt-1" src={cover} />
+          <div className='d-flex'>
+            <div className='col-1 p-0'>
+              <img className='w-100 mt-1' src={cover} alt='' />
             </div>
             <div id="activity-content" className="pe-0 col-11">
               <div>{bookName}</div>

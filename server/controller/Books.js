@@ -1,6 +1,7 @@
-import Book from "../models/Book.js";
+const Book = require("../models/Book.js");
 
-export const getBooksTrending = async (req, res) => {
+
+const getBooksTrending = async (req, res) => {
   try {
     const books = await Book.find({
       $expr: { $lt: [0.5, { $rand: {} }] },
@@ -12,7 +13,7 @@ export const getBooksTrending = async (req, res) => {
   }
 };
 
-export const getBookDetail = async (req, res) => {
+const getBookDetail = async (req, res) => {
   try {
     const book = await Book.find({ _id: req.params.id });
     const relatedCategories = await Book.aggregate([
@@ -44,7 +45,7 @@ export const getBookDetail = async (req, res) => {
   }
 };
 
-export const getBooksByCategory = async (req, res, next) => {
+const getBooksByCategory = async (req, res, next) => {
   try {
     const books = await Book.find({ categories: req.params.category });
     res.locals.books = books;
@@ -54,7 +55,7 @@ export const getBooksByCategory = async (req, res, next) => {
   }
 };
 
-export const getBooksBySearch = async (req, res) => {
+const getBooksBySearch = async (req, res) => {
   try {
     const regPattern = new RegExp(`${req.params.searchValue}`, "i");
     const books = await Book.find({
@@ -77,7 +78,7 @@ export const getBooksBySearch = async (req, res) => {
   }
 };
 
-export const getOtherCategories = async (req, res) => {
+const getOtherCategories = async (req, res) => {
   try {
     const otherCategories = await Book.aggregate([
       {
@@ -105,4 +106,11 @@ export const getOtherCategories = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
+
+module.exports = {
+  getBooksByCategory,
+  getBookDetail,
+  getBooksBySearch,
+  getBooksTrending,
+  getOtherCategories
 };

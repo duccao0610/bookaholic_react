@@ -33,10 +33,10 @@ const BookDetail = () => {
     // fetch(`http://localhost:5000/books/${params.id}`)
     setLoading(true);
     setShowMore(false);
-    fetch(`http://192.168.0.102:5000/books/${params.id}`)
+    fetch(`http://localhost:5000/books/${params.id}`)
       .then((res) => res.json())
       .then((resJson) => {
-        console.log("resjson", resJson);
+        console.log('resjson', resJson);
         setLoading(false);
         setBook(resJson.info[0]);
         setRelatedGenres(resJson.relatedGenres);
@@ -58,17 +58,17 @@ const BookDetail = () => {
             <div className=" p-0 d-flex flex-column flex-lg-row pb-2 row">
               <div className="book_detail_cover p-0 mb-1 col-9 col-lg-3 h-100">
                 <Image
-                  className="rounded border-0 w-100 "
-                  style={{ boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }}
-                  alt=""
+                  className='rounded border-0 w-100 '
+                  style={{ boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }}
+                  alt=''
                   src={book.cover}
                 />
               </div>
-              <div className="col-12 col-lg-9 pl-0 pl-lg-3">
-                <div className="book_detail_title fw-normal fs-2 fw-bold">
+              <div className='col-12 col-lg-9 pl-0 pl-lg-3'>
+                <div className='book_detail_title fw-normal fs-2 fw-bold'>
                   {book.title}
                 </div>
-                <div className="book_detail_authors font-italic fw-light fs-5">
+                <div className='book_detail_authors font-italic fw-light fs-5'>
                   <span>by </span>
                   {book.authors.map((author, idx) => (
                     <span key={idx}>
@@ -77,14 +77,14 @@ const BookDetail = () => {
                     </span>
                   ))}
                 </div>
-                <div className="d-flex align-items-end row  justify-content-around justify-content-lg-start">
-                  <div className="mr-2 mb-2 mb-lg-0 col-lg-3">
+                <div className='d-flex align-items-end row  justify-content-around justify-content-lg-start'>
+                  <div className='mr-2 mb-2 mb-lg-0 col-lg-3'>
                     <StarRatings
                       rating={4}
-                      starSpacing="3px"
+                      starSpacing='3px'
                       numberOfStars={5}
-                      starDimension="16px"
-                      starRatedColor="yellow"
+                      starDimension='16px'
+                      starRatedColor='yellow'
                     />
                   </div>
                   <div
@@ -102,29 +102,28 @@ const BookDetail = () => {
                       {showDetailRating ? (
                         <div
                           style={{
-                            width: "250px",
-                            left: "10px",
-                            zIndex: "3",
+                            width: '250px',
+                            left: '10px',
+                            zIndex: '3',
                           }}
-                          className="position-absolute text-nowrap"
-                        >
+                          className='position-absolute text-nowrap'>
                           <BookRating ratings={[10, 6, 5, 4, 3]} />
                         </div>
                       ) : null}
                     </div>
                   </div>
-                  <div className="col-12 col-lg-3 text-left pl-lg-0 fw-bold">
-                    {book.reviews.length + " reviews"}
+                  <div className='col-12 col-lg-3 text-left pl-lg-0 fw-bold'>
+                    {book.reviews.length + ' reviews'}
                   </div>
                 </div>
-                <div className="my-1 d-flex flex-column flex-lg-row align-items-center pr-2 align-items-lg-center ">
-                  <div className="col-12 col-lg-5 p-0">
-                    <span className="mr-1 font-italic col-8  pl-0">
+                <div className='my-1 d-flex flex-column flex-lg-row align-items-center pr-2 align-items-lg-center '>
+                  <div className='col-12 col-lg-5 p-0'>
+                    <span className='mr-1 font-italic col-8  pl-0'>
                       You own this book ?
                     </span>
-                    <div className=" col-3 pl-0">
+                    <div className=' col-3 pl-0'>
                       <Switch
-                        offColor="#E43712"
+                        offColor='#E43712'
                         handleDiameter={20}
                         checked={availability}
                         onChange={() => {
@@ -133,26 +132,25 @@ const BookDetail = () => {
                       />
                     </div>
                   </div>
-                  <div className="p-0 col-lg-5 d-inline-block d-lg-none">
+                  <div className='p-0 col-lg-5 d-inline-block d-lg-none'>
                     <Social />
                   </div>
                 </div>
                 <div>
-                  <h6 className="fw-bold">Description</h6>
+                  <h6 className='fw-bold'>Description</h6>
                   {showMore
                     ? book.description
                     : book.description.substring(0, 300)}
                   {book.description.length > 300 ? (
                     <span
-                      style={{ cursor: "pointer" }}
-                      className="text-info"
-                      onClick={handleShowMoreDesc}
-                    >
-                      {showMore ? " (less)" : " ...more"}
+                      style={{ cursor: 'pointer' }}
+                      className='text-info'
+                      onClick={handleShowMoreDesc}>
+                      {showMore ? ' (less)' : ' ...more'}
                     </span>
                   ) : null}
                 </div>
-                <div className="mt-4 d-lg-none">
+                <div className='mt-4 d-lg-none'>
                   <RelatedBooks books={relatedBooks} />
                 </div>
               </div>
