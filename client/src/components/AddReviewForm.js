@@ -29,7 +29,8 @@ const AddReviewForm = () => {
         />
       </div>
       <Button
-        className="d-block mt-3 col-3 col-lg-1"
+        className="d-block mt-3 col-3 col-lg-1 px-2"
+        style={{ background: "#5A3434" }}
         variant="primary"
         size="md"
       >

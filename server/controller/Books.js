@@ -1,5 +1,4 @@
 import Book from "../models/Book.js";
-import mongoose from "mongoose";
 
 export const getBooksTrending = async (req, res) => {
   try {
