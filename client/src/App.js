@@ -17,8 +17,8 @@ function App() {
     <div className="App bg-white min-vh-100  border border-light px-0">
       <NavBar />
       <div className="content">
-        <Route path='/profile/:id/shelves' component={Shelves} />
-        <Route path='/profile/:id' component={Profile} />
+        <Route path="/user/:username/shelves" component={Shelves} />
+        <Route path="/user/:username" exact component={Profile} />
         <Route
           path="/books/:id"
           render={() => <BookDetail key={Date.now()} />}
