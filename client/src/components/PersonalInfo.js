@@ -1,14 +1,50 @@
-import { Image } from 'react-bootstrap';
-import ProfileVoting from './ProfileVoting';
+import { Image } from "react-bootstrap";
+import ProfileVoting from "./ProfileVoting";
+import { useState } from "react";
 
 const PersonalInfo = ({
   inPage,
   avatar,
   reviewsQuant,
-  owningsQuant,
+  owningQuant,
   nickname,
   bio,
+  username,
 }) => {
+  const [editProfileBtn, setEditProfileBtn] = useState(true);
+
+  const handleEditProfile = async () => {
+    const editedProfile = JSON.stringify({
+      nickname: nicknameInputVal,
+      bio: bioInputVal,
+    });
+
+    if (!editProfileBtn) {
+      await fetch(`http://localhost:5000/user/${username}/editProfile`, {
+        headers: { "Content-type": "application/json; charset=UTF-8" },
+        method: "PUT",
+        body: editedProfile,
+      })
+        .then((res) => res.json())
+        .then((resJson) => {
+          console.log(resJson);
+        })
+        .catch((err) => console.log(err));
+    }
+
+    setEditProfileBtn(!editProfileBtn);
+  };
+
+  const [nicknameInputVal, setNicknameInputVal] = useState(nickname);
+  const handleChangeNickname = (e) => {
+    setNicknameInputVal(e.target.value);
+  };
+
+  const [bioInputVal, setBioInputval] = useState(bio);
+  const handleChangeBio = (e) => {
+    setBioInputval(e.target.value);
+  };
+
   switch (inPage) {
     // Default = profile page
     default:
@@ -22,20 +58,29 @@ const PersonalInfo = ({
             </div>
           </div>
           <div className='ms-lg-5 w-100'>
-            <h4 className='border-bottom pb-2 text-uppercase text-center'>
-              {nickname}
-            </h4>
+            <div className='border-bottom pb-2 d-flex justify-content-between'>
+              {editProfileBtn ? (
+                <h4 className='text-uppercase m-0'>{nicknameInputVal}</h4>
+              ) : (
+                <input
+                  className='w-100'
+                  type='text'
+                  value={nicknameInputVal}
+                  onChange={handleChangeNickname}
+                />
+              )}
+
+              <div
+                className='btn btn-sm btn-primary'
+                onClick={handleEditProfile}>
+                {editProfileBtn ? "Edit" : "Save"}
+              </div>
+            </div>
             <table className='table table-sm table-borderless align-top'>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
               <tbody>
                 <tr>
                   <th>Books</th>
-                  <td>{owningsQuant}</td>
+                  <td>{owningQuant}</td>
                 </tr>
                 <tr>
                   <th>Reviews</th>
@@ -43,7 +88,19 @@ const PersonalInfo = ({
                 </tr>
                 <tr>
                   <th>Bio</th>
-                  <td>{bio}</td>
+                  <td>
+                    {editProfileBtn ? (
+                      `${bioInputVal}`
+                    ) : (
+                      <textarea
+                        className='w-100'
+                        style={{ height: "90px" }}
+                        type='text'
+                        value={bioInputVal}
+                        onChange={handleChangeBio}
+                      />
+                    )}
+                  </td>
                 </tr>
               </tbody>
             </table>

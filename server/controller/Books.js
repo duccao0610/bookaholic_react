@@ -1,7 +1,6 @@
-import Book from "../models/Book.js";
-import mongoose from "mongoose";
+const Book = require("../models/Book.js");
 
-export const getBooksTrending = async (req, res) => {
+const getBooksTrending = async (req, res) => {
   try {
     const books = await Book.find().limit(10);
     res.status(200).json(books);
@@ -11,7 +10,7 @@ export const getBooksTrending = async (req, res) => {
   }
 };
 
-export const getBookDetail = async (req, res) => {
+const getBookDetail = async (req, res) => {
   try {
     const book = await Book.find({ _id: req.params.id });
     const relatedCategories = await Book.aggregate([
@@ -43,7 +42,7 @@ export const getBookDetail = async (req, res) => {
   }
 };
 
-export const getBookByCategory = async (req, res) => {
+const getBookByCategory = async (req, res) => {
   try {
     const books = await Book.find({ categories: req.params.category });
     res.status(200).json(books);
@@ -53,7 +52,7 @@ export const getBookByCategory = async (req, res) => {
   }
 };
 
-export const getBooksBySearch = async (req, res) => {
+const getBooksBySearch = async (req, res) => {
   try {
     const regPattern = new RegExp(`${req.params.searchValue}`, "i");
     const books = await Book.find({
@@ -65,4 +64,11 @@ export const getBooksBySearch = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
+};
+
+module.exports = {
+  getBookByCategory,
+  getBookDetail,
+  getBooksBySearch,
+  getBooksTrending,
 };
