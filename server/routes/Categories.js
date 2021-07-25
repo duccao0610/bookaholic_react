@@ -1,5 +1,8 @@
 const express = require("express");
-const { getBooksByCategory } = require("../controller/Books.js");
+const {
+  getBooksByCategory,
+  getOtherCategories,
+} = require("../controller/Books.js");
 
 const router = express.Router();
 
