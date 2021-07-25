@@ -1,6 +1,5 @@
 const Book = require("../models/Book.js");
 
-
 const getBooksTrending = async (req, res) => {
   try {
     const books = await Book.find({
@@ -106,11 +105,12 @@ const getOtherCategories = async (req, res) => {
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
+};
 
 module.exports = {
   getBooksByCategory,
   getBookDetail,
   getBooksBySearch,
   getBooksTrending,
-  getOtherCategories
+  getOtherCategories,
 };
