@@ -4,10 +4,10 @@ const Register = () => {
   return (
     <div className="auth_container">
       <div className="auth_form">
-        <h2 className="text-white   text-center py-3 px-2 auth_heading">
+        <h2 className="text-white text-center py-3 px-2 auth_heading">
           Join Bookaholic now.
         </h2>
-        <form className="mt-4 px-5">
+        <form method="post" className="mt-4 px-5">
           <input name="username" placeholder="Username" type="text" />
           <input
             name="password"

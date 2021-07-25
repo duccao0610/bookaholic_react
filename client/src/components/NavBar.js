@@ -38,7 +38,7 @@ const NavBar = () => {
     <Navbar
       style={{ background: "#F4F1EA" }}
       variant="dark"
-      className="py-2 row fixed-top w-100 m-0"
+      className="row navbar_container fixed-top px-4"
     >
       <Link
         key={Math.random()}
@@ -76,7 +76,7 @@ const NavBar = () => {
         }`}
       >
         <Button
-          className="w-75 btn_auth px-0"
+          className="w-75 btn_auth px-0 "
           style={{ background: "#5A3434", color: "white" }}
         >
           {pathname === "/login" ? "Register" : "Login"}
