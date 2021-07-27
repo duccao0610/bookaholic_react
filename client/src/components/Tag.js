@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 const Tag = ({ variant, name, related }) => {
   return (
-    <Link to={`/categories/` + name}>
+    <Link to={`/category/` + name}>
       <div
         className={
           related

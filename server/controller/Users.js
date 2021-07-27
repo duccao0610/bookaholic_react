@@ -1,6 +1,17 @@
 const User = require("../models/User");
 // const ObjectId = require("mongoose").Types.ObjectId;
 
+//find user for login-service
+const findUserByUsername = async (username) => {
+  const user = await User.findOne({
+    username: username,
+  }).exec();
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return user;
+};
+
 const getUserByUsername = async (req, res) => {
   const user = await User.findOne({ username: req.params.username });
   if (user) {
@@ -27,4 +38,4 @@ const editUserProfile = async (req, res) => {
   res.json(user);
 };
 
-module.exports = { getUserByUsername, editUserProfile };
+module.exports = { getUserByUsername, editUserProfile, findUserByUsername };

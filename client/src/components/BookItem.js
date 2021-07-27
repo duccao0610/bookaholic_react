@@ -60,7 +60,7 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
         <div
           className={"book_info pl-3 d-flex flex-column justify-content-evenly"}
         >
-          <Link to={"/books/" + book._id} className="text-dark">
+          <Link to={"/book/" + book._id} className="text-dark">
             <div
               className={`title_truncated font-weight-bold text-left text-break ${
                 onSearch ? "" : "fs-5"

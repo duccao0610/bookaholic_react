@@ -14,6 +14,15 @@ const BookSchema = mongoose.Schema({
   description: String,
 });
 
+class BookClass {
+  getTitle() {
+    return `${this.title}`;
+  }
+  calculateAverageRating() {}
+}
+
+BookSchema.loadClass(BookClass);
+
 const Book = mongoose.model("Book", BookSchema);
 
 module.exports = Book;
