@@ -21,8 +21,8 @@ const PersonalInfo = ({
 
     if (!editProfileBtn) {
       await fetch(`http://localhost:5000/user/${username}/editProfile`, {
-        headers: { "Content-type": "application/json; charset=UTF-8" },
         method: "PUT",
+        headers: { "Content-type": "application/json" },
         body: editedProfile,
       })
         .then((res) => res.json())

@@ -1,6 +1,22 @@
-const Shelf = ({ shelfName, shelfId, inPage }) => {
+import { FaTrashAlt } from "react-icons/fa";
+
+const Shelf = ({
+  shelfName,
+  shelfId,
+  inPage,
+
+  onClickShelf,
+  onDeleteShelf,
+}) => {
+  const handleClickShelf = () => {
+    onClickShelf(shelfId);
+  };
+  const handleDeleteShelf = () => {
+    onDeleteShelf(shelfId);
+  };
+
   switch (inPage) {
-    case 'profile':
+    case "profile":
       return (
         <div className='col-3'>
           <div className='col-12'>
@@ -15,8 +31,18 @@ const Shelf = ({ shelfName, shelfId, inPage }) => {
         </div>
       );
 
+    // default = Shelves page
     default:
-      break;
+      return (
+        <div className='d-flex justify-content-between align-items-center'>
+          <div
+            className='text-decoration-underline pointer pt-0'
+            onClick={handleClickShelf}>
+            {shelfName}
+          </div>
+          <FaTrashAlt className='pointer ms-3' onClick={handleDeleteShelf} />
+        </div>
+      );
   }
 };
 
