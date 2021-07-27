@@ -20,10 +20,10 @@ function App() {
         <Route path="/user/:username/shelves" component={Shelves} />
         <Route path="/user/:username" exact component={Profile} />
         <Route
-          path="/books/:id"
+          path="/book/:id"
           render={() => <BookDetail key={Date.now()} />}
         />
-        <Route path="/categories/:category" component={Category} />
+        <Route path="/category/:category" component={Category} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/" exact component={Home} />

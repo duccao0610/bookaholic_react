@@ -10,7 +10,7 @@ const Category = () => {
   const [genresData, setGenresData] = useState([]);
   useEffect(() => {
     setLoading(true);
-    fetch(`http://192.168.0.102:5000/categories/${params.category}`)
+    fetch(`http://192.168.0.102:5000/category/${params.category}`)
       .then((res) => res.json())
       .then((resJson) => {
         setLoading(false);

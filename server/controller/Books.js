@@ -1,12 +1,12 @@
 const Book = require("../models/Book.js");
 
 const getBooksTrending = async (req, res) => {
+  console.log("USER", req.user);
   try {
     const books = await Book.find({
       $expr: { $lt: [0.5, { $rand: {} }] },
     }).limit(20);
     res.status(200).json(books);
-    // console.log(books);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
