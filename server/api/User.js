@@ -8,6 +8,7 @@ const {
   addShelf,
   deleteShelf,
   deleteBookOnShelf,
+  editShelfName,
 } = require("../controller/Users.js");
 
 const router = express.Router();
@@ -22,6 +23,7 @@ router.put(
   "/:username/shelves/:shelfId/deleteBook/book=:bookId",
   deleteBookOnShelf
 );
+router.put("/:username/shelves/:shelfId/editShelfName", editShelfName);
 
 router.put("/:username/editProfile", editUserProfile);
 

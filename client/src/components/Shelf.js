@@ -1,4 +1,6 @@
-import { FaTrashAlt } from "react-icons/fa";
+import { useState } from "react";
+import { FaTrashAlt, FaEdit, FaCheckSquare } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 
 const Shelf = ({
   shelfName,
@@ -8,11 +10,32 @@ const Shelf = ({
   onShowBooksOnShelf,
   onDeleteShelf,
 }) => {
+  const params = useParams();
+
   const handleShowBooksOnShelf = () => {
     onShowBooksOnShelf(shelfId);
   };
   const handleDeleteShelf = () => {
     onDeleteShelf(shelfId);
+  };
+
+  const [inputNewShelfNameVal, setInputNewShelfNameVal] = useState(shelfName);
+  const handleInputNewShelfName = (e) => {
+    setInputNewShelfNameVal(e.target.value);
+  };
+  const [editShelfNameBtn, setEditShelfNameBtn] = useState(true);
+  const handleEditShelfName = () => {
+    if (!editShelfNameBtn) {
+      fetch(
+        `http://localhost:5000/user/${params.username}/shelves/${shelfId}/editShelfName`,
+        {
+          method: "PUT",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ newShelfName: inputNewShelfNameVal }),
+        }
+      );
+    }
+    setEditShelfNameBtn(!editShelfNameBtn);
   };
 
   switch (inPage) {
@@ -34,13 +57,29 @@ const Shelf = ({
     // default = Shelves page
     default:
       return (
-        <div className='d-flex justify-content-between align-items-center'>
-          <div
-            className='text-decoration-underline pointer pt-0'
-            onClick={handleShowBooksOnShelf}>
-            {shelfName}
+        <div className='d-flex justify-content-between'>
+          <div className='d-flex align-items-center'>
+            <div className='pointer' onClick={handleEditShelfName}>
+              {editShelfNameBtn ? <FaEdit /> : <FaCheckSquare />}
+            </div>
+            {editShelfNameBtn ? (
+              <div
+                className='text-decoration-underline pointer pt-0'
+                onClick={handleShowBooksOnShelf}>
+                {inputNewShelfNameVal}
+              </div>
+            ) : (
+              <input
+                className='form-control form-control-sm'
+                type='text'
+                value={inputNewShelfNameVal}
+                onChange={handleInputNewShelfName}
+              />
+            )}
           </div>
-          <FaTrashAlt className='pointer ms-3' onClick={handleDeleteShelf} />
+          <div className='pointer ms-3' onClick={handleDeleteShelf}>
+            <FaTrashAlt />
+          </div>
         </div>
       );
   }

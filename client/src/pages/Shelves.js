@@ -115,6 +115,7 @@ const Shelves = () => {
               <></>
             ) : (
               <input
+                className='form-control form-control-sm'
                 type='text'
                 onChange={handleInputShelfName}
                 value={inputShelfNameVal}

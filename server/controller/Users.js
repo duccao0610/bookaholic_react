@@ -171,6 +171,20 @@ const deleteBookOnShelf = async (req, res) => {
   }
 };
 
+const editShelfName = async (req, _) => {
+  try {
+    await User.updateOne(
+      { username: req.params.username },
+      {
+        $set: { "shelves.$[item].shelfName": req.body.newShelfName },
+      },
+      { arrayFilters: [{ "item._id": { $eq: req.params.shelfId } }] }
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   getUserByUsername,
   editUserProfile,
@@ -180,4 +194,5 @@ module.exports = {
   addShelf,
   deleteShelf,
   deleteBookOnShelf,
+  editShelfName,
 };
