@@ -1,25 +1,36 @@
 import "./App.css";
-import { Navbar, Form, FormControl } from "react-bootstrap";
 import { Route } from "react-router-dom";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import NavBar from "./components/NavBar";
+import BookDetail from "./components/BookDetail";
+import Category from "./pages/Category";
+import Shelves from "./pages/Shelves";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import FloatingButton from "./components/FloatingButton";
+import { useLocation } from "react-router-dom";
 function App() {
+  const { pathname } = useLocation();
+
   return (
-    <div className="App">
-      <Navbar
-        bg="primary"
-        variant="dark"
-        className="d-flex justify-content-between py-4"
-      >
-        <Navbar.Brand href="#home">Bookaholic</Navbar.Brand>
-        <Form inline>
-          <FormControl
-            type="text"
-            placeholder="Search here..."
-            className="mr-sm-2"
-          />
-        </Form>
-      </Navbar>
-      <Route path="/" exact component={Home} />
+    <div className="App bg-white min-vh-100  border border-light px-0">
+      <NavBar />
+      <div className="content">
+        <Route path="/user/:username/shelves" component={Shelves} />
+        <Route path="/user/:username" exact component={Profile} />
+        <Route
+          path="/book/:id"
+          render={() => <BookDetail key={Date.now()} />}
+        />
+        <Route path="/category/:category" component={Category} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/" exact component={Home} />
+      </div>
+      {pathname === "/login" ? null : pathname === "/register" ? null : (
+        <FloatingButton />
+      )}
     </div>
   );
 }

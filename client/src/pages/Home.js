@@ -1,11 +1,15 @@
 import { Tabs, Tab, Spinner, Container, Row, Col } from "react-bootstrap";
 import { useState, useEffect } from "react";
-import BookOnTrend from "../components/BookOnTrend";
+import BookItem from "../components/BookItem";
+import Activity from "../components/Activity";
+import "./Home.css";
+
 const Home = () => {
   const [booksData, setBooksData] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch("http://192.168.0.102:5000/books")
+    fetch("http://localhost:5000/book")
+      // fetch("http://192.168.0.102:5000/books")
       .then((res) => res.json())
       .then((resJson) => {
         console.log(resJson);
@@ -15,26 +19,63 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="w-100 vh-100">
-      <div className="home_tabs w-100 d-flex flex-column align-items-center py-3">
+    <div className="w-100  d-flex">
+      <div className=" bg-warning d-none d-md-inline-block d-lg-inline-block vh-100 col-md-2 col-lg-2">
+        Left
+      </div>
+      <div className="home_tabs w-100 d-flex flex-column align-items-center py-3 col-12 col-md-8 col-lg-8 ">
         <Tabs
           variant="pills"
           defaultActiveKey="trending"
-          id="uncontrolled-tab-example"
+          className="row tabs_container "
         >
-          <Tab eventKey="feeds" title="Feeds">
-            <div className="tab_feeds_content">Feeds</div>
+          <Tab
+            eventKey="feeds"
+            title="Feeds"
+            tabClassName="d-flex justify-content-center col-6"
+          >
+            <div className="tab_feeds_content mt-3 w-100 d-flex flex-column">
+              <Activity
+                username="username"
+                bookName="Mat Biec"
+                date="08/07/2021"
+                rating={4}
+                review="(theo lời một bài hát)."
+                cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546928634l/43505141.jpg"
+              />
+              <Activity
+                username="username"
+                bookName="Mat Biec"
+                date="08/07/2021"
+                rating={4}
+                review="Một tác phẩm được nhiều người bình chọn là hay nhất của nhà văn này. Một tác phẩm đang được dịch và giới thiệu tại Nhật Bản (theo thông tin từ các báo)… Bởi sự trong sáng của một tình cảm, bởi cái kết thúc rất, rất buồn khi suốt câu chuyện vẫn là những điều vui, buồn lẫn lộn (cái kết thúc không như mong đợi của mọi người). Cũng bởi, mắt biếc… năm xưa nay đâu (theo lời một bài hát)."
+                cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546928634l/43505141.jpg"
+              />
+            </div>
           </Tab>
-          <Tab eventKey="trending" title="Trending">
+          <Tab
+            eventKey="trending"
+            title="Trending"
+            tabClassName="col-6 d-flex justify-content-center"
+          >
             <div className="tab_trending_content mt-3 text-center">
               {loading ? (
-                <Spinner animation="border" variant="primary" />
+                <div className="vh-100">
+                  <Spinner animation="border" variant="primary" />
+                </div>
               ) : (
                 <Container>
                   <Row>
                     {booksData.map((book) => (
-                      <Col key={book._id} xs={12} sm={12} md={6} lg={6} xl={4}>
-                        <BookOnTrend book={book}></BookOnTrend>
+                      <Col
+                        key={book._id}
+                        xs={12}
+                        sm={12}
+                        md={12}
+                        lg={12}
+                        xl={6}
+                      >
+                        <BookItem book={book}></BookItem>
                       </Col>
                     ))}
                   </Row>
@@ -43,6 +84,9 @@ const Home = () => {
             </div>
           </Tab>
         </Tabs>
+      </div>
+      <div className="bg-danger d-none d-md-inline-block d-lg-inline-block col-md-2 col-lg-2 vh-100">
+        Right
       </div>
     </div>
   );
