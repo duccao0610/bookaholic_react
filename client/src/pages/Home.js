@@ -3,13 +3,24 @@ import { useState, useEffect } from "react";
 import BookItem from "../components/BookItem";
 import Activity from "../components/Activity";
 import "./Home.css";
-
+import { useHistory } from "react-router-dom";
 const Home = () => {
+  const history = useHistory();
+  const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+  if (!currentUser) {
+    history.push("/auth/login");
+  }
   const [booksData, setBooksData] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch("http://localhost:5000/book")
-      // fetch("http://192.168.0.102:5000/books")
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
+    fetch("http://localhost:5000/book/", requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
         console.log(resJson);

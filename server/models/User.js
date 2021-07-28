@@ -35,6 +35,7 @@ class UserClass {
       {
         id: this._id,
         username: this.username,
+        nickname: this.nickname,
       },
       "MY_PRIVATE_KEY",
       {

@@ -30,10 +30,16 @@ const BookDetail = () => {
   };
 
   useEffect(() => {
-    // fetch(`http://localhost:5000/books/${params.id}`)
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
     setLoading(true);
     setShowMore(false);
-    fetch(`http://localhost:5000/book/${params.id}`)
+    fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
         console.log("resjson", resJson);

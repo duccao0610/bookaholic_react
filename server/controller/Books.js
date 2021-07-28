@@ -1,6 +1,7 @@
 const Book = require("../models/Book.js");
 
 const getBooksTrending = async (req, res) => {
+  //receive data from prev middleware via req
   console.log("USER", req.user);
   try {
     const books = await Book.find({

@@ -1,7 +1,11 @@
 .form_control {
   position: relative;
 }
-
+.navbar_container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
 .search_overlay_container {
   width: 100%;
   position: absolute;

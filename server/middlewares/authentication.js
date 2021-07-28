@@ -8,12 +8,15 @@ const authentication = (req, res, next) => {
     const token = authorization.split(" ")[1];
     try {
       const data = jwt.verify(token, "MY_PRIVATE_KEY");
+      //Pass data from middleware to next via req
       req.user = {
         id: data.id,
         username: data.username,
+        nickname: data.nickname,
       };
       next();
     } catch (err) {
+      console.log(err);
       res.status(401).send("INVALID_TOKEN");
     }
   }

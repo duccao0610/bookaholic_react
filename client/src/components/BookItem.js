@@ -25,7 +25,7 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
       }
     >
       {onlyImage ? (
-        <Link to={"/books/" + book._id}>
+        <Link to={"/book/" + book._id}>
           <Image
             width={onCategory ? 110 : 80}
             height={onCategory ? 160 : 120}
@@ -84,7 +84,7 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
             <>
               <div className="tag_truncated text-left">
                 {book.categories.map((item, idx) => {
-                  return idx >= 5 ? null : (
+                  return idx >= 4 ? null : (
                     <Tag key={idx} variant={idx} name={item} />
                   );
                 })}

@@ -3,16 +3,20 @@ const authServices = require("../services/authentication");
 
 const router = express.Router();
 
-router.post("/register", (req, res) => {
-  authServices.register(req.body.username, req.body.password);
-  res.send("REGISTER SUCCESS");
+router.post("/register", async (req, res) => {
+  const message = await authServices.register(
+    req.body.username,
+    req.body.password,
+    req.body.nickname
+  );
+  res.json(message);
 });
 router.post("/login", async (req, res) => {
-  const userWithToken = await authServices.login(
+  const message = await authServices.login(
     req.body.username,
     req.body.password
   );
-  //   res.json(userWithToken);
+  res.json(message);
 });
 
 module.exports = router;

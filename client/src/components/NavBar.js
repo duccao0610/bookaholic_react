@@ -8,13 +8,12 @@ import { useEffect } from "react";
 import SearchResultsOverlay from "./SearchResultsOverlay";
 const NavBar = () => {
   const { pathname, key } = useLocation();
-  console.log("location", pathname);
+  const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
   const [resultsVisibility, setResultsVisibility] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const reg = /\s\s+/g;
   const clearedSearchValue = searchValue.replace(reg, " ").trim();
-  console.log("searc", "[" + searchValue + "]");
-  console.log("clear", "[" + clearedSearchValue + "]");
+
   const handleSearch = (e) => {
     setResultsVisibility(true);
     setSearchValue(e.target.value);
@@ -42,12 +41,12 @@ const NavBar = () => {
     >
       <Link
         key={Math.random()}
-        to="/"
-        className="text-decoration-none col-4 col-lg-2 col-md-3 mx-lg-4 pl-0"
+        to={`${currentUser ? "/" : "/auth/login"}`}
+        className="text-decoration-none col-3 col-lg-2 col-md-2 ml-2 mr-5 pl-0"
       >
         <img style={{ width: "100px" }} alt="" src={Logo} />
       </Link>
-      <div className=" col-8 col-lg-8 col-md-7 p-0 mr-0 mr-lg-3 mr-md-0 row px-0">
+      <div className=" col-8 col-lg-7 col-md-6 p-0 mr-2 row px-0">
         <Form inline className="col-12 col-lg-6 col-md-8  px-0">
           <div className="form_control w-100">
             <FormControl
@@ -66,11 +65,11 @@ const NavBar = () => {
         </Form>
       </div>
       <Link
-        to={pathname === "/login" ? "/register" : "/login"}
+        to={pathname === "/auth/login" ? "/auth/register" : "/auth/login"}
         className={`mx-auto p-0 col-lg-1 col-0 col-md-2 ${
-          pathname === "/register"
+          pathname === "/auth/register"
             ? "d-md-inline-block d-none"
-            : pathname === "/login"
+            : pathname === "/auth/login"
             ? "d-md-inline-block d-none"
             : "d-none"
         }`}
@@ -79,9 +78,34 @@ const NavBar = () => {
           className="w-75 btn_auth px-0 "
           style={{ background: "#5A3434", color: "white" }}
         >
-          {pathname === "/login" ? "Register" : "Login"}
+          {pathname === "/auth/login" ? "Register" : "Login"}
         </Button>
       </Link>
+      {currentUser ? (
+        <div className="d-none d-md-inline-block col-lg-2 col-md-3  text-center">
+          <Link to={`/user/${currentUser.username}`}>
+            Hi, {currentUser.nickname}
+          </Link>
+        </div>
+      ) : (
+        <Link
+          to="/auth/login"
+          className={`mx-auto p-0 col-lg-1 col-0 col-md-2 ${
+            pathname === "/auth/login"
+              ? "d-none"
+              : pathname === "/auth/register"
+              ? "d-none"
+              : "d-md-inline-block d-none"
+          }`}
+        >
+          <Button
+            className="w-75 btn_auth px-0 "
+            style={{ background: "#5A3434", color: "white" }}
+          >
+            Login
+          </Button>
+        </Link>
+      )}
     </Navbar>
   );
 };
