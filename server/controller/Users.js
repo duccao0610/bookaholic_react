@@ -43,7 +43,7 @@ const getUserShelves = async (req, res) => {
   }
 };
 
-const getUserBooksOnShelf = async (req, res) => {
+const getBooksOnShelf = async (req, res) => {
   const userBooksOnShelf = await User.aggregate([
     {
       $match: {
@@ -137,12 +137,47 @@ const deleteShelf = async (req, res) => {
   }
 };
 
+const deleteBookOnShelf = async (req, res) => {
+  const shelves = await User.aggregate([
+    {
+      $match: { username: req.params.username },
+    },
+    {
+      $project: { shelves: true },
+    },
+    {
+      $unwind: { path: "$shelves" },
+    },
+  ]);
+
+  const shelfIndex = shelves.findIndex((shelf) => {
+    return shelf.shelves._id == req.params.shelfId;
+  });
+
+  const pullPath = "shelves." + shelfIndex + ".bookList";
+
+  try {
+    await User.updateOne(
+      { username: req.params.username },
+      {
+        $pull: {
+          [pullPath]: new ObjectId(req.params.bookId),
+        },
+      }
+    );
+    res.json({ msg: "BOOK_ON_SHELF_DELETED" });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   getUserByUsername,
   editUserProfile,
   findUserByUsername,
   getUserShelves,
-  getUserBooksOnShelf,
+  getBooksOnShelf,
   addShelf,
   deleteShelf,
+  deleteBookOnShelf,
 };

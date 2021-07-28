@@ -5,11 +5,11 @@ const Shelf = ({
   shelfId,
   inPage,
 
-  onClickShelf,
+  onShowBooksOnShelf,
   onDeleteShelf,
 }) => {
-  const handleClickShelf = () => {
-    onClickShelf(shelfId);
+  const handleShowBooksOnShelf = () => {
+    onShowBooksOnShelf(shelfId);
   };
   const handleDeleteShelf = () => {
     onDeleteShelf(shelfId);
@@ -37,7 +37,7 @@ const Shelf = ({
         <div className='d-flex justify-content-between align-items-center'>
           <div
             className='text-decoration-underline pointer pt-0'
-            onClick={handleClickShelf}>
+            onClick={handleShowBooksOnShelf}>
             {shelfName}
           </div>
           <FaTrashAlt className='pointer ms-3' onClick={handleDeleteShelf} />
