@@ -59,7 +59,7 @@ const Shelf = ({
       return (
         <div className='d-flex justify-content-between'>
           <div className='d-flex align-items-center'>
-            <div className='pointer' onClick={handleEditShelfName}>
+            <div className='pointer me-2' onClick={handleEditShelfName}>
               {editShelfNameBtn ? <FaEdit /> : <FaCheckSquare />}
             </div>
             {editShelfNameBtn ? (

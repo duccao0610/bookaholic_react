@@ -18,7 +18,7 @@ const BookOnShelf = ({ book, shelfId, onDeleteBookOnShelf }) => {
 
   return (
     <tr>
-      <td>
+      <td className='d-none d-md-table-cell fs-6'>
         <img src={cover} alt='' style={{ width: "50px" }} />
       </td>
       <td>{title}</td>

@@ -91,8 +91,10 @@ const Shelves = () => {
   return loading ? (
     <></>
   ) : (
-    <div className='d-flex container'>
-      <div id='left-panel' className='col-3'>
+    <div className='d-md-flex container px-0'>
+      <div
+        id='left-panel'
+        className='col-md-3 d-flex flex-column align-items-center align-items-md-start'>
         <div>ALL SHELVES</div>
         <div>
           <div
@@ -127,11 +129,13 @@ const Shelves = () => {
           {addShelfBtn ? "Add a shelf" : "Save"}
         </div>
       </div>
-      <div id='right-panel' className='col-9'>
+      <div id='right-panel' className='col-md-9'>
         <table className='table'>
           <thead>
             <tr>
-              <th scope='col'>Cover</th>
+              <th scope='col' className='d-none d-md-table-cell'>
+                Cover
+              </th>
               <th scope='col'>Title</th>
               <th scope='col'>Author(s)</th>
               <th scope='col'>Avg. rating</th>
