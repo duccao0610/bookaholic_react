@@ -15,7 +15,7 @@ import { useEffect, useContext } from "react";
 import SearchResultsOverlay from "./SearchResultsOverlay";
 import UserContext from "../context/userContext";
 const NavBar = () => {
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { currentUser, setCurrentUser, setExpTime } = useContext(UserContext);
   const history = useHistory();
   const { pathname, key } = useLocation();
   const [resultsVisibility, setResultsVisibility] = useState(false);
@@ -34,6 +34,7 @@ const NavBar = () => {
   const handleLogOut = () => {
     sessionStorage.clear();
     setCurrentUser(null);
+    setExpTime(undefined);
     history.push("/auth/login");
   };
 
