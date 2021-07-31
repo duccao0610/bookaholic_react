@@ -21,7 +21,7 @@ function App() {
   };
   const [currentUser, setCurrentUser] = useState(null);
 
-  const handleSetCurrentUser = (userId) => {
+  const handleUpdateCurrentUser = (userId) => {
     fetch(`http://localhost:5000/user/id/${userId}`)
       .then((res) => res.json())
       .then((resJson) => {
@@ -51,8 +51,9 @@ function App() {
   return (
     <UserContext.Provider
       value={{
+        setCurrentUser: setCurrentUser,
         currentUser: currentUser,
-        handleSetCurrentUser: handleSetCurrentUser,
+        handleUpdateCurrentUser: handleUpdateCurrentUser,
         expTime: expTime,
         setExpTime: handleSetExpTime,
       }}

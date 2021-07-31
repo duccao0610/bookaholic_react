@@ -12,7 +12,7 @@ const PersonalInfo = ({
   bio,
   username,
 }) => {
-  const { handleSetCurrentUser } = useContext(UserContext);
+  const { handleUpdateCurrentUser } = useContext(UserContext);
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
   const handleEditProfile = async () => {
@@ -33,7 +33,9 @@ const PersonalInfo = ({
         })
         .catch((err) => console.log(err));
     }
-    handleSetCurrentUser(JSON.parse(sessionStorage.getItem("currentUser")).id);
+    handleUpdateCurrentUser(
+      JSON.parse(sessionStorage.getItem("currentUser")).id
+    );
 
     setEditProfileBtn(!editProfileBtn);
   };
