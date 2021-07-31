@@ -40,6 +40,7 @@ function App() {
         alert("TOKEN_EXPIRED.Please login again");
         sessionStorage.clear();
         setExpTime(undefined);
+        setCurrentUser(null);
         history.push("/auth/login");
       }, expired);
     }
