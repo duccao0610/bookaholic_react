@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 const {
   findUserByUsername,
   checkUserExistByUsername,
@@ -7,11 +8,16 @@ const {
 //LOGIN
 const login = async (username, password) => {
   const user = await findUserByUsername(username);
+  if (user === null) {
+    return { message: false };
+  }
   if (!user.verifyPassword(password)) {
     return { message: false };
     // throw new Error("USERNAME/PASSWORD NOT MATCH");
   }
   const token = user.generateToken();
+  const data = jwt.verify(token, "MY_PRIVATE_KEY");
+
   return {
     user: {
       id: user.id,
@@ -19,6 +25,7 @@ const login = async (username, password) => {
       nickname: user.nickname,
     },
     token: token,
+    expireTime: data.exp,
   };
 };
 

@@ -16,6 +16,7 @@ const SearchResultsOverlay = ({ searchValue }) => {
       },
     };
     let timer;
+    let loadingData = true;
     if (searchValue.length > 0) {
       setLoading(true);
       timer = setTimeout(() => {
@@ -25,8 +26,10 @@ const SearchResultsOverlay = ({ searchValue }) => {
         )
           .then((res) => res.json())
           .then((resJson) => {
-            setLoading(false);
-            setBooksData(resJson);
+            if (loadingData) {
+              setLoading(false);
+              setBooksData(resJson);
+            }
           });
       }, 1000);
     } else {
@@ -35,6 +38,7 @@ const SearchResultsOverlay = ({ searchValue }) => {
     }
 
     return () => {
+      loadingData = false;
       setBooksData([]);
       clearTimeout(timer);
     };

@@ -66,5 +66,7 @@ input::placeholder {
   font-weight: bold;
 }
 .btn_auth_form:hover {
-  opacity: 0.8;
+  background: rgb(90, 52, 52);
+  opacity: 0.9;
+  color: white;
 }

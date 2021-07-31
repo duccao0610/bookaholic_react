@@ -13,11 +13,13 @@ const authentication = (req, res, next) => {
         id: data.id,
         username: data.username,
         nickname: data.nickname,
+        expireTime: data.exp,
       };
       next();
     } catch (err) {
       console.log(err);
-      res.status(401).send("INVALID_TOKEN");
+      // res.status(401).send("INVALID_TOKEN");
+      res.send({ message: false });
     }
   }
 };

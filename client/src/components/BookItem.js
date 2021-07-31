@@ -1,4 +1,4 @@
-import { Image } from "react-bootstrap";
+import { Image, Tooltip, OverlayTrigger } from "react-bootstrap";
 import StarRatings from "react-star-ratings";
 import { Link } from "react-router-dom";
 import Tag from "./Tag";
@@ -11,8 +11,8 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
           ? onCategory
             ? "col-4 col-md-3 col-lg-2  mr-lg-2 mr-xl-0 d-flex justify-content-center mb-3 p-0"
             : "d-flex justify-content-center"
-          : `rounded d-flex justify-content-start px-md-2 px-3 py-2 ${
-              onSearch ? "d-flex justify-content-start mb-2 w-100" : "mb-lg-4"
+          : `border rounded d-flex justify-content-start px-2 px-lg-3 py-2 py-lg-3 mb-3 ${
+              onSearch ? "d-flex justify-content-start mb-2 w-100" : "mb-lg-3"
             }`
       }
       style={
@@ -21,27 +21,42 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
               boxShadow:
                 "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
             }
-          : null
+          : onlyImage
+          ? null
+          : {
+              boxShadow:
+                "rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset",
+            }
       }
     >
       {onlyImage ? (
-        <Link to={"/book/" + book._id}>
-          <Image
-            width={onCategory ? 110 : 80}
-            height={onCategory ? 160 : 120}
-            // className="w-100 h-100"
-            src={book.cover}
-            alt={`${book.cover} + image`}
-            rounded={onCategory ? false : true}
-            style={{
-              boxShadow: `${
-                onCategory
-                  ? "rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px"
-                  : "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
-              }`,
-            }}
-          />
-        </Link>
+        <OverlayTrigger
+          placement="bottom-end"
+          delay={{ show: 200, hide: 250 }}
+          overlay={
+            <Tooltip id="tooltip-top" className="font-italic">
+              {book.title} by {book.authors[0]}
+            </Tooltip>
+          }
+        >
+          <Link to={"/book/" + book._id}>
+            <Image
+              width={onCategory ? 110 : 80}
+              height={onCategory ? 160 : 120}
+              // className="w-100 h-100"
+              src={book.cover}
+              alt={`${book.cover} + image`}
+              rounded={onCategory ? false : true}
+              style={{
+                boxShadow: `${
+                  onCategory
+                    ? "rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.9) 0px 0px 0px 1px"
+                    : "rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px"
+                }`,
+              }}
+            />
+          </Link>
+        </OverlayTrigger>
       ) : (
         <Image
           width={onSearch ? 50 : 85}
@@ -84,7 +99,7 @@ const BookItem = ({ book, onlyImage, onCategory, onSearch }) => {
             <>
               <div className="tag_truncated text-left">
                 {book.categories.map((item, idx) => {
-                  return idx >= 4 ? null : (
+                  return idx >= 7 ? null : (
                     <Tag key={idx} variant={idx} name={item} />
                   );
                 })}

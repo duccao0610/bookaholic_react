@@ -37,17 +37,24 @@ const BookDetail = () => {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     };
+    let loadingData = true;
     setLoading(true);
     setShowMore(false);
     fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
         console.log("resjson", resJson);
-        setLoading(false);
-        setBook(resJson.info[0]);
-        setRelatedGenres(resJson.relatedGenres);
-        setRelatedBooks(resJson.relatedBooks);
+        if (loadingData) {
+          setLoading(false);
+          setBook(resJson.info[0]);
+          setRelatedGenres(resJson.relatedGenres);
+          setRelatedBooks(resJson.relatedBooks);
+        }
       });
+
+    return () => {
+      loadingData = false;
+    };
   }, [params.id]);
 
   return (

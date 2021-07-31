@@ -7,7 +7,7 @@ const getBooksTrending = async (req, res) => {
     const books = await Book.find({
       $expr: { $lt: [0.5, { $rand: {} }] },
     }).limit(20);
-    res.status(200).json(books);
+    res.status(200).json({ books: books, message: true });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -30,8 +30,12 @@ const getBookDetail = async (req, res) => {
       { $sort: { total: -1 } },
     ]);
     const relatedBooks = await Book.find({
-      categories: { $in: book[0].categories },
+      $or: [
+        { title: { $regex: book[0].title.split(" ")[0] } },
+        { categories: { $in: book[0].categories } },
+      ],
       _id: { $ne: book[0]._id },
+      $expr: { $lt: [0.5, { $rand: {} }] },
     }).limit(10);
 
     const bookInfo = {

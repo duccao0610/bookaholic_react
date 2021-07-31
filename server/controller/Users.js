@@ -17,7 +17,8 @@ const findUserByUsername = async (username) => {
     username: username,
   }).exec();
   if (!user) {
-    throw new Error("User not found");
+    return null;
+    // throw new Error("User not found");
   }
   return user;
 };

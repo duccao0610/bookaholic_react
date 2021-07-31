@@ -59,6 +59,7 @@ const Register = () => {
             placeholder="Nickname"
             type="text"
             className="mt-4"
+            maxLength={10}
           />
           <input
             onChange={(e) => setPassword(e.target.value)}
