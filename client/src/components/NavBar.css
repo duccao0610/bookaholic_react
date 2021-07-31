@@ -1,7 +1,6 @@
 .form_control {
   position: relative;
 }
-
 .search_overlay_container {
   width: 100%;
   position: absolute;
@@ -33,7 +32,18 @@
 
 @media (min-width: 1300px) {
   .navbar_container {
-    width: inherit !important;
+    /* width: inherit !important; */
+    width: 100vh !important;
     margin: auto !important;
+  }
+}
+@media (max-width: 765px) {
+  /* .search_overlay_container_ {
+    left: -50%;
+    width: 60vw;
+  } */
+  .overlay_current_user {
+    left: -50%;
+    width: 60vw;
   }
 }

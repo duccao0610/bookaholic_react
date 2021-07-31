@@ -8,15 +8,28 @@ const SearchResultsOverlay = ({ searchValue }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
     let timer;
+    let loadingData = true;
     if (searchValue.length > 0) {
       setLoading(true);
       timer = setTimeout(() => {
-        fetch(`http://192.168.0.102:5000/books/search/${searchValue}`)
+        fetch(
+          `http://192.168.0.102:5000/book/search/${searchValue}`,
+          requestOptions
+        )
           .then((res) => res.json())
           .then((resJson) => {
-            setLoading(false);
-            setBooksData(resJson);
+            if (loadingData) {
+              setLoading(false);
+              setBooksData(resJson);
+            }
           });
       }, 1000);
     } else {
@@ -25,6 +38,7 @@ const SearchResultsOverlay = ({ searchValue }) => {
     }
 
     return () => {
+      loadingData = false;
       setBooksData([]);
       clearTimeout(timer);
     };

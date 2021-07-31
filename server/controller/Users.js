@@ -1,13 +1,26 @@
 const User = require("../models/User");
 const ObjectId = require("mongoose").Types.ObjectId;
 
+//check user existed or not
+const checkUserExistByUsername = async (username) => {
+  const users = await User.find({
+    username: username,
+  });
+  if (users.length >= 1) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 //find user for login-service
 const findUserByUsername = async (username) => {
   const user = await User.findOne({
     username: username,
   }).exec();
   if (!user) {
-    throw new Error("User not found");
+    return null;
+    // throw new Error("User not found");
   }
   return user;
 };
@@ -186,6 +199,7 @@ const editShelfName = async (req, _) => {
 };
 
 module.exports = {
+  checkUserExistByUsername,
   getUserByUsername,
   editUserProfile,
   findUserByUsername,

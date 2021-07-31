@@ -1,15 +1,60 @@
 import "./Auth.css";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import UserContext from "../context/userContext";
 const Login = () => {
+  const { setExpTime } = useContext(UserContext);
+  const history = useHistory();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: username, password: password }),
+    };
+
+    fetch("http://localhost:5000/auth/login", requestOptions)
+      .then((res) => res.json())
+      .then((resJson) => {
+        console.log(resJson);
+        if (resJson.message === false) {
+          alert("Username/Password not match");
+        } else {
+          alert("Login success");
+          sessionStorage.setItem("token", resJson.token);
+          sessionStorage.setItem("currentUser", JSON.stringify(resJson.user));
+          setExpTime(resJson.expireTime);
+          history.push("/");
+        }
+      });
+  };
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      history.push("/");
+    }
+  }, [history]);
+
   return (
     <div className="auth_container h-100">
       <div className="auth_form">
         <h2 className="text-white  text-center py-2 px-1 auth_heading">
           Welcome to Bookaholic.
         </h2>
-        <form className="mt-4 px-5">
-          <input name="username" placeholder="Username" type="text" />
+        <form className="mt-4 px-5" method="post" onSubmit={handleFormSubmit}>
           <input
+            onChange={(e) => setUsername(e.target.value)}
+            value={username}
+            name="username"
+            placeholder="Username"
+            type="text"
+          />
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
             name="password"
             placeholder="Password"
             type="password"
@@ -22,7 +67,7 @@ const Login = () => {
             Forgot your password ?
           </Link>
           <span style={{ color: "#5A3434", fontWeight: "bolder" }}>or</span>
-          <Link to="/register" className="text-white">
+          <Link to="/auth/register" className="text-white">
             Not have an account ?
           </Link>
         </div>
