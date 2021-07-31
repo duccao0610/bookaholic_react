@@ -3,7 +3,7 @@ import { Link, useHistory } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import UserContext from "../context/userContext";
 const Login = () => {
-  const { setExpTime } = useContext(UserContext);
+  const { setExpTime, handleSetCurrentUser } = useContext(UserContext);
   const history = useHistory();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -25,6 +25,7 @@ const Login = () => {
           alert("Login success");
           sessionStorage.setItem("token", resJson.token);
           sessionStorage.setItem("currentUser", JSON.stringify(resJson.user));
+          handleSetCurrentUser(resJson.user.id);
           setExpTime(resJson.expireTime);
           history.push("/");
         }

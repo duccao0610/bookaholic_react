@@ -11,12 +11,13 @@ import Logo from "../Logo1.png";
 import { useState } from "react";
 import "./NavBar.css";
 import { useLocation, useHistory } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import SearchResultsOverlay from "./SearchResultsOverlay";
+import UserContext from "../context/userContext";
 const NavBar = () => {
+  const { currentUser } = useContext(UserContext);
   const history = useHistory();
   const { pathname, key } = useLocation();
-  const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
   const [resultsVisibility, setResultsVisibility] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const reg = /\s\s+/g;

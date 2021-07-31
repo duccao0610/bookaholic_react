@@ -9,9 +9,11 @@ const {
   deleteShelf,
   deleteBookOnShelf,
   editShelfName,
+  getNicknameById,
 } = require("../controller/Users.js");
 
 const router = express.Router();
+router.get("/id/:id", getNicknameById);
 router.get("/:username", getUserByUsername);
 
 router.get("/:username/shelves", getUserShelves);

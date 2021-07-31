@@ -1,6 +1,7 @@
 import { Image } from "react-bootstrap";
 import ProfileVoting from "./ProfileVoting";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import UserContext from "../context/userContext";
 
 const PersonalInfo = ({
   inPage,
@@ -11,6 +12,7 @@ const PersonalInfo = ({
   bio,
   username,
 }) => {
+  const { handleSetCurrentUser } = useContext(UserContext);
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
   const handleEditProfile = async () => {
@@ -31,6 +33,7 @@ const PersonalInfo = ({
         })
         .catch((err) => console.log(err));
     }
+    handleSetCurrentUser(JSON.parse(sessionStorage.getItem("currentUser")).id);
 
     setEditProfileBtn(!editProfileBtn);
   };
@@ -49,34 +52,35 @@ const PersonalInfo = ({
     // Default = profile page
     default:
       return (
-        <div className='d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row'>
-          <div className='d-flex flex-column align-items-center'>
+        <div className="d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row">
+          <div className="d-flex flex-column align-items-center">
             <Image src={avatar} roundedCircle width={150} height={150} />
-            <div className='d-flex justify-content-evenly'>
+            <div className="d-flex justify-content-evenly">
               <ProfileVoting isUpvote={true} votesQuant={123} />
               <ProfileVoting isUpvote={false} votesQuant={3456} />
             </div>
           </div>
-          <div className='ms-lg-5 w-100'>
-            <div className='border-bottom pb-2 d-flex justify-content-between'>
+          <div className="ms-lg-5 w-100">
+            <div className="border-bottom pb-2 d-flex justify-content-between">
               {editProfileBtn ? (
-                <h4 className='text-uppercase m-0'>{nicknameInputVal}</h4>
+                <h4 className="text-uppercase m-0">{nicknameInputVal}</h4>
               ) : (
                 <input
-                  className='w-100'
-                  type='text'
+                  className="w-100"
+                  type="text"
                   value={nicknameInputVal}
                   onChange={handleChangeNickname}
                 />
               )}
 
               <div
-                className='btn btn-sm btn-primary'
-                onClick={handleEditProfile}>
+                className="btn btn-sm btn-primary"
+                onClick={handleEditProfile}
+              >
                 {editProfileBtn ? "Edit" : "Save"}
               </div>
             </div>
-            <table className='table table-sm table-borderless align-top'>
+            <table className="table table-sm table-borderless align-top">
               <tbody>
                 <tr>
                   <th>Books</th>
@@ -93,9 +97,9 @@ const PersonalInfo = ({
                       `${bioInputVal}`
                     ) : (
                       <textarea
-                        className='w-100'
+                        className="w-100"
                         style={{ height: "90px" }}
-                        type='text'
+                        type="text"
                         value={bioInputVal}
                         onChange={handleChangeBio}
                       />

@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema({
   isAdmin: Boolean,
   username: String,
   password: String,
-  nickname: String,
+  nickname: { type: String, maxLength: 10 },
   bio: String,
   address: { city: String, district: String },
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
