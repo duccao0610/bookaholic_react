@@ -12,7 +12,6 @@ const {
 } = require("../controller/Users.js");
 
 const router = express.Router();
-
 router.get("/:username", getUserByUsername);
 
 router.get("/:username/shelves", getUserShelves);

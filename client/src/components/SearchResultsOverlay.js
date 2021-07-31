@@ -21,7 +21,7 @@ const SearchResultsOverlay = ({ searchValue }) => {
       setLoading(true);
       timer = setTimeout(() => {
         fetch(
-          `http://192.168.0.102:5000/book/search/${searchValue}`,
+          `http://localhost:5000/book/search/${searchValue}`,
           requestOptions
         )
           .then((res) => res.json())
