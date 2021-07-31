@@ -15,8 +15,10 @@ const FloatingButton = () => {
       }
       prevPositionRef.current = currentPosition;
     };
-    document.onscroll = () => {
-      handleScroll();
+
+    document.addEventListener("scroll", handleScroll);
+    return () => {
+      document.removeEventListener("scroll", handleScroll);
     };
   }, []);
 

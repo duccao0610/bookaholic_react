@@ -4,10 +4,11 @@ const {
   getBookDetail,
   getBooksBySearch,
 } = require("../controller/Books.js");
+const authentication = require("../middlewares/authentication");
 
 const router = express.Router();
 
-router.get("/", getBooksTrending);
+router.get("/", authentication, getBooksTrending);
 router.get("/:id", getBookDetail);
 router.get("/search/:searchValue", getBooksBySearch);
 

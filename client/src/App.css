@@ -24,7 +24,7 @@ button:hover {
 
 @media (min-width: 1300px) {
   .App {
-    width: 90%;
+    width: 50%;
     margin: auto;
     padding: 5px;
   }

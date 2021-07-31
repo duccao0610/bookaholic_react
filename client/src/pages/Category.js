@@ -9,15 +9,21 @@ const Category = () => {
   const [booksData, setBooksData] = useState([]);
   const [genresData, setGenresData] = useState([]);
   useEffect(() => {
+    let loadingData = true;
     setLoading(true);
     fetch(`http://192.168.0.102:5000/category/${params.category}`)
       .then((res) => res.json())
       .then((resJson) => {
-        setLoading(false);
-        console.log("CategoryData", resJson);
-        setBooksData(resJson.books);
-        setGenresData(resJson.otherCategories);
+        if (loadingData) {
+          setLoading(false);
+          console.log("CategoryData", resJson);
+          setBooksData(resJson.books);
+          setGenresData(resJson.otherCategories);
+        }
       });
+    return () => {
+      loadingData = false;
+    };
   }, [params.category]);
   return (
     <>
