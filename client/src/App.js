@@ -19,6 +19,18 @@ function App() {
   const handleSetExpTime = (time) => {
     setExpTime(time);
   };
+  const [currentUser, setCurrentUser] = useState(null);
+
+  const handleSetCurrentUser = (userId) => {
+    fetch(`http://localhost:5000/user/id/${userId}`)
+      .then((res) => res.json())
+      .then((resJson) => {
+        if (resJson.message === true) {
+          console.log("CURRENT", resJson);
+          setCurrentUser(resJson.user[0]);
+        }
+      });
+  };
 
   useEffect(() => {
     let timer;
@@ -39,6 +51,8 @@ function App() {
   return (
     <UserContext.Provider
       value={{
+        currentUser: currentUser,
+        handleSetCurrentUser: handleSetCurrentUser,
         expTime: expTime,
         setExpTime: handleSetExpTime,
       }}

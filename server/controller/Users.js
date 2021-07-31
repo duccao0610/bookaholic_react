@@ -1,6 +1,18 @@
 const User = require("../models/User");
 const ObjectId = require("mongoose").Types.ObjectId;
 
+const getNicknameById = async (req, res) => {
+  const user = await User.find(
+    { _id: ObjectId(req.params.id) },
+    "nickname username"
+  );
+  if (user) {
+    res.json({ user: user, message: true });
+  } else {
+    res.json({ message: false });
+  }
+};
+
 //check user existed or not
 const checkUserExistByUsername = async (username) => {
   const users = await User.find({
@@ -199,6 +211,7 @@ const editShelfName = async (req, _) => {
 };
 
 module.exports = {
+  getNicknameById,
   checkUserExistByUsername,
   getUserByUsername,
   editUserProfile,
