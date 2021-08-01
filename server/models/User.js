@@ -21,6 +21,8 @@ const userSchema = mongoose.Schema({
   owning: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
   reviews: [
     {
+      date: Date,
+      rating: Number,
       content: String,
       book: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
     },
@@ -39,7 +41,7 @@ class UserClass {
       },
       "MY_PRIVATE_KEY",
       {
-        expiresIn: 90,
+        expiresIn: 600,
       }
     );
     return token;

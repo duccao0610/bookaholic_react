@@ -10,11 +10,12 @@ import Social from "./Social";
 import RelatedGenres from "./RelatedGenres";
 import RelatedBooks from "./RelatedBooks";
 import Activity from "./Activity";
-
+import { FaExclamationTriangle } from "react-icons/fa";
 const BookDetail = () => {
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
+  const [bookReviews, setBookReviews] = useState([]);
   const [availability, setAvailability] = useState(false);
   const [showDetailRating, setShowDetailRating] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -27,6 +28,18 @@ const BookDetail = () => {
 
   const handleShowDetailRating = () => {
     setShowDetailRating((prev) => !prev);
+  };
+  const handleRefreshReviewsData = () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
+    fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
+      .then((res) => res.json())
+      .then((resJson) => setBookReviews(resJson.bookReviews));
   };
 
   useEffect(() => {
@@ -49,6 +62,7 @@ const BookDetail = () => {
           setBook(resJson.info[0]);
           setRelatedGenres(resJson.relatedGenres);
           setRelatedBooks(resJson.relatedBooks);
+          setBookReviews(resJson.bookReviews);
         }
       });
 
@@ -184,29 +198,36 @@ const BookDetail = () => {
                 </div>
               </div>
               <div className="p-0">
-                <Activity
-                  inPage="book-detail"
-                  username="Cao Minh Duc"
-                  bookName="Chuoi An Mang A.B.C"
-                  authors={["Agatha Christie", "Someone Else"]}
-                  rating={2}
-                  cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1435375133l/25802987._SY475_.jpg"
-                  review="Khi một sát nhân giết người hàng loạt bí danh ABC chế nhạo Poirot bằng những lá thư úp mở và giết người theo thứ tự chữ cái, Poirot tiến hành một phương pháp điều tra bất thường để truy tìm ABC. Chữ A là bà Ascher ờ Andover, B là Betty Barnard ở Bexhill, C là ngài Carmichael Clarke ở Churston. Qua từng vụ án, kẻ giết người càng tự tin hơn - nhưng để lại một vệt manh mối rõ ràng để chế nhạo Hercule Poirot tài ba có thể lại sai lầm đầu tiên và chí tử."
-                  date="12/07/2021"
-                />
-                <Activity
-                  inPage="book-detail"
-                  username="Cao Minh Duc"
-                  bookName="Chuoi An Mang A.B.C"
-                  authors={["Agatha Christie", "Someone Else"]}
-                  rating={2}
-                  cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1435375133l/25802987._SY475_.jpg"
-                  review="Khi một sát nhân giết người hàng loạt bí danh ABC chế nhạo Poirot bằng những lá thư úp mở và giết người theo thứ tự chữ cái, Poirot tiến hành một phương pháp điều tra bất thường để truy tìm ABC. Chữ A là bà Ascher ờ Andover, B là Betty Barnard ở Bexhill, C là ngài Carmichael Clarke ở Churston. Qua từng vụ án, kẻ giết người càng tự tin hơn - nhưng để lại một vệt manh mối rõ ràng để chế nhạo Hercule Poirot tài ba có thể lại sai lầm đầu tiên và chí tử."
-                  date="12/07/2021"
-                />
+                {bookReviews.length === 0 ? (
+                  <div className="d-flex align-items-center justify-content-center my-3 font-italic">
+                    <FaExclamationTriangle />
+                    Not have a review yet
+                  </div>
+                ) : (
+                  <>
+                    {bookReviews.map((review, idx) => {
+                      return (
+                        <Activity
+                          key={idx}
+                          inPage="book-detail"
+                          username={review.reviewInfo.nickname}
+                          bookName={book.title}
+                          authors={book.authors}
+                          rating={review.reviewInfo.reviews.rating}
+                          cover={book.cover}
+                          review={review.reviewInfo.reviews.content}
+                          date={review.reviewInfo.reviews.date.slice(0, 10)}
+                        />
+                      );
+                    })}
+                  </>
+                )}
               </div>
               <div ref={reviewInputRef}>
-                <AddReviewForm />
+                <AddReviewForm
+                  refreshReviewsData={handleRefreshReviewsData}
+                  bookId={book._id}
+                />
               </div>
             </div>
           </div>

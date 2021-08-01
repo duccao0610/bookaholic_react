@@ -1,4 +1,5 @@
 const Book = require("../models/Book.js");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const getBooksTrending = async (req, res) => {
   //receive data from prev middleware via req
@@ -38,10 +39,44 @@ const getBookDetail = async (req, res) => {
       $expr: { $lt: [0.5, { $rand: {} }] },
     }).limit(10);
 
+    const bookReviews = await Book.aggregate([
+      { $match: { _id: ObjectId(req.params.id) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "reviews.book",
+          as: "reviewInfo",
+        },
+      },
+      {
+        $project: {
+          "reviewInfo.nickname": 1,
+          "reviewInfo.reviews": 1,
+        },
+      },
+      {
+        $unwind: {
+          path: "$reviewInfo",
+        },
+      },
+      {
+        $unwind: {
+          path: "$reviewInfo.reviews",
+        },
+      },
+      {
+        $match: {
+          "reviewInfo.reviews.book": ObjectId(req.params.id),
+        },
+      },
+    ]);
+
     const bookInfo = {
       info: book,
       relatedGenres: relatedCategories,
       relatedBooks: relatedBooks,
+      bookReviews: bookReviews,
     };
     res.status(200).json(bookInfo);
   } catch (error) {

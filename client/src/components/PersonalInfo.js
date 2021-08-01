@@ -68,6 +68,8 @@ const PersonalInfo = ({
                 <h4 className="text-uppercase m-0">{nicknameInputVal}</h4>
               ) : (
                 <input
+                  placeholder="Max 10 characters"
+                  maxLength={10}
                   className="w-100"
                   type="text"
                   value={nicknameInputVal}
