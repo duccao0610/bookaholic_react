@@ -10,11 +10,13 @@ const {
   deleteBookOnShelf,
   editShelfName,
   getNicknameById,
+  addReview,
 } = require("../controller/Users.js");
 
 const router = express.Router();
 router.get("/id/:id", getNicknameById);
 router.get("/:username", getUserByUsername);
+router.post("/addReview", addReview);
 
 router.get("/:username/shelves", getUserShelves);
 router.get("/:username/shelves/:shelfId", getBooksOnShelf);

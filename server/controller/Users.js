@@ -210,6 +210,27 @@ const editShelfName = async (req, _) => {
   }
 };
 
+const addReview = async (req, res) => {
+  try {
+    await User.updateOne(
+      { _id: req.body.userId },
+      {
+        $push: {
+          reviews: {
+            rating: req.body.rating,
+            content: req.body.content,
+            book: req.body.bookId,
+            date: new Date(),
+          },
+        },
+      }
+    );
+    res.json({ message: "ADD_REVIEW_SUCCESS" });
+  } catch (err) {
+    res.json({ message: err.message });
+  }
+};
+
 module.exports = {
   getNicknameById,
   checkUserExistByUsername,
@@ -222,4 +243,5 @@ module.exports = {
   deleteShelf,
   deleteBookOnShelf,
   editShelfName,
+  addReview,
 };

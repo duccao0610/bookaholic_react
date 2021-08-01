@@ -19,8 +19,15 @@ const Register = () => {
         nickname: nickname,
       }),
     };
+    if (password === "" || username === "" || nickname === "") {
+      alert("Please fill in information needed");
+      return;
+    }
 
-    if (password === confirmPassword) {
+    if (
+      (username && password && nickname) !== "" &&
+      password === confirmPassword
+    ) {
       fetch("http://localhost:5000/auth/register", requestOptions)
         .then((res) => res.json())
         .then((resJson) => {
@@ -34,7 +41,10 @@ const Register = () => {
             setConfirmPassword("");
           }
         });
-    } else {
+    } else if (
+      (username && password && nickname) !== "" &&
+      password !== confirmPassword
+    ) {
       alert("PASSWORD NOT MATCH");
     }
   };
