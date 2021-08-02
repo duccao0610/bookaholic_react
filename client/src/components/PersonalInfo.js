@@ -12,7 +12,7 @@ const PersonalInfo = ({
   bio,
   username,
 }) => {
-  const { handleUpdateCurrentUser } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser } = useContext(UserContext);
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
   const handleEditProfile = async () => {
@@ -76,13 +76,15 @@ const PersonalInfo = ({
                   onChange={handleChangeNickname}
                 />
               )}
-
-              <div
-                className="btn btn-sm btn-primary"
-                onClick={handleEditProfile}
-              >
-                {editProfileBtn ? "Edit" : "Save"}
-              </div>
+              {currentUser === null ||
+              currentUser.username !== username ? null : (
+                <div
+                  className="btn btn-sm btn-primary"
+                  onClick={handleEditProfile}
+                >
+                  {editProfileBtn ? "Edit" : "Save"}
+                </div>
+              )}
             </div>
             <table className="table table-sm table-borderless align-top">
               <tbody>
