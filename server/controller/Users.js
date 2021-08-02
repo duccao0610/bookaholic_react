@@ -231,7 +231,25 @@ const addReview = async (req, res) => {
   }
 };
 
+const getUsersBySearch = async (req, res) => {
+  try {
+    const regPattern = new RegExp(`${req.params.searchValue}`, "i");
+    const users = await User.find(
+      {
+        nickname: {
+          $regex: regPattern,
+        },
+      },
+      "nickname bio username"
+    ).limit(10);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 module.exports = {
+  getUsersBySearch,
   getNicknameById,
   checkUserExistByUsername,
   getUserByUsername,

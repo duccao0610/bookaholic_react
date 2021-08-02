@@ -15,11 +15,31 @@ import UserContext from "./context/userContext";
 function App() {
   const history = useHistory();
   const { pathname } = useLocation();
-  const [expTime, setExpTime] = useState();
+  const expTimeTemp = sessionStorage.getItem("expTime");
+  const [expTime, setExpTime] = useState(expTimeTemp ? expTimeTemp : undefined);
   const handleSetExpTime = (time) => {
     setExpTime(time);
   };
-  const [currentUser, setCurrentUser] = useState(null);
+  const currentTemp = JSON.parse(sessionStorage.getItem("currentUser"));
+  const [currentUser, setCurrentUser] = useState(currentTemp ? {} : null);
+
+  useEffect(() => {
+    let loadingData = true;
+    const current = JSON.parse(sessionStorage.getItem("currentUser"));
+    if (current) {
+      fetch(`http://localhost:5000/user/id/${current.id}`)
+        .then((res) => res.json())
+        .then((resJson) => {
+          if (resJson.message === true && loadingData) {
+            console.log("CURRENT", resJson);
+            setCurrentUser(resJson.user[0]);
+          }
+        });
+    }
+    return () => {
+      loadingData = false;
+    };
+  }, []);
 
   const handleUpdateCurrentUser = (userId) => {
     fetch(`http://localhost:5000/user/id/${userId}`)
@@ -47,7 +67,7 @@ function App() {
     return () => {
       clearTimeout(timer);
     };
-  }, [history, expTime]);
+  }, [expTime, history]);
 
   return (
     <UserContext.Provider

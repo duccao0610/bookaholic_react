@@ -25,6 +25,7 @@ const Login = () => {
           alert("Login success");
           sessionStorage.setItem("token", resJson.token);
           sessionStorage.setItem("currentUser", JSON.stringify(resJson.user));
+          sessionStorage.setItem("expTime", resJson.expireTime);
           handleUpdateCurrentUser(resJson.user.id);
           setExpTime(resJson.expireTime);
           history.push("/");
