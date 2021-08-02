@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 
 import { Link, useParams } from "react-router-dom";
 
@@ -6,12 +6,13 @@ import Activity from "../components/Activity";
 import ReactPaginate from "react-paginate";
 import PersonalInfo from "../components/PersonalInfo";
 import Shelf from "../components/Shelf";
-
+import UserContext from "../context/userContext";
 const Profile = () => {
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
   const userDataRef = useRef();
+  const { currentUser } = useContext(UserContext);
   useEffect(() => {
     setLoading(true);
     fetch(`http://localhost:5000/user/${params.username}`)
@@ -61,13 +62,16 @@ const Profile = () => {
                 className="d-flex justify-content-between align-items-end border-bottom"
               >
                 <div className="text-uppercase fw-bold">bookshelves</div>
-                <Link
-                  className="btn btn-sm btn-primary mb-1"
-                  to={`/user/${params.username}/shelves`}
-                  onClick={goToShelvesPage}
-                >
-                  Custom my shelves
-                </Link>
+                {currentUser === null ||
+                currentUser.username !== user.username ? null : (
+                  <Link
+                    className="btn btn-sm btn-primary mb-1"
+                    to={`/user/${params.username}/shelves`}
+                    onClick={goToShelvesPage}
+                  >
+                    Custom my shelves
+                  </Link>
+                )}
               </div>
               <div className="d-flex my-3">
                 {[...user.shelves]

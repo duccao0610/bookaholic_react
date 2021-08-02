@@ -1,0 +1,46 @@
+.alert_container {
+  top: 25% !important;
+}
+
+.alert_body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.alert_footer {
+  /* background-color: red; */
+  text-align: center;
+  display: flex !important;
+  justify-content: center !important;
+}
+.alert_footer button {
+  background: rgb(90, 52, 52);
+  padding: 5px 20px;
+}
+.alert_footer button:hover {
+  background: rgb(90, 52, 52) !important;
+  opacity: 0.8 !important;
+}
+.alert_footer button:focus {
+  background: rgb(90, 52, 52) !important;
+}
+.alert_header span {
+  color: #5a3434;
+}
+
+.alert_message {
+  font-style: italic;
+}
+.alert_icon {
+  animation: spin 1s ease-in-out;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
