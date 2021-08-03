@@ -12,19 +12,22 @@ const ProfileRecap = () => {
         minHeight: "150px",
       }}
     >
-      <img
-        style={{
-          position: "absolute",
-          top: 35,
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
-        className="border border-dark rounded-circle"
-        width="70px"
-        height="70px"
-        alt="avatar"
-        src="https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg"
-      />
+      {currentUser ? (
+        <img
+          style={{
+            position: "absolute",
+            top: 35,
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
+          className="border border-dark rounded-circle"
+          width="70px"
+          height="70px"
+          alt="avatar"
+          src={currentUser.avatar}
+        />
+      ) : null}
+
       <div
         className="fs-4 fw-bold mt-4 text-center"
         style={{ color: "#5a3434" }}

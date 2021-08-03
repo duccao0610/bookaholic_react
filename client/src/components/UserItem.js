@@ -20,7 +20,7 @@ const UserItem = ({ user, inRank, idx }) => {
             style={{
               position: "absolute",
               top: -20,
-              right: -10,
+              right: -5,
               transform: "rotate(30deg)",
             }}
           >
@@ -36,7 +36,7 @@ const UserItem = ({ user, inRank, idx }) => {
           width="50px"
           height="50px"
           alt="avatar"
-          src="https://st.depositphotos.com/2101611/3925/v/600/depositphotos_39258143-stock-illustration-businessman-avatar-profile-picture.jpg"
+          src={user.avatar}
         />
       </div>
       <div className="col-8">

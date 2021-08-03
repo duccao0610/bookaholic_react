@@ -47,6 +47,14 @@ const Alert = ({
               : ""}
           </div>
         );
+      case "avatar":
+        return (
+          <div class="alert_message">
+            {status === "fail"
+              ? "Please choose image with smaller size (< 5kB)"
+              : ""}
+          </div>
+        );
       default:
         return;
     }

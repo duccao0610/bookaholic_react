@@ -4,7 +4,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const getRecapInfoById = async (req, res) => {
   const user = await User.find(
     { _id: ObjectId(req.params.id) },
-    "nickname username userRate friends"
+    "nickname username userRate friends avatar"
   );
   if (user) {
     res.json({ user: user, message: true });
@@ -137,11 +137,14 @@ const editUserProfile = async (req, res) => {
 
 // Upload avatar
 const uploadAvatar = async (req, res) => {
-  await User.updateOne({ username: req.params.username }, {
-    $set: { avatar: req.body.base64ImgSrc }
-  });
+  await User.updateOne(
+    { username: req.params.username },
+    {
+      $set: { avatar: req.body.base64ImgSrc },
+    }
+  );
   console.log(req.body.base64ImgSrc);
-}
+};
 
 const addShelf = async (req, res) => {
   try {
@@ -251,7 +254,7 @@ const getUsersBySearch = async (req, res) => {
           $regex: regPattern,
         },
       },
-      "nickname bio username"
+      "nickname bio username avatar"
     ).limit(10);
     res.status(200).json(users);
   } catch (error) {
@@ -277,6 +280,7 @@ const getTopUsers = async (req, res) => {
           username: 1,
           nickname: 1,
           userRate: 1,
+          avatar: 1,
         },
       },
       {
