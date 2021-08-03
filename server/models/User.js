@@ -56,8 +56,6 @@ class UserClass {
       256,
       "sha512"
     );
-    // console.log("Salt", salt);
-    // console.log("hashedPass", hashedPassword.toString("hex"));
     return {
       salt: salt,
       hashedPassword: hashedPassword.toString("hex"),

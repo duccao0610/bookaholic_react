@@ -1,10 +1,10 @@
 const User = require("../models/User");
 const ObjectId = require("mongoose").Types.ObjectId;
 
-const getNicknameById = async (req, res) => {
+const getRecapInfoById = async (req, res) => {
   const user = await User.find(
     { _id: ObjectId(req.params.id) },
-    "nickname username"
+    "nickname username userRate friends"
   );
   if (user) {
     res.json({ user: user, message: true });
@@ -248,9 +248,39 @@ const getUsersBySearch = async (req, res) => {
   }
 };
 
+const getTopUsers = async (req, res) => {
+  try {
+    const users = await User.aggregate([
+      {
+        $match: {
+          "userRate.upvote": { $gt: 0 },
+        },
+      },
+      {
+        $sort: {
+          "userRate.upvote": -1,
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          nickname: 1,
+          userRate: 1,
+        },
+      },
+      {
+        $limit: Number(req.params.top),
+      },
+    ]);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
 module.exports = {
+  getTopUsers,
   getUsersBySearch,
-  getNicknameById,
+  getRecapInfoById,
   checkUserExistByUsername,
   getUserByUsername,
   editUserProfile,

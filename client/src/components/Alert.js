@@ -39,6 +39,14 @@ const Alert = ({
               : null}
           </div>
         );
+      case "logout":
+        return (
+          <div class="alert_message">
+            {status === "fail"
+              ? "Token expired.Please login again to continue"
+              : ""}
+          </div>
+        );
       default:
         return;
     }
