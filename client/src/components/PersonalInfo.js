@@ -2,7 +2,7 @@ import ProfileVoting from "./ProfileVoting";
 import { useState, useContext } from "react";
 import UserContext from "../context/userContext";
 import { AiFillCamera } from "react-icons/ai";
-
+import Alert from "./Alert";
 const PersonalInfo = ({
   inPage,
   avatar,
@@ -39,6 +39,21 @@ const PersonalInfo = ({
 
     setEditProfileBtn(!editProfileBtn);
   };
+  //Show alert
+  const [alertVisibility, setAlertVisibility] = useState(false);
+  const [alertType, setAlertType] = useState();
+  const [alertStatus, setAlertStatus] = useState();
+  const [alertDetail, setAlertDetail] = useState();
+
+  const showAlert = (type, status, detail) => {
+    setAlertVisibility(true);
+    setAlertType(type);
+    setAlertStatus(status);
+    setAlertDetail(detail);
+  };
+  const alertClose = (status) => {
+    setAlertVisibility(false);
+  };
 
   // Edit nickname
   const [nicknameInputVal, setNicknameInputVal] = useState(nickname);
@@ -53,14 +68,14 @@ const PersonalInfo = ({
   };
 
   // Upload avatar
-  const [displayAvatar, setDisplayAvatar] = useState(avatar)
+  const [displayAvatar, setDisplayAvatar] = useState(avatar);
   const handleUploadAvatar = (event) => {
     const inputFile = event.target.files[0];
     console.log(inputFile.size);
 
     // Check file size
     if (inputFile.size > 5 * 1024) {
-      alert("Please choose another image which has size smaller than 5mb")
+      showAlert("avatar", "fail");
     } else {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -68,45 +83,59 @@ const PersonalInfo = ({
         fetch(`http://localhost:5000/user/${username}/uploadAvatar`, {
           method: "PUT",
           headers: { "Content-type": "application/json" },
-          body: JSON.stringify({ base64ImgSrc: e.target.result })
+          body: JSON.stringify({ base64ImgSrc: e.target.result }),
         });
 
         // Update UI
         setDisplayAvatar(e.target.result);
-      }
+      };
       reader.readAsDataURL(inputFile);
     }
     // Clear input
-    event.target.value = '';
-  }
+    event.target.value = "";
+  };
 
   switch (inPage) {
     // Default = profile page
     default:
       return (
         <div className="d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row">
+          <Alert
+            alertClose={alertClose}
+            alertVisibility={alertVisibility}
+            alertType={alertType}
+            alertStatus={alertStatus}
+            alertDetail={alertDetail}
+          />
           <div className="d-flex flex-column align-items-center">
-            <div className='position-relative'>
-              <div className='border rounded-circle p-1'>
+            <div className="position-relative">
+              <div className="border rounded-circle p-1">
                 <img
-                  id='avatar'
-                  alt=''
-                  src={displayAvatar} className='border rounded-circle overflow-hidden'
-                  width='150px'
-                  height='150px'
-                  style={{ objectFit: 'contain' }}
+                  id="avatar"
+                  alt=""
+                  src={displayAvatar}
+                  className="border rounded-circle overflow-hidden"
+                  width="150px"
+                  height="150px"
+                  style={{ objectFit: "contain" }}
                 />
               </div>
               <label
-                className='mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light'
-                htmlFor='upload-avatar'
-                style={{ width: '30px', height: '30px', right: '0px', bottom: '15px' }}>
-                <AiFillCamera className='p-1 fs-3' />
+                className="mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light"
+                htmlFor="upload-avatar"
+                style={{
+                  width: "30px",
+                  height: "30px",
+                  right: "0px",
+                  bottom: "15px",
+                }}
+              >
+                <AiFillCamera className="p-1 fs-3" />
               </label>
               <input
-                id='upload-avatar'
-                type='file'
-                className='d-none'
+                id="upload-avatar"
+                type="file"
+                className="d-none"
                 onChange={handleUploadAvatar}
               />
             </div>
@@ -147,7 +176,7 @@ const PersonalInfo = ({
                   <td>{owningQuant}</td>
                 </tr>
                 <tr>
-                  <th className='col-2'>Reviews</th>
+                  <th className="col-2">Reviews</th>
                   <td>{reviewsQuant}</td>
                 </tr>
                 <tr>

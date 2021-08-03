@@ -13,7 +13,7 @@ const Register = () => {
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const inputRegExp = /[^\w!@#$%^&*-.]/g;
-  
+
   const [alertVisibility, setAlertVisibility] = useState(false);
   const [alertType, setAlertType] = useState();
   const [alertStatus, setAlertStatus] = useState();
@@ -99,9 +99,9 @@ const Register = () => {
             onChange={(e) => {
               setUsername(e.target.value);
               if (e.target.value.match(inputRegExp)) {
-                setIsUsernameValid(true)
+                setIsUsernameValid(true);
               } else {
-                setIsUsernameValid(false)
+                setIsUsernameValid(false);
               }
             }}
             value={username}
@@ -109,7 +109,7 @@ const Register = () => {
             placeholder="Username"
             type="text"
           />
-          <div className={isUsernameValid ? 'd-block text-danger' : 'd-none'}>
+          <div className={isUsernameValid ? "d-block text-danger" : "d-none"}>
             containing invalid character
           </div>
           <input
@@ -125,9 +125,9 @@ const Register = () => {
             onChange={(e) => {
               setPassword(e.target.value);
               if (e.target.value.match(inputRegExp)) {
-                setIsPasswordValid(true)
+                setIsPasswordValid(true);
               } else {
-                setIsPasswordValid(false)
+                setIsPasswordValid(false);
               }
             }}
             value={password}
@@ -136,7 +136,7 @@ const Register = () => {
             className="mt-4"
             type="password"
           />
-          <div className={isPasswordValid ? 'd-block text-danger' : 'd-none'}>
+          <div className={isPasswordValid ? "d-block text-danger" : "d-none"}>
             containing invalid character
           </div>
           <input
