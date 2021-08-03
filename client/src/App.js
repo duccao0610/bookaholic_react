@@ -12,16 +12,38 @@ import FloatingButton from "./components/FloatingButton";
 import { useLocation, useHistory } from "react-router-dom";
 import { useState, useEffect } from "react";
 import UserContext from "./context/userContext";
+import Footer from "./components/Footer";
+import Alert from "./components/Alert";
 function App() {
   const history = useHistory();
   const { pathname } = useLocation();
   const expTimeTemp = sessionStorage.getItem("expTime");
   const [expTime, setExpTime] = useState(expTimeTemp ? expTimeTemp : undefined);
+  const currentTemp = JSON.parse(sessionStorage.getItem("currentUser"));
+  const [currentUser, setCurrentUser] = useState(currentTemp ? {} : null);
+  const [alertVisibility, setAlertVisibility] = useState(false);
+  const [alertType, setAlertType] = useState();
+  const [alertStatus, setAlertStatus] = useState();
+  const [alertDetail, setAlertDetail] = useState();
+
+  const showAlert = (type, status, detail) => {
+    setAlertVisibility(true);
+    setAlertType(type);
+    setAlertStatus(status);
+    setAlertDetail(detail);
+  };
+  const alertClose = (status) => {
+    setAlertVisibility(false);
+    if (status === "fail") {
+      sessionStorage.clear();
+      setExpTime(undefined);
+      setCurrentUser(null);
+      history.push("/auth/login");
+    }
+  };
   const handleSetExpTime = (time) => {
     setExpTime(time);
   };
-  const currentTemp = JSON.parse(sessionStorage.getItem("currentUser"));
-  const [currentUser, setCurrentUser] = useState(currentTemp ? {} : null);
 
   useEffect(() => {
     let loadingData = true;
@@ -57,11 +79,7 @@ function App() {
     if (expTime !== undefined) {
       const expired = expTime * 1000 - Date.now();
       timer = setTimeout(() => {
-        alert("TOKEN_EXPIRED.Please login again");
-        sessionStorage.clear();
-        setExpTime(undefined);
-        setCurrentUser(null);
-        history.push("/auth/login");
+        showAlert("logout", "fail");
       }, expired);
     }
     return () => {
@@ -84,6 +102,13 @@ function App() {
           <NavBar />
         )}
         <div className="content">
+          <Alert
+            alertClose={alertClose}
+            alertVisibility={alertVisibility}
+            alertType={alertType}
+            alertStatus={alertStatus}
+            alertDetail={alertDetail}
+          />
           <Route path="/user/:username/shelves" component={Shelves} />
           <Route path="/user/:username" exact component={Profile} />
           <Route
@@ -100,6 +125,7 @@ function App() {
           <FloatingButton />
         )}
       </div>
+      <Footer />
     </UserContext.Provider>
   );
 }

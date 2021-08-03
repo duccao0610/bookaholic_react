@@ -23,6 +23,8 @@ const login = async (username, password) => {
       id: user.id,
       username: user.username,
       nickname: user.nickname,
+      userRate: user.userRate,
+      friends: user.friends.length,
     },
     token: token,
     expireTime: data.exp,
