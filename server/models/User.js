@@ -41,7 +41,7 @@ class UserClass {
       },
       "MY_PRIVATE_KEY",
       {
-        expiresIn: 60,
+        expiresIn: 3600,
       }
     );
     return token;
