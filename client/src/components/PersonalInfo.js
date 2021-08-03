@@ -1,7 +1,7 @@
-import { Image } from "react-bootstrap";
 import ProfileVoting from "./ProfileVoting";
 import { useState, useContext } from "react";
 import UserContext from "../context/userContext";
+import { AiFillCamera } from "react-icons/ai";
 
 const PersonalInfo = ({
   inPage,
@@ -40,15 +40,45 @@ const PersonalInfo = ({
     setEditProfileBtn(!editProfileBtn);
   };
 
+  // Edit nickname
   const [nicknameInputVal, setNicknameInputVal] = useState(nickname);
   const handleChangeNickname = (e) => {
     setNicknameInputVal(e.target.value);
   };
 
+  // Edit bio
   const [bioInputVal, setBioInputval] = useState(bio);
   const handleChangeBio = (e) => {
     setBioInputval(e.target.value);
   };
+
+  // Upload avatar
+  const [displayAvatar, setDisplayAvatar] = useState(avatar)
+  const handleUploadAvatar = (event) => {
+    const inputFile = event.target.files[0];
+    console.log(inputFile.size);
+
+    // Check file size
+    if (inputFile.size > 5 * 1024) {
+      alert("Please choose another image which has size smaller than 5mb")
+    } else {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Update on database
+        fetch(`http://localhost:5000/user/${username}/uploadAvatar`, {
+          method: "PUT",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({ base64ImgSrc: e.target.result })
+        });
+
+        // Update UI
+        setDisplayAvatar(e.target.result);
+      }
+      reader.readAsDataURL(inputFile);
+    }
+    // Clear input
+    event.target.value = '';
+  }
 
   switch (inPage) {
     // Default = profile page
@@ -56,7 +86,31 @@ const PersonalInfo = ({
       return (
         <div className="d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row">
           <div className="d-flex flex-column align-items-center">
-            <Image src={avatar} roundedCircle width={150} height={150} />
+            <div className='position-relative'>
+              <div className='border rounded-circle p-1'>
+                <img
+                  id='avatar'
+                  alt=''
+                  src={displayAvatar} className='border rounded-circle overflow-hidden'
+                  width='150px'
+                  height='150px'
+                  style={{ objectFit: 'contain' }}
+                />
+              </div>
+              <label
+                className='mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light'
+                htmlFor='upload-avatar'
+                style={{ width: '30px', height: '30px', right: '0px', bottom: '15px' }}>
+                <AiFillCamera className='p-1 fs-3' />
+              </label>
+              <input
+                id='upload-avatar'
+                type='file'
+                className='d-none'
+                onChange={handleUploadAvatar}
+              />
+            </div>
+
             <div className="d-flex justify-content-evenly">
               <ProfileVoting isUpvote={true} votesQuant={123} />
               <ProfileVoting isUpvote={false} votesQuant={3456} />
@@ -91,7 +145,7 @@ const PersonalInfo = ({
                   <td>{owningQuant}</td>
                 </tr>
                 <tr>
-                  <th>Reviews</th>
+                  <th className='col-2'>Reviews</th>
                   <td>{reviewsQuant}</td>
                 </tr>
                 <tr>

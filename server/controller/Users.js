@@ -47,6 +47,7 @@ const getUserByUsername = async (req, res) => {
   }
 };
 
+// Get user's shelves
 const getUserShelves = async (req, res) => {
   const userShelves = await User.aggregate([
     {
@@ -68,6 +69,7 @@ const getUserShelves = async (req, res) => {
   }
 };
 
+// Get all books from a shelf
 const getBooksOnShelf = async (req, res) => {
   const userBooksOnShelf = await User.aggregate([
     {
@@ -112,6 +114,7 @@ const getBooksOnShelf = async (req, res) => {
   }
 };
 
+// Edit user's profile (nickname, bio, address)
 const editUserProfile = async (req, res) => {
   const data = req.body;
   try {
@@ -131,6 +134,14 @@ const editUserProfile = async (req, res) => {
     console.log(err);
   }
 };
+
+// Upload avatar
+const uploadAvatar = async (req, res) => {
+  await User.updateOne({ username: req.params.username }, {
+    $set: { avatar: req.body.base64ImgSrc }
+  });
+  console.log(req.body.base64ImgSrc);
+}
 
 const addShelf = async (req, res) => {
   try {
@@ -236,6 +247,7 @@ module.exports = {
   checkUserExistByUsername,
   getUserByUsername,
   editUserProfile,
+  uploadAvatar,
   findUserByUsername,
   getUserShelves,
   getBooksOnShelf,
