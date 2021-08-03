@@ -10,8 +10,8 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [isUsernameValid, setIsUsernameValid] = useState(false);
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const [isUsernameInvalid, setIsUsernameInvalid] = useState(false);
+  const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const inputRegExp = /[^\w!@#$%^&*-.]/g;
 
   const [alertVisibility, setAlertVisibility] = useState(false);
@@ -44,7 +44,7 @@ const Register = () => {
       }),
     };
 
-    if (!isPasswordValid || !isUsernameValid) {
+    if (isPasswordInvalid || isUsernameInvalid) {
       alert("Please remove invalid characters and try again");
       return;
     }
@@ -99,9 +99,10 @@ const Register = () => {
             onChange={(e) => {
               setUsername(e.target.value);
               if (e.target.value.match(inputRegExp)) {
-                setIsUsernameValid(true);
+
+                setIsUsernameInvalid(true)
               } else {
-                setIsUsernameValid(false);
+                setIsUsernameInvalid(false)
               }
             }}
             value={username}
@@ -109,7 +110,8 @@ const Register = () => {
             placeholder="Username"
             type="text"
           />
-          <div className={isUsernameValid ? "d-block text-danger" : "d-none"}>
+
+          <div className={isUsernameInvalid ? 'd-block text-danger' : 'd-none'}>
             containing invalid character
           </div>
           <input
@@ -125,9 +127,9 @@ const Register = () => {
             onChange={(e) => {
               setPassword(e.target.value);
               if (e.target.value.match(inputRegExp)) {
-                setIsPasswordValid(true);
+                setIsPasswordInvalid(true)
               } else {
-                setIsPasswordValid(false);
+                setIsPasswordInvalid(false)
               }
             }}
             value={password}
@@ -136,7 +138,7 @@ const Register = () => {
             className="mt-4"
             type="password"
           />
-          <div className={isPasswordValid ? "d-block text-danger" : "d-none"}>
+          <div className={isPasswordInvalid ? 'd-block text-danger' : 'd-none'}>
             containing invalid character
           </div>
           <input
