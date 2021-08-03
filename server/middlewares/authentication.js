@@ -9,6 +9,7 @@ const authentication = (req, res, next) => {
     try {
       const data = jwt.verify(token, "MY_PRIVATE_KEY");
       //Pass data from middleware to next via req
+      console.log("DATA", data);
       req.user = {
         id: data.id,
         username: data.username,
