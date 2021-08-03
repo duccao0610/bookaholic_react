@@ -42,7 +42,7 @@ class UserClass {
       },
       "MY_PRIVATE_KEY",
       {
-        expiresIn: 600,
+        expiresIn: 60,
       }
     );
     return token;
@@ -57,8 +57,6 @@ class UserClass {
       256,
       "sha512"
     );
-    // console.log("Salt", salt);
-    // console.log("hashedPass", hashedPassword.toString("hex"));
     return {
       salt: salt,
       hashedPassword: hashedPassword.toString("hex"),

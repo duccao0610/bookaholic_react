@@ -7,7 +7,7 @@ const getBooksTrending = async (req, res) => {
   try {
     const books = await Book.find({
       $expr: { $lt: [0.5, { $rand: {} }] },
-    }).limit(20);
+    }).limit(10);
     res.status(200).json({ books: books, message: true });
   } catch (error) {
     res.status(404).json({ message: error.message });

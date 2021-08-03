@@ -2,10 +2,26 @@ import { Form, Button } from "react-bootstrap";
 import StarRatings from "react-star-ratings";
 import { useState, useContext } from "react";
 import UserContext from "../context/userContext";
+import Alert from "./Alert";
 const AddReviewForm = ({ bookId, refreshReviewsData }) => {
   const { currentUser } = useContext(UserContext);
   const [rating, setRating] = useState(1);
   const [content, setContent] = useState("");
+  const [alertVisibility, setAlertVisibility] = useState(false);
+  const [alertType, setAlertType] = useState();
+  const [alertStatus, setAlertStatus] = useState();
+  const [alertDetail, setAlertDetail] = useState();
+
+  const showAlert = (type, status, detail) => {
+    setAlertVisibility(true);
+    setAlertType(type);
+    setAlertStatus(status);
+    setAlertDetail(detail);
+  };
+
+  const alertClose = (status) => {
+    setAlertVisibility(false);
+  };
   const changeRating = (newRating) => {
     setRating(newRating);
   };
@@ -30,15 +46,22 @@ const AddReviewForm = ({ bookId, refreshReviewsData }) => {
         setRating(1);
         setContent("");
       } else {
-        alert("Please write your review first");
+        showAlert("review", "fail", "empty");
       }
     } else {
-      alert("Please login to add review");
+      showAlert("review", "fail");
     }
   };
 
   return (
     <Form className="mt-3 row mx-1 px-0">
+      <Alert
+        alertClose={alertClose}
+        alertVisibility={alertVisibility}
+        alertType={alertType}
+        alertStatus={alertStatus}
+        alertDetail={alertDetail}
+      />
       <Form.Group className="mb-3 p-0" controlId="exampleForm.ControlTextarea1">
         <Form.Label className="fw-bold fs-5">Write a review </Form.Label>
         <Form.Control

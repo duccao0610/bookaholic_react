@@ -11,7 +11,7 @@ const Category = () => {
   useEffect(() => {
     let loadingData = true;
     setLoading(true);
-    fetch(`http://192.168.0.102:5000/category/${params.category}`)
+    fetch(`http://localhost:5000/category/${params.category}`)
       .then((res) => res.json())
       .then((resJson) => {
         if (loadingData) {

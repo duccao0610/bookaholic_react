@@ -107,7 +107,11 @@ const NavBar = () => {
       {currentUser ? (
         <div className="px-0 col-5 col-lg-2 col-md-3 d-flex">
           <Dropdown className="w-100 d-flex align-items-center justify-content-around">
-            <Link to={`/user/${currentUser.username}`}>
+            <Link
+              className="fw-bold"
+              style={{ color: "#5a3434" }}
+              to={`/user/${currentUser.username}`}
+            >
               {currentUser.nickname}
             </Link>
             <Image

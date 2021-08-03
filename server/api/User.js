@@ -10,14 +10,18 @@ const {
   deleteShelf,
   deleteBookOnShelf,
   editShelfName,
-  getNicknameById,
+  getRecapInfoById,
   addReview,
+  getUsersBySearch,
+  getTopUsers,
 } = require("../controller/Users.js");
 
 const router = express.Router();
-router.get("/id/:id", getNicknameById);
+router.get("/id/:id", getRecapInfoById);
 router.get("/:username", getUserByUsername);
 router.post("/addReview", addReview);
+router.get("/search/:searchValue", getUsersBySearch);
+router.get("/ranking/:top", getTopUsers);
 
 router.get("/:username/shelves", getUserShelves);
 router.get("/:username/shelves/:shelfId", getBooksOnShelf);
