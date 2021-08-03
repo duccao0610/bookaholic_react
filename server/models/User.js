@@ -10,6 +10,7 @@ const userSchema = mongoose.Schema({
   nickname: { type: String, maxLength: 10 },
   bio: String,
   address: { city: String, district: String },
+  avatar: String,
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   shelves: [
     {

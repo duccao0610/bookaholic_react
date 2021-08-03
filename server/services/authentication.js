@@ -43,6 +43,7 @@ const register = async (username, password, nickname) => {
       nickname: nickname,
       bio: "",
       address: {},
+      avatar: "",
       isAdmin: false,
       userRate: {
         upvote: 0,

@@ -3,6 +3,7 @@ const express = require("express");
 const {
   getUserByUsername,
   editUserProfile,
+  uploadAvatar,
   getUserShelves,
   getBooksOnShelf,
   addShelf,
@@ -33,5 +34,6 @@ router.put(
 router.put("/:username/shelves/:shelfId/editShelfName", editShelfName);
 
 router.put("/:username/editProfile", editUserProfile);
+router.put("/:username/uploadAvatar", uploadAvatar)
 
 module.exports = router;

@@ -10,6 +10,10 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [isUsernameValid, setIsUsernameValid] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+  const inputRegExp = /[^\w!@#$%^&*-.]/g;
+  
   const [alertVisibility, setAlertVisibility] = useState(false);
   const [alertType, setAlertType] = useState();
   const [alertStatus, setAlertStatus] = useState();
@@ -39,6 +43,12 @@ const Register = () => {
         nickname: nickname,
       }),
     };
+
+    if (!isPasswordValid || !isUsernameValid) {
+      alert("Please remove invalid characters and try again");
+      return;
+    }
+
     if (password === "" || username === "" || nickname === "") {
       showAlert("register", "fail", "empty");
       return;
@@ -70,6 +80,7 @@ const Register = () => {
       showAlert("register", "fail", "not_match");
     }
   };
+
   return (
     <div className="auth_container">
       <Alert
@@ -85,12 +96,22 @@ const Register = () => {
         </h2>
         <form method="post" className="mt-4 px-5" onSubmit={handleOnSubmit}>
           <input
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              if (e.target.value.match(inputRegExp)) {
+                setIsUsernameValid(true)
+              } else {
+                setIsUsernameValid(false)
+              }
+            }}
             value={username}
             name="username"
             placeholder="Username"
             type="text"
           />
+          <div className={isUsernameValid ? 'd-block text-danger' : 'd-none'}>
+            containing invalid character
+          </div>
           <input
             onChange={(e) => setNickname(e.target.value)}
             value={nickname}
@@ -101,13 +122,23 @@ const Register = () => {
             maxLength={10}
           />
           <input
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (e.target.value.match(inputRegExp)) {
+                setIsPasswordValid(true)
+              } else {
+                setIsPasswordValid(false)
+              }
+            }}
             value={password}
             name="password"
             placeholder="Password"
             className="mt-4"
             type="password"
           />
+          <div className={isPasswordValid ? 'd-block text-danger' : 'd-none'}>
+            containing invalid character
+          </div>
           <input
             onChange={(e) => setConfirmPassword(e.target.value)}
             value={confirmPassword}

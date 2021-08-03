@@ -32,14 +32,14 @@ const Profile = () => {
     setActiveShelvesGroup(clickedGroup.selected);
   };
 
-  const goToShelvesPage = () => {};
+  const goToShelvesPage = () => { };
 
   return (
     <div>
       {loading ? (
         <div></div>
       ) : (
-        <div className="d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center container px-0 mt-3">
+        <div className="d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center container px-0 pt-3">
           <div
             id="profile-main-content"
             className="col-sm-12 col-md-9 col-lg-8"
@@ -47,7 +47,7 @@ const Profile = () => {
             <PersonalInfo
               id="1"
               inPage="profile"
-              avatar="https://i.pinimg.com/originals/75/31/5d/75315db511a058432745fc37d82a7c44.png"
+              avatar={user.avatar}
               upvote={user.userRate.upvote}
               downvote={user.userRate.downvote}
               nickname={user.nickname}
