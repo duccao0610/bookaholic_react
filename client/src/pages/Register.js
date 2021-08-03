@@ -13,7 +13,7 @@ const Register = () => {
   const [isUsernameInvalid, setIsUsernameInvalid] = useState(false);
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const inputRegExp = /[^\w!@#$%^&*-.]/g;
-  
+
   const [alertVisibility, setAlertVisibility] = useState(false);
   const [alertType, setAlertType] = useState();
   const [alertStatus, setAlertStatus] = useState();
@@ -99,6 +99,7 @@ const Register = () => {
             onChange={(e) => {
               setUsername(e.target.value);
               if (e.target.value.match(inputRegExp)) {
+
                 setIsUsernameInvalid(true)
               } else {
                 setIsUsernameInvalid(false)
@@ -109,6 +110,7 @@ const Register = () => {
             placeholder="Username"
             type="text"
           />
+
           <div className={isUsernameInvalid ? 'd-block text-danger' : 'd-none'}>
             containing invalid character
           </div>

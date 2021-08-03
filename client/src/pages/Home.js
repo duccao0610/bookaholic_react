@@ -116,7 +116,7 @@ const Home = () => {
               </Tab>
             </Tabs>
           </div>
-          <div className="pl-5 pr-3 py-2 d-none d-md-inline-block d-lg-inline-block col-md-2 col-lg-3 vh-100">
+          <div className="position-relative pl-5 pr-3 py-2 d-none d-md-inline-block d-lg-inline-block col-md-2 col-lg-3 vh-100">
             <TopUsers />
           </div>
         </div>
