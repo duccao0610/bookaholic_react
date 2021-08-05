@@ -4,7 +4,7 @@ import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {
   const handleVote = (e) => {
     if (!e.target.checked) onVote("notVote");
-    else onVote(e.target.id);
+    else onVote(e.target.value);
   };
 
   switch (inPage) {
@@ -29,8 +29,9 @@ const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {
             <input
               className="btn-check"
               type="checkbox"
+              value='upvote'
               id="upvote"
-              checked={voteStatus === "upvote" ? true : false}
+              checked={voteStatus === "upvote"}
               onChange={handleVote}
             />
             <label
@@ -45,8 +46,9 @@ const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {
             <input
               className="btn-check"
               type="checkbox"
+              value='downvote'
               id="downvote"
-              checked={voteStatus === "downvote" ? true : false}
+              checked={voteStatus === "downvote"}
               onChange={handleVote}
             />
             <label
