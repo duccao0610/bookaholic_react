@@ -8,6 +8,7 @@ import PersonalInfo from "../components/PersonalInfo";
 import Shelf from "../components/Shelf";
 import UserContext from "../context/userContext";
 const Profile = () => {
+
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
@@ -56,7 +57,6 @@ const Profile = () => {
               isMyProfile={
                 currentUser ? currentUser.username === user.username : false
               }
-              current={user}
             />
             <div id="book-shelves" className="mb-3">
               <div
@@ -65,7 +65,7 @@ const Profile = () => {
               >
                 <div className="text-uppercase fw-bold">bookshelves</div>
                 {currentUser === null ||
-                currentUser.username !== user.username ? null : (
+                  currentUser.username !== user.username ? null : (
                   <Link
                     style={{ background: "#5a3434" }}
                     className="btn btn-sm mb-1 text-white"

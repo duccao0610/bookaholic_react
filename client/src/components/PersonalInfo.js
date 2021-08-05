@@ -14,7 +14,6 @@ const PersonalInfo = ({
   isMyProfile,
   downvote,
   upvote,
-  current,
 }) => {
   const { currentUser, handleUpdateCurrentUser, socketRef } =
     useContext(UserContext);
@@ -103,21 +102,28 @@ const PersonalInfo = ({
 
   const [upvoteCount, setUpvoteCount] = useState(upvote);
   const [downvoteCount, setDownvoteCount] = useState(downvote);
-  const [voteStatus, setVoteStatus] = useState("notVote");
+  const [shouldFetchVote, setShouldFetchVote] = useState(false);
+  const [triggerFetchVote, setTriggerFetchVote] = useState(false);
+  const [voteStatus, setVoteStatus] = useState();
   const prevVoteStatusRef = useRef();
+
   useEffect(() => {
-    console.log(current);
-    const searchVotedUsersList = current.votedUsersList.findIndex(
-      (item) => item.username === username
-    );
-    if (searchVotedUsersList !== -1) {
-      if (current.votedUsersList[searchVotedUsersList].isUpvote) {
-        setVoteStatus("upvote");
+    if (currentUser.votedUsersList) {
+      const searchVotedUsersList = currentUser.votedUsersList.findIndex(
+        (item) => item.username === username
+      );
+      if (searchVotedUsersList !== -1) {
+        if (currentUser.votedUsersList[searchVotedUsersList].isUpvote) {
+          setVoteStatus("upvote");
+        } else {
+          setVoteStatus("downvote");
+        }
       } else {
-        setVoteStatus("downvote");
+        setVoteStatus('notVote');
       }
     }
-  }, [current, username]);
+  }, [currentUser, username]);
+
 
   const handleVote = (newVoteStatus) => {
     prevVoteStatusRef.current = voteStatus;
@@ -125,45 +131,53 @@ const PersonalInfo = ({
       showAlert("vote", "fail");
       return;
     }
+
     if (newVoteStatus === "upvote" && voteStatus === "notVote") {
       setUpvoteCount((prev) => (prev += 1));
     }
-    if (newVoteStatus === "upvote" && voteStatus === "downvote") {
+    else if (newVoteStatus === "upvote" && voteStatus === "downvote") {
       setUpvoteCount((prev) => (prev += 1));
       setDownvoteCount((prev) => (prev -= 1));
     }
-    if (newVoteStatus === "downvote" && voteStatus === "notVote") {
+    else if (newVoteStatus === "downvote" && voteStatus === "notVote") {
       setDownvoteCount((prev) => (prev += 1));
     }
-    if (newVoteStatus === "downvote" && voteStatus === "upvote") {
+    else if (newVoteStatus === "downvote" && voteStatus === "upvote") {
       setDownvoteCount((prev) => (prev += 1));
       setUpvoteCount((prev) => (prev -= 1));
     }
-    if (newVoteStatus === "notVote" && voteStatus === "upvote") {
+    else if (newVoteStatus === "notVote" && voteStatus === "upvote") {
       setUpvoteCount((prev) => (prev -= 1));
     }
-    if (newVoteStatus === "notVote" && voteStatus === "downvote") {
+    else if (newVoteStatus === "notVote" && voteStatus === "downvote") {
       setDownvoteCount((prev) => (prev -= 1));
     }
     setVoteStatus(newVoteStatus);
+    setShouldFetchVote(true);
+    setTriggerFetchVote(!triggerFetchVote);
   };
 
   useEffect(() => {
-    fetch("http://localhost:5000/user/voteUser", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        upvoteCount: upvoteCount,
-        downvoteCount: downvoteCount,
-        votedUser: username,
-        currentUser: current.username,
-        prevVoteStatus: prevVoteStatusRef.current,
-        voteStatus: voteStatus,
-      }),
-    }).catch((error) => {
-      console.log("Error occured when fetch: ", error);
-    });
-  }, [current.username, downvoteCount, upvoteCount, username, voteStatus]);
+    if (shouldFetchVote) {
+      fetch("http://localhost:5000/user/voteUser", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          upvoteCount: upvoteCount,
+          downvoteCount: downvoteCount,
+          votedUser: username,
+          currentUser: currentUser.username,
+          prevVoteStatus: prevVoteStatusRef.current,
+          voteStatus: voteStatus,
+        }),
+      }).then(() => {
+        handleUpdateCurrentUser(JSON.parse(sessionStorage.getItem('currentUser')).id);
+      }).then(() => {
+        setShouldFetchVote(false);
+        alert("Update success");
+      });
+    }
+  }, [triggerFetchVote]);
 
   switch (inPage) {
     case "profile":
@@ -221,8 +235,6 @@ const PersonalInfo = ({
               ) : (
                 <ProfileVoting
                   inPage="profile"
-                  votedUsername={username}
-                  currentUser={current}
                   upvote={upvoteCount}
                   downvote={downvoteCount}
                   voteStatus={voteStatus}
