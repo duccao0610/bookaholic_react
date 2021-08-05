@@ -32,7 +32,7 @@ const Profile = () => {
     setActiveShelvesGroup(clickedGroup.selected);
   };
 
-  const goToShelvesPage = () => { };
+  const goToShelvesPage = () => {};
 
   return (
     <div>

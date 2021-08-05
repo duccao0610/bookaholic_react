@@ -12,7 +12,8 @@ const PersonalInfo = ({
   bio,
   username,
 }) => {
-  const { currentUser, handleUpdateCurrentUser } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser, socketRef } =
+    useContext(UserContext);
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
   const handleEditProfile = async () => {
@@ -33,9 +34,14 @@ const PersonalInfo = ({
         })
         .catch((err) => console.log(err));
     }
-    handleUpdateCurrentUser(
-      JSON.parse(sessionStorage.getItem("currentUser")).id
-    );
+
+    socketRef.emit("updateProfile", "profile update");
+    socketRef.on("updateCurrentUser", () => {
+      handleUpdateCurrentUser(
+        JSON.parse(sessionStorage.getItem("currentUser")).id
+      );
+      console.log("updated");
+    });
 
     setEditProfileBtn(!editProfileBtn);
   };
@@ -74,7 +80,7 @@ const PersonalInfo = ({
     console.log(inputFile.size);
 
     // Check file size
-    if (inputFile.size > 5 * 1024) {
+    if (inputFile.size > 5 * 1024 * 1024) {
       showAlert("avatar", "fail");
     } else {
       const reader = new FileReader();
@@ -120,24 +126,37 @@ const PersonalInfo = ({
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              <label
-                className="mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light"
-                htmlFor="upload-avatar"
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  right: "0px",
-                  bottom: "15px",
-                }}
-              >
-                <AiFillCamera className="p-1 fs-3" />
-              </label>
-              <input
-                id="upload-avatar"
-                type="file"
-                className="d-none"
-                onChange={handleUploadAvatar}
-              />
+              {currentUser === null ||
+              currentUser.username !== username ? null : (
+                <>
+                  <label
+                    className="mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light"
+                    htmlFor="upload-avatar"
+                    style={{
+                      width: "30px",
+                      height: "30px",
+                      right: "0px",
+                      bottom: "15px",
+                    }}
+                  >
+                    <AiFillCamera className="p-1 fs-3" />
+                  </label>
+                  <input
+                    id="upload-avatar"
+                    type="file"
+                    className="d-none"
+                    onChange={(e) => {
+                      handleUploadAvatar(e);
+                      socketRef.emit("updateAvatar", "Avatar update");
+                      socketRef.on("updateCurrentUser", () => {
+                        handleUpdateCurrentUser(
+                          JSON.parse(sessionStorage.getItem("currentUser")).id
+                        );
+                      });
+                    }}
+                  />
+                </>
+              )}
             </div>
 
             <div className="d-flex justify-content-evenly">

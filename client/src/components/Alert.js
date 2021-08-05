@@ -41,7 +41,7 @@ const Alert = ({
         );
       case "logout":
         return (
-          <div class="alert_message">
+          <div className="alert_message">
             {status === "fail"
               ? "Token expired.Please login again to continue"
               : ""}
@@ -49,7 +49,7 @@ const Alert = ({
         );
       case "avatar":
         return (
-          <div class="alert_message">
+          <div className="alert_message">
             {status === "fail"
               ? "Please choose image with smaller size (< 5kB)"
               : ""}

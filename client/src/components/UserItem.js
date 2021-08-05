@@ -4,7 +4,7 @@ import ProfileVoting from "./ProfileVoting";
 const UserItem = ({ user, inRank, idx }) => {
   return (
     <div
-      className="justify-content-center px-3 py-2 mx-1 row mb-2"
+      className="justify-content-start px-3 py-2 mx-1 row mb-2"
       style={
         inRank
           ? null
@@ -37,6 +37,7 @@ const UserItem = ({ user, inRank, idx }) => {
           height="50px"
           alt="avatar"
           src={user.avatar}
+          // style={{ objectFit: "fill" }}
         />
       </div>
       <div className="col-8">
