@@ -2,7 +2,7 @@ import { useContext } from "react";
 import UserContext from "../context/userContext";
 const ProfileRecap = () => {
   const { currentUser } = useContext(UserContext);
-  console.log("CUrrentRECAP", currentUser);
+  // console.log("CUrrentRECAP", currentUser);
   return (
     <div
       className="mt-5 px-3 py-4 d-flex flex-column rounded"

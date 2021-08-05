@@ -23,10 +23,10 @@ const Alert = ({
             {status === "success"
               ? "Register success"
               : detail === "empty"
-              ? "Please fill in all fields required"
-              : detail === "existed"
-              ? "Username existed, please choose another!"
-              : "Password not match"}
+                ? "Please fill in all fields required"
+                : detail === "existed"
+                  ? "Username existed, please choose another!"
+                  : "Password not match"}
           </div>
         );
       case "review":

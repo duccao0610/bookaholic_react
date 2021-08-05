@@ -14,6 +14,7 @@ const {
   addReview,
   getUsersBySearch,
   getTopUsers,
+  voteUser
 } = require("../controller/Users.js");
 
 const router = express.Router();
@@ -34,6 +35,7 @@ router.put(
 router.put("/:username/shelves/:shelfId/editShelfName", editShelfName);
 
 router.put("/:username/editProfile", editUserProfile);
-router.put("/:username/uploadAvatar", uploadAvatar)
+router.put("/:username/uploadAvatar", uploadAvatar);
+router.put("/voteUser", voteUser);
 
 module.exports = router;

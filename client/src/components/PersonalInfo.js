@@ -1,5 +1,5 @@
 import ProfileVoting from "./ProfileVoting";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import UserContext from "../context/userContext";
 import { AiFillCamera } from "react-icons/ai";
 import Alert from "./Alert";
@@ -11,9 +11,14 @@ const PersonalInfo = ({
   nickname,
   bio,
   username,
+  isMyProfile,
+  downvote,
+  upvote,
+  currentUser
 }) => {
   const { currentUser, handleUpdateCurrentUser, socketRef } =
     useContext(UserContext);
+
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
   const handleEditProfile = async () => {
@@ -27,12 +32,7 @@ const PersonalInfo = ({
         method: "PUT",
         headers: { "Content-type": "application/json" },
         body: editedProfile,
-      })
-        .then((res) => res.json())
-        .then((resJson) => {
-          console.log(resJson);
-        })
-        .catch((err) => console.log(err));
+      }).catch((err) => console.log(err));
     }
 
     socketRef.emit("updateProfile", "profile update");
@@ -101,9 +101,69 @@ const PersonalInfo = ({
     event.target.value = "";
   };
 
+  const [upvoteCount, setUpvoteCount] = useState(upvote);
+  const [downvoteCount, setDownvoteCount] = useState(downvote);
+  const [voteStatus, setVoteStatus] = useState('notVote');
+  const prevVoteStatusRef = useRef();
+  useEffect(() => {
+    console.log(currentUser);
+    const searchVotedUsersList = currentUser.votedUsersList.findIndex(
+      (item) => item.username === username
+    )
+    if (searchVotedUsersList !== -1) {
+      if (currentUser.votedUsersList[searchVotedUsersList].isUpvote) {
+        setVoteStatus('upvote');
+      } else {
+        setVoteStatus('downvote');
+      }
+    }
+  }, [currentUser, username]);
+
+  const handleVote = (newVoteStatus) => {
+    prevVoteStatusRef.current = voteStatus;
+    if (newVoteStatus === 'upvote' && voteStatus === 'notVote') {
+      setUpvoteCount(prev => prev += 1);
+    }
+    if (newVoteStatus === 'upvote' && voteStatus === 'downvote') {
+      setUpvoteCount((prev) => prev += 1);
+      setDownvoteCount((prev) => prev -= 1);
+    }
+    if (newVoteStatus === 'downvote' && voteStatus === 'notVote') {
+      setDownvoteCount((prev) => prev += 1);
+    }
+    if (newVoteStatus === 'downvote' && voteStatus === 'upvote') {
+      setDownvoteCount((prev) => prev += 1);
+      setUpvoteCount((prev) => prev -= 1);
+    }
+    if (newVoteStatus === 'notVote' && voteStatus === 'upvote') {
+      setUpvoteCount((prev) => prev -= 1);
+    }
+    if (newVoteStatus === 'notVote' && voteStatus === 'downvote') {
+      setDownvoteCount((prev) => prev -= 1);
+    }
+    setVoteStatus(newVoteStatus);
+  }
+
+  useEffect(() => {
+    fetch('http://localhost:5000/user/voteUser', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        upvoteCount: upvoteCount,
+        downvoteCount: downvoteCount,
+        votedUser: username,
+        currentUser: currentUser.username,
+        prevVoteStatus: prevVoteStatusRef.current,
+        voteStatus: voteStatus
+      }),
+    }).catch((error) => {
+      console.log('Error occured when fetch: ', error);
+    })
+
+  }, [currentUser.username, downvoteCount, upvoteCount, username, voteStatus]);
+
   switch (inPage) {
-    // Default = profile page
-    default:
+    case 'profile':
       return (
         <div className="d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row">
           <Alert
@@ -126,8 +186,9 @@ const PersonalInfo = ({
                   style={{ objectFit: "contain" }}
                 />
               </div>
-              {currentUser === null ||
-              currentUser.username !== username ? null : (
+//               {currentUser === null ||
+//               currentUser.username !== username ? null : (
+              {isMyProfile ? (
                 <>
                   <label
                     className="mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light"
@@ -155,14 +216,22 @@ const PersonalInfo = ({
                       });
                     }}
                   />
-                </>
-              )}
-            </div>
-
             <div className="d-flex justify-content-evenly">
               <ProfileVoting isUpvote={true} votesQuant={123} />
               <ProfileVoting isUpvote={false} votesQuant={3456} />
             </div>
+      </>
+              ) : null}
+            </div>
+            <ProfileVoting
+              inPage='profile'
+              votedUsername={username}
+              currentUser={currentUser}
+              upvote={upvoteCount}
+              downvote={downvoteCount}
+              voteStatus={voteStatus}
+              onVote={handleVote}
+            />
           </div>
           <div className="ms-lg-5 w-100">
             <div className="border-bottom pb-2 d-flex justify-content-between">
@@ -179,7 +248,7 @@ const PersonalInfo = ({
                 />
               )}
               {currentUser === null ||
-              currentUser.username !== username ? null : (
+                currentUser.username !== username ? null : (
                 <div
                   className="btn btn-sm btn-primary"
                   onClick={handleEditProfile}
@@ -219,6 +288,8 @@ const PersonalInfo = ({
           </div>
         </div>
       );
+    default:
+      break;
   }
 };
 

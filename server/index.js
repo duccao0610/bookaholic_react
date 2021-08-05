@@ -14,7 +14,7 @@ const io = socketIo(server, {
 });
 
 app.use(cors());
-app.use(express.json({ limit: "5mb" }));
+app.use(express.json({ limit: "5MB" }));
 app.use(router);
 
 io.on("connection", (socket) => {

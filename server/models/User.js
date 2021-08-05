@@ -19,6 +19,7 @@ const userSchema = mongoose.Schema({
     },
   ],
   userRate: { downvote: Number, upvote: Number },
+  votedUsersList: [{ username: String, isUpvote: Boolean }],
   owning: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
   reviews: [
     {
