@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { FaCrown } from "react-icons/fa";
 import ProfileVoting from "./ProfileVoting";
 const UserItem = ({ user, inRank, idx }) => {
+  // console.log(user.userRate);
   return (
     <div
       className="justify-content-center px-3 py-2 mx-1 row mb-2"
@@ -9,9 +10,9 @@ const UserItem = ({ user, inRank, idx }) => {
         inRank
           ? null
           : {
-              boxShadow:
-                "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
-            }
+            boxShadow:
+              "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+          }
       }
     >
       <div className="col-3 d-flex align-items-center justify-content-center">
@@ -49,11 +50,7 @@ const UserItem = ({ user, inRank, idx }) => {
         </Link>
         {inRank ? (
           <div className="d-flex">
-            <ProfileVoting isUpvote={true} votesQuant={user.userRate.upvote} />
-            <ProfileVoting
-              isUpvote={false}
-              votesQuant={user.userRate.downvote}
-            />
+            <ProfileVoting upvote={user.userRate.upvote} downvote={user.userRate.downvote} inPage='home' />
           </div>
         ) : (
           <p className="font-italic" style={{ fontSize: "12px", opacity: 0.8 }}>

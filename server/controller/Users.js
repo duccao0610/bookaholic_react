@@ -4,7 +4,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const getRecapInfoById = async (req, res) => {
   const user = await User.find(
     { _id: ObjectId(req.params.id) },
-    "nickname username userRate friends avatar"
+    "nickname username userRate friends avatar votedUsersList"
   );
   if (user) {
     res.json({ user: user, message: true });
@@ -224,6 +224,63 @@ const editShelfName = async (req, _) => {
   }
 };
 
+// Vote an user
+const voteUser = async (req, res) => {
+  const {
+    votedUser,
+    currentUser,
+    upvoteCount,
+    downvoteCount,
+    prevVoteStatus,
+    voteStatus
+  } = req.body;
+  try {
+    // Update userRate field of the rated user
+    await User.updateOne({ username: votedUser }, {
+      $set: {
+        userRate: {
+          upvote: upvoteCount,
+          downvote: downvoteCount
+        }
+      }
+    });
+
+    // Update votedUsersList field of the currentUser
+    const getCurrentUser = await User.findOne({ username: currentUser }, { votedUsersList: 1, _id: 0 });
+    let isUpvote = null;
+    if (voteStatus === 'upvote') isUpvote = true;
+    if (voteStatus === 'downvote') isUpvote = false;
+
+    if (prevVoteStatus !== null) {
+      const itemIndexToUpdate = getCurrentUser.votedUsersList.findIndex((item) => item.username === votedUser);
+      console.log("item index: " + itemIndexToUpdate);
+      if (itemIndexToUpdate === -1) {
+        await User.updateOne({ username: currentUser }, {
+          $push: { votedUsersList: { username: votedUser, isUpvote: isUpvote } }
+        });
+      } else if (itemIndexToUpdate > -1) {
+        if (isUpvote === null) {
+          await User.updateOne({ username: currentUser }, {
+            $pull: { votedUsersList: { username: votedUser } }
+          })
+        } else {
+          await User.updateOne({ username: currentUser }, {
+            $set: { [`votedUsersList.${itemIndexToUpdate}.isUpvote`]: isUpvote }
+          });
+        }
+      }
+    }
+
+    res.json({ msg: "UPDATE_VOTE_SUCCESS" })
+
+    console.log(getCurrentUser);
+
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
+// Add review
 const addReview = async (req, res) => {
   try {
     await User.updateOne(
@@ -292,6 +349,7 @@ const getTopUsers = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 module.exports = {
   getTopUsers,
   getUsersBySearch,
@@ -308,4 +366,5 @@ module.exports = {
   deleteBookOnShelf,
   editShelfName,
   addReview,
+  voteUser
 };

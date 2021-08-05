@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const router = require("./api");
 
 app.use(cors());
-app.use(express.json({ limit: '5mb' }));
+app.use(express.json({ limit: "5MB" }));
 app.use(router);
 
 //Connect MongoDB
