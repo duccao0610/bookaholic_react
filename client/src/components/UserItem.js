@@ -53,14 +53,14 @@ const UserItem = ({ user, inRank, idx }) => {
         {inRank ? (
           <div className="row">
             <div className="col-6 d-flex align-items-center gap-1">
-              <FaArrowCircleUp color="green" />
-              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+              <FaArrowCircleUp color="green" size={10} />
+              <span style={{ fontSize: "10px", fontWeight: "bold" }}>
                 {user.userRate.upvote}
               </span>
             </div>
             <div className="col-6 d-flex align-items-center gap-1">
-              <FaArrowCircleDown color="red" />
-              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+              <FaArrowCircleDown color="red" size={10} />
+              <span style={{ fontSize: "10px", fontWeight: "bold" }}>
                 {user.userRate.downvote}
               </span>
             </div>

@@ -53,8 +53,10 @@ const Profile = () => {
               reviewsQuant={120}
               bio={user.bio}
               username={user.username}
-              isMyProfile={currentUser.username === user.username}
-              currentUser={user}
+              isMyProfile={
+                currentUser ? currentUser.username === user.username : false
+              }
+              current={user}
             />
             <div id="book-shelves" className="mb-3">
               <div
