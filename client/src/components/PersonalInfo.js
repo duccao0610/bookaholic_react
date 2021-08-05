@@ -108,7 +108,7 @@ const PersonalInfo = ({
   const prevVoteStatusRef = useRef();
 
   useEffect(() => {
-    if (currentUser.votedUsersList) {
+    if (currentUser) {
       const searchVotedUsersList = currentUser.votedUsersList.findIndex(
         (item) => item.username === username
       );
@@ -119,11 +119,10 @@ const PersonalInfo = ({
           setVoteStatus("downvote");
         }
       } else {
-        setVoteStatus('notVote');
+        setVoteStatus("notVote");
       }
     }
   }, [currentUser, username]);
-
 
   const handleVote = (newVoteStatus) => {
     prevVoteStatusRef.current = voteStatus;
@@ -134,22 +133,17 @@ const PersonalInfo = ({
 
     if (newVoteStatus === "upvote" && voteStatus === "notVote") {
       setUpvoteCount((prev) => (prev += 1));
-    }
-    else if (newVoteStatus === "upvote" && voteStatus === "downvote") {
+    } else if (newVoteStatus === "upvote" && voteStatus === "downvote") {
       setUpvoteCount((prev) => (prev += 1));
       setDownvoteCount((prev) => (prev -= 1));
-    }
-    else if (newVoteStatus === "downvote" && voteStatus === "notVote") {
+    } else if (newVoteStatus === "downvote" && voteStatus === "notVote") {
       setDownvoteCount((prev) => (prev += 1));
-    }
-    else if (newVoteStatus === "downvote" && voteStatus === "upvote") {
+    } else if (newVoteStatus === "downvote" && voteStatus === "upvote") {
       setDownvoteCount((prev) => (prev += 1));
       setUpvoteCount((prev) => (prev -= 1));
-    }
-    else if (newVoteStatus === "notVote" && voteStatus === "upvote") {
+    } else if (newVoteStatus === "notVote" && voteStatus === "upvote") {
       setUpvoteCount((prev) => (prev -= 1));
-    }
-    else if (newVoteStatus === "notVote" && voteStatus === "downvote") {
+    } else if (newVoteStatus === "notVote" && voteStatus === "downvote") {
       setDownvoteCount((prev) => (prev -= 1));
     }
     setVoteStatus(newVoteStatus);
@@ -170,12 +164,16 @@ const PersonalInfo = ({
           prevVoteStatus: prevVoteStatusRef.current,
           voteStatus: voteStatus,
         }),
-      }).then(() => {
-        handleUpdateCurrentUser(JSON.parse(sessionStorage.getItem('currentUser')).id);
-      }).then(() => {
-        setShouldFetchVote(false);
-        alert("Update success");
-      });
+      })
+        .then(() => {
+          handleUpdateCurrentUser(
+            JSON.parse(sessionStorage.getItem("currentUser")).id
+          );
+        })
+        .then(() => {
+          setShouldFetchVote(false);
+          showAlert("vote", "success");
+        });
     }
   }, [triggerFetchVote]);
 

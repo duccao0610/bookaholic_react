@@ -33,7 +33,9 @@ const Alert = ({
       case "vote":
         return (
           <div className="alert_message">
-            {status === "fail" ? "Please login to continue" : null}
+            {status === "fail"
+              ? "Please login to continue"
+              : "Voted successful"}
           </div>
         );
 

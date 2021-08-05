@@ -3,7 +3,6 @@ import { FaCrown } from "react-icons/fa";
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 
 const UserItem = ({ user, inRank, idx }) => {
-  // console.log(user.userRate);
   return (
     <div
       className="justify-content-start px-3 py-2 mx-1 row mb-2"
@@ -53,13 +52,17 @@ const UserItem = ({ user, inRank, idx }) => {
         {inRank ? (
           <div className="row">
             <div className="col-6 d-flex align-items-center gap-1">
-              <FaArrowCircleUp color="green" size={10} />
+              <div className="d-flex align-items-center">
+                <FaArrowCircleUp color="green" size={10} />
+              </div>
               <span style={{ fontSize: "10px", fontWeight: "bold" }}>
                 {user.userRate.upvote}
               </span>
             </div>
             <div className="col-6 d-flex align-items-center gap-1">
-              <FaArrowCircleDown color="red" size={10} />
+              <div className="d-flex align-items-center">
+                <FaArrowCircleDown color="red" size={10} />
+              </div>
               <span style={{ fontSize: "10px", fontWeight: "bold" }}>
                 {user.userRate.downvote}
               </span>
