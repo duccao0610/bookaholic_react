@@ -14,10 +14,9 @@ const PersonalInfo = ({
   isMyProfile,
   downvote,
   upvote,
-  currentUser
+  currentUser,
 }) => {
-  const { currentUser, handleUpdateCurrentUser, socketRef } =
-    useContext(UserContext);
+  const { handleUpdateCurrentUser, socketRef } = useContext(UserContext);
 
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
@@ -103,67 +102,66 @@ const PersonalInfo = ({
 
   const [upvoteCount, setUpvoteCount] = useState(upvote);
   const [downvoteCount, setDownvoteCount] = useState(downvote);
-  const [voteStatus, setVoteStatus] = useState('notVote');
+  const [voteStatus, setVoteStatus] = useState("notVote");
   const prevVoteStatusRef = useRef();
   useEffect(() => {
     console.log(currentUser);
     const searchVotedUsersList = currentUser.votedUsersList.findIndex(
       (item) => item.username === username
-    )
+    );
     if (searchVotedUsersList !== -1) {
       if (currentUser.votedUsersList[searchVotedUsersList].isUpvote) {
-        setVoteStatus('upvote');
+        setVoteStatus("upvote");
       } else {
-        setVoteStatus('downvote');
+        setVoteStatus("downvote");
       }
     }
   }, [currentUser, username]);
 
   const handleVote = (newVoteStatus) => {
     prevVoteStatusRef.current = voteStatus;
-    if (newVoteStatus === 'upvote' && voteStatus === 'notVote') {
-      setUpvoteCount(prev => prev += 1);
+    if (newVoteStatus === "upvote" && voteStatus === "notVote") {
+      setUpvoteCount((prev) => (prev += 1));
     }
-    if (newVoteStatus === 'upvote' && voteStatus === 'downvote') {
-      setUpvoteCount((prev) => prev += 1);
-      setDownvoteCount((prev) => prev -= 1);
+    if (newVoteStatus === "upvote" && voteStatus === "downvote") {
+      setUpvoteCount((prev) => (prev += 1));
+      setDownvoteCount((prev) => (prev -= 1));
     }
-    if (newVoteStatus === 'downvote' && voteStatus === 'notVote') {
-      setDownvoteCount((prev) => prev += 1);
+    if (newVoteStatus === "downvote" && voteStatus === "notVote") {
+      setDownvoteCount((prev) => (prev += 1));
     }
-    if (newVoteStatus === 'downvote' && voteStatus === 'upvote') {
-      setDownvoteCount((prev) => prev += 1);
-      setUpvoteCount((prev) => prev -= 1);
+    if (newVoteStatus === "downvote" && voteStatus === "upvote") {
+      setDownvoteCount((prev) => (prev += 1));
+      setUpvoteCount((prev) => (prev -= 1));
     }
-    if (newVoteStatus === 'notVote' && voteStatus === 'upvote') {
-      setUpvoteCount((prev) => prev -= 1);
+    if (newVoteStatus === "notVote" && voteStatus === "upvote") {
+      setUpvoteCount((prev) => (prev -= 1));
     }
-    if (newVoteStatus === 'notVote' && voteStatus === 'downvote') {
-      setDownvoteCount((prev) => prev -= 1);
+    if (newVoteStatus === "notVote" && voteStatus === "downvote") {
+      setDownvoteCount((prev) => (prev -= 1));
     }
     setVoteStatus(newVoteStatus);
-  }
+  };
 
   useEffect(() => {
-    fetch('http://localhost:5000/user/voteUser', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+    fetch("http://localhost:5000/user/voteUser", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         upvoteCount: upvoteCount,
         downvoteCount: downvoteCount,
         votedUser: username,
         currentUser: currentUser.username,
         prevVoteStatus: prevVoteStatusRef.current,
-        voteStatus: voteStatus
+        voteStatus: voteStatus,
       }),
     }).catch((error) => {
-      console.log('Error occured when fetch: ', error);
-    })
-
+      console.log("Error occured when fetch: ", error);
+    });
   }, [currentUser.username, downvoteCount, upvoteCount, username, voteStatus]);
 
   switch (inPage) {
-    case 'profile':
+    case "profile":
       return (
         <div className="d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row">
           <Alert
@@ -186,8 +184,6 @@ const PersonalInfo = ({
                   style={{ objectFit: "contain" }}
                 />
               </div>
-//               {currentUser === null ||
-//               currentUser.username !== username ? null : (
               {isMyProfile ? (
                 <>
                   <label
@@ -216,22 +212,19 @@ const PersonalInfo = ({
                       });
                     }}
                   />
-            <div className="d-flex justify-content-evenly">
-              <ProfileVoting isUpvote={true} votesQuant={123} />
-              <ProfileVoting isUpvote={false} votesQuant={3456} />
+                </>
+              ) : (
+                <ProfileVoting
+                  inPage="profile"
+                  votedUsername={username}
+                  currentUser={currentUser}
+                  upvote={upvoteCount}
+                  downvote={downvoteCount}
+                  voteStatus={voteStatus}
+                  onVote={handleVote}
+                />
+              )}
             </div>
-      </>
-              ) : null}
-            </div>
-            <ProfileVoting
-              inPage='profile'
-              votedUsername={username}
-              currentUser={currentUser}
-              upvote={upvoteCount}
-              downvote={downvoteCount}
-              voteStatus={voteStatus}
-              onVote={handleVote}
-            />
           </div>
           <div className="ms-lg-5 w-100">
             <div className="border-bottom pb-2 d-flex justify-content-between">
@@ -247,15 +240,15 @@ const PersonalInfo = ({
                   onChange={handleChangeNickname}
                 />
               )}
-              {currentUser === null ||
-                currentUser.username !== username ? null : (
+              {isMyProfile ? (
                 <div
-                  className="btn btn-sm btn-primary"
+                  style={{ background: "#5a3434" }}
+                  className="btn btn-sm text-white"
                   onClick={handleEditProfile}
                 >
                   {editProfileBtn ? "Edit" : "Save"}
                 </div>
-              )}
+              ) : null}
             </div>
             <table className="table table-sm table-borderless align-top">
               <tbody>

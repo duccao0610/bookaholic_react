@@ -63,9 +63,10 @@ const Profile = () => {
               >
                 <div className="text-uppercase fw-bold">bookshelves</div>
                 {currentUser === null ||
-                  currentUser.username !== user.username ? null : (
+                currentUser.username !== user.username ? null : (
                   <Link
-                    className="btn btn-sm btn-primary mb-1"
+                    style={{ background: "#5a3434" }}
+                    className="btn btn-sm mb-1 text-white"
                     to={`/user/${params.username}/shelves`}
                   >
                     Custom my shelves

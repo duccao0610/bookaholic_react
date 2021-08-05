@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { FaCrown } from "react-icons/fa";
-import ProfileVoting from "./ProfileVoting";
+import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
+
 const UserItem = ({ user, inRank, idx }) => {
   // console.log(user.userRate);
   return (
@@ -10,9 +11,9 @@ const UserItem = ({ user, inRank, idx }) => {
         inRank
           ? null
           : {
-            boxShadow:
-              "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
-          }
+              boxShadow:
+                "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+            }
       }
     >
       <div className="col-3 d-flex align-items-center justify-content-center">
@@ -50,8 +51,19 @@ const UserItem = ({ user, inRank, idx }) => {
           {user.nickname}
         </Link>
         {inRank ? (
-          <div className="d-flex">
-            <ProfileVoting upvote={user.userRate.upvote} downvote={user.userRate.downvote} inPage='home' />
+          <div className="row">
+            <div className="col-6 d-flex align-items-center gap-1">
+              <FaArrowCircleUp color="green" />
+              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                {user.userRate.upvote}
+              </span>
+            </div>
+            <div className="col-6 d-flex align-items-center gap-1">
+              <FaArrowCircleDown color="red" />
+              <span style={{ fontSize: "13px", fontWeight: "bold" }}>
+                {user.userRate.downvote}
+              </span>
+            </div>
           </div>
         ) : (
           <p className="font-italic" style={{ fontSize: "12px", opacity: 0.8 }}>
