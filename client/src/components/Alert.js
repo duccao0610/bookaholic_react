@@ -23,12 +23,20 @@ const Alert = ({
             {status === "success"
               ? "Register success"
               : detail === "empty"
-                ? "Please fill in all fields required"
-                : detail === "existed"
-                  ? "Username existed, please choose another!"
-                  : "Password not match"}
+              ? "Please fill in all fields required"
+              : detail === "existed"
+              ? "Username existed, please choose another!"
+              : "Password not match"}
           </div>
         );
+
+      case "vote":
+        return (
+          <div className="alert_message">
+            {status === "fail" ? "Please login to continue" : null}
+          </div>
+        );
+
       case "review":
         return (
           <div className="alert_message">

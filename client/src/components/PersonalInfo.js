@@ -14,9 +14,10 @@ const PersonalInfo = ({
   isMyProfile,
   downvote,
   upvote,
-  currentUser,
+  current,
 }) => {
-  const { handleUpdateCurrentUser, socketRef } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser, socketRef } =
+    useContext(UserContext);
 
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
@@ -105,21 +106,25 @@ const PersonalInfo = ({
   const [voteStatus, setVoteStatus] = useState("notVote");
   const prevVoteStatusRef = useRef();
   useEffect(() => {
-    console.log(currentUser);
-    const searchVotedUsersList = currentUser.votedUsersList.findIndex(
+    console.log(current);
+    const searchVotedUsersList = current.votedUsersList.findIndex(
       (item) => item.username === username
     );
     if (searchVotedUsersList !== -1) {
-      if (currentUser.votedUsersList[searchVotedUsersList].isUpvote) {
+      if (current.votedUsersList[searchVotedUsersList].isUpvote) {
         setVoteStatus("upvote");
       } else {
         setVoteStatus("downvote");
       }
     }
-  }, [currentUser, username]);
+  }, [current, username]);
 
   const handleVote = (newVoteStatus) => {
     prevVoteStatusRef.current = voteStatus;
+    if (!currentUser || currentUser === null) {
+      showAlert("vote", "fail");
+      return;
+    }
     if (newVoteStatus === "upvote" && voteStatus === "notVote") {
       setUpvoteCount((prev) => (prev += 1));
     }
@@ -151,14 +156,14 @@ const PersonalInfo = ({
         upvoteCount: upvoteCount,
         downvoteCount: downvoteCount,
         votedUser: username,
-        currentUser: currentUser.username,
+        currentUser: current.username,
         prevVoteStatus: prevVoteStatusRef.current,
         voteStatus: voteStatus,
       }),
     }).catch((error) => {
       console.log("Error occured when fetch: ", error);
     });
-  }, [currentUser.username, downvoteCount, upvoteCount, username, voteStatus]);
+  }, [current.username, downvoteCount, upvoteCount, username, voteStatus]);
 
   switch (inPage) {
     case "profile":
@@ -217,7 +222,7 @@ const PersonalInfo = ({
                 <ProfileVoting
                   inPage="profile"
                   votedUsername={username}
-                  currentUser={currentUser}
+                  currentUser={current}
                   upvote={upvoteCount}
                   downvote={downvoteCount}
                   voteStatus={voteStatus}
