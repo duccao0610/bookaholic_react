@@ -11,5 +11,4 @@ const router = express.Router();
 router.get("/", authentication, getBooksTrending);
 router.get("/:id", getBookDetail);
 router.get("/search/:searchValue", getBooksBySearch);
-
 module.exports = router;

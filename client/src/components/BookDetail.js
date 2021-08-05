@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Spinner, Image } from "react-bootstrap";
 import AddReviewForm from "./AddReviewForm";
@@ -10,23 +10,46 @@ import Social from "./Social";
 import RelatedGenres from "./RelatedGenres";
 import RelatedBooks from "./RelatedBooks";
 import Activity from "./Activity";
-
+import { FaExclamationTriangle } from "react-icons/fa";
+import UserContext from "../context/userContext";
 const BookDetail = () => {
+  const { currentUser } = useContext(UserContext);
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
+  const [bookReviews, setBookReviews] = useState([]);
   const [availability, setAvailability] = useState(false);
   const [showDetailRating, setShowDetailRating] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [relatedBooks, setRelatedBooks] = useState([]);
   const [relatedGenres, setRelatedGenres] = useState([]);
   const reviewInputRef = useRef(null);
+
+  // const reviewed = bookReviews.find((e) =>
+  //   e.reviewInfo.nickname === currentUser ? currentUser.nickname : "BukayoNo77"
+  // );
+
+  console.log("currentUser", currentUser);
+  // console.log("reviewed", reviewed);
+
   const handleShowMoreDesc = () => {
     setShowMore((prev) => !prev);
   };
 
   const handleShowDetailRating = () => {
     setShowDetailRating((prev) => !prev);
+  };
+  const handleRefreshReviewsData = () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
+    fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
+      .then((res) => res.json())
+      .then((resJson) => setBookReviews(resJson.bookReviews));
   };
 
   useEffect(() => {
@@ -49,6 +72,7 @@ const BookDetail = () => {
           setBook(resJson.info[0]);
           setRelatedGenres(resJson.relatedGenres);
           setRelatedBooks(resJson.relatedBooks);
+          setBookReviews(resJson.bookReviews);
         }
       });
 
@@ -184,30 +208,50 @@ const BookDetail = () => {
                 </div>
               </div>
               <div className="p-0">
-                <Activity
-                  inPage="book-detail"
-                  username="Cao Minh Duc"
-                  bookName="Chuoi An Mang A.B.C"
-                  authors={["Agatha Christie", "Someone Else"]}
-                  rating={2}
-                  cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1435375133l/25802987._SY475_.jpg"
-                  review="Khi một sát nhân giết người hàng loạt bí danh ABC chế nhạo Poirot bằng những lá thư úp mở và giết người theo thứ tự chữ cái, Poirot tiến hành một phương pháp điều tra bất thường để truy tìm ABC. Chữ A là bà Ascher ờ Andover, B là Betty Barnard ở Bexhill, C là ngài Carmichael Clarke ở Churston. Qua từng vụ án, kẻ giết người càng tự tin hơn - nhưng để lại một vệt manh mối rõ ràng để chế nhạo Hercule Poirot tài ba có thể lại sai lầm đầu tiên và chí tử."
-                  date="12/07/2021"
-                />
-                <Activity
-                  inPage="book-detail"
-                  username="Cao Minh Duc"
-                  bookName="Chuoi An Mang A.B.C"
-                  authors={["Agatha Christie", "Someone Else"]}
-                  rating={2}
-                  cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1435375133l/25802987._SY475_.jpg"
-                  review="Khi một sát nhân giết người hàng loạt bí danh ABC chế nhạo Poirot bằng những lá thư úp mở và giết người theo thứ tự chữ cái, Poirot tiến hành một phương pháp điều tra bất thường để truy tìm ABC. Chữ A là bà Ascher ờ Andover, B là Betty Barnard ở Bexhill, C là ngài Carmichael Clarke ở Churston. Qua từng vụ án, kẻ giết người càng tự tin hơn - nhưng để lại một vệt manh mối rõ ràng để chế nhạo Hercule Poirot tài ba có thể lại sai lầm đầu tiên và chí tử."
-                  date="12/07/2021"
-                />
+                {bookReviews.length === 0 ? (
+                  <div className="d-flex align-items-center justify-content-center my-3 font-italic">
+                    <FaExclamationTriangle />
+                    Not have a review yet
+                  </div>
+                ) : (
+                  <>
+                    {bookReviews.map((review, idx) => {
+                      return (
+                        <Activity
+                          key={idx}
+                          inPage="book-detail"
+                          username={review.reviewInfo.nickname}
+                          bookName={book.title}
+                          authors={book.authors}
+                          rating={review.reviewInfo.reviews.rating}
+                          cover={review.reviewInfo.avatar}
+                          review={review.reviewInfo.reviews.content}
+                          date={review.reviewInfo.reviews.date.slice(0, 10)}
+                        />
+                      );
+                    })}
+                  </>
+                )}
               </div>
-              <div ref={reviewInputRef}>
-                <AddReviewForm />
-              </div>
+              {currentUser ? (
+                bookReviews.find(
+                  (e) => e.reviewInfo.nickname === currentUser.nickname
+                ) === undefined ? (
+                  <div ref={reviewInputRef}>
+                    <AddReviewForm
+                      refreshReviewsData={handleRefreshReviewsData}
+                      bookId={book._id}
+                    />
+                  </div>
+                ) : null
+              ) : (
+                <div ref={reviewInputRef}>
+                  <AddReviewForm
+                    refreshReviewsData={handleRefreshReviewsData}
+                    bookId={book._id}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="pt-5 d-none d-lg-block col-lg-3  mr-5 vh-100 align-self-lg-start">

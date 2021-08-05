@@ -7,9 +7,10 @@ const userSchema = mongoose.Schema({
   isAdmin: Boolean,
   username: String,
   password: String,
-  nickname: String,
+  nickname: { type: String, maxLength: 10 },
   bio: String,
   address: { city: String, district: String },
+  avatar: String,
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   shelves: [
     {
@@ -18,9 +19,12 @@ const userSchema = mongoose.Schema({
     },
   ],
   userRate: { downvote: Number, upvote: Number },
+  votedUsersList: [{ username: String, isUpvote: Boolean }],
   owning: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
   reviews: [
     {
+      date: Date,
+      rating: Number,
       content: String,
       book: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
     },
@@ -39,7 +43,7 @@ class UserClass {
       },
       "MY_PRIVATE_KEY",
       {
-        expiresIn: 120,
+        expiresIn: 300,
       }
     );
     return token;
@@ -54,8 +58,6 @@ class UserClass {
       256,
       "sha512"
     );
-    // console.log("Salt", salt);
-    // console.log("hashedPass", hashedPassword.toString("hex"));
     return {
       salt: salt,
       hashedPassword: hashedPassword.toString("hex"),

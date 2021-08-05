@@ -2,11 +2,34 @@ import "./Auth.css";
 import { Link, useHistory } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import UserContext from "../context/userContext";
+import Alert from "../components/Alert";
 const Login = () => {
-  const { setExpTime } = useContext(UserContext);
+  const { setExpTime, handleUpdateCurrentUser } = useContext(UserContext);
   const history = useHistory();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [alertVisibility, setAlertVisibility] = useState(false);
+  const [alertType, setAlertType] = useState();
+  const [alertStatus, setAlertStatus] = useState();
+  const [loginResData, setLoginResData] = useState({});
+
+  const showAlert = (type, status) => {
+    setAlertVisibility(true);
+    setAlertType(type);
+    setAlertStatus(status);
+  };
+
+  const alertClose = (status) => {
+    setAlertVisibility(false);
+    if (status === "success") {
+      sessionStorage.setItem("token", loginResData.token);
+      sessionStorage.setItem("currentUser", JSON.stringify(loginResData.user));
+      sessionStorage.setItem("expTime", loginResData.expireTime);
+      handleUpdateCurrentUser(loginResData.user.id);
+      setExpTime(loginResData.expireTime);
+      history.push("/");
+    }
+  };
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const requestOptions = {
@@ -20,13 +43,10 @@ const Login = () => {
       .then((resJson) => {
         console.log(resJson);
         if (resJson.message === false) {
-          alert("Username/Password not match");
+          showAlert("login", "fail");
         } else {
-          alert("Login success");
-          sessionStorage.setItem("token", resJson.token);
-          sessionStorage.setItem("currentUser", JSON.stringify(resJson.user));
-          setExpTime(resJson.expireTime);
-          history.push("/");
+          showAlert("login", "success");
+          setLoginResData(resJson);
         }
       });
   };
@@ -40,6 +60,12 @@ const Login = () => {
 
   return (
     <div className="auth_container h-100">
+      <Alert
+        alertClose={alertClose}
+        alertVisibility={alertVisibility}
+        alertType={alertType}
+        alertStatus={alertStatus}
+      />
       <div className="auth_form">
         <h2 className="text-white  text-center py-2 px-1 auth_heading">
           Welcome to Bookaholic.

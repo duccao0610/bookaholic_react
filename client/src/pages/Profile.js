@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 
 import { Link, useParams } from "react-router-dom";
 
@@ -6,12 +6,14 @@ import Activity from "../components/Activity";
 import ReactPaginate from "react-paginate";
 import PersonalInfo from "../components/PersonalInfo";
 import Shelf from "../components/Shelf";
-
+import UserContext from "../context/userContext";
 const Profile = () => {
+
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
   const userDataRef = useRef();
+  const { currentUser } = useContext(UserContext);
   useEffect(() => {
     setLoading(true);
     fetch(`http://localhost:5000/user/${params.username}`)
@@ -31,14 +33,12 @@ const Profile = () => {
     setActiveShelvesGroup(clickedGroup.selected);
   };
 
-  const goToShelvesPage = () => {};
-
   return (
     <div>
       {loading ? (
         <div></div>
       ) : (
-        <div className="d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center container px-0 mt-3">
+        <div className="d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center container px-0 pt-3">
           <div
             id="profile-main-content"
             className="col-sm-12 col-md-9 col-lg-8"
@@ -46,7 +46,7 @@ const Profile = () => {
             <PersonalInfo
               id="1"
               inPage="profile"
-              avatar="https://i.pinimg.com/originals/75/31/5d/75315db511a058432745fc37d82a7c44.png"
+              avatar={user.avatar}
               upvote={user.userRate.upvote}
               downvote={user.userRate.downvote}
               nickname={user.nickname}
@@ -54,6 +54,9 @@ const Profile = () => {
               reviewsQuant={120}
               bio={user.bio}
               username={user.username}
+              isMyProfile={
+                currentUser ? currentUser.username === user.username : false
+              }
             />
             <div id="book-shelves" className="mb-3">
               <div
@@ -61,13 +64,16 @@ const Profile = () => {
                 className="d-flex justify-content-between align-items-end border-bottom"
               >
                 <div className="text-uppercase fw-bold">bookshelves</div>
-                <Link
-                  className="btn btn-sm btn-primary mb-1"
-                  to={`/user/${params.username}/shelves`}
-                  onClick={goToShelvesPage}
-                >
-                  Custom my shelves
-                </Link>
+                {currentUser === null ||
+                  currentUser.username !== user.username ? null : (
+                  <Link
+                    style={{ background: "#5a3434" }}
+                    className="btn btn-sm mb-1 text-white"
+                    to={`/user/${params.username}/shelves`}
+                  >
+                    Custom my shelves
+                  </Link>
+                )}
               </div>
               <div className="d-flex my-3">
                 {[...user.shelves]

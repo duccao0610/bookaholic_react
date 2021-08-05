@@ -1,6 +1,18 @@
 const User = require("../models/User");
 const ObjectId = require("mongoose").Types.ObjectId;
 
+const getRecapInfoById = async (req, res) => {
+  const user = await User.find(
+    { _id: ObjectId(req.params.id) },
+    "nickname username userRate friends avatar owning votedUsersList"
+  );
+  if (user) {
+    res.json({ user: user, message: true });
+  } else {
+    res.json({ message: false });
+  }
+};
+
 //check user existed or not
 const checkUserExistByUsername = async (username) => {
   const users = await User.find({
@@ -35,6 +47,7 @@ const getUserByUsername = async (req, res) => {
   }
 };
 
+// Get user's shelves
 const getUserShelves = async (req, res) => {
   const userShelves = await User.aggregate([
     {
@@ -56,6 +69,7 @@ const getUserShelves = async (req, res) => {
   }
 };
 
+// Get all books from a shelf
 const getBooksOnShelf = async (req, res) => {
   const userBooksOnShelf = await User.aggregate([
     {
@@ -100,6 +114,7 @@ const getBooksOnShelf = async (req, res) => {
   }
 };
 
+// Edit user's profile (nickname, bio, address)
 const editUserProfile = async (req, res) => {
   const data = req.body;
   try {
@@ -118,6 +133,17 @@ const editUserProfile = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+};
+
+// Upload avatar
+const uploadAvatar = async (req, res) => {
+  await User.updateOne(
+    { username: req.params.username },
+    {
+      $set: { avatar: req.body.base64ImgSrc },
+    }
+  );
+  console.log(req.body.base64ImgSrc);
 };
 
 const addShelf = async (req, res) => {
@@ -198,10 +224,140 @@ const editShelfName = async (req, _) => {
   }
 };
 
+// Vote an user
+const voteUser = async (req, res) => {
+  const {
+    votedUser,
+    currentUser,
+    upvoteCount,
+    downvoteCount,
+    prevVoteStatus,
+    voteStatus
+  } = req.body;
+  try {
+    // Update userRate field of the rated user
+    await User.updateOne({ username: votedUser }, {
+      $set: {
+        userRate: {
+          upvote: upvoteCount,
+          downvote: downvoteCount
+        }
+      }
+    });
+
+    // Update votedUsersList field of the currentUser
+    const getCurrentUser = await User.findOne({ username: currentUser }, { votedUsersList: 1, _id: 0 });
+    let isUpvote = null;
+    if (voteStatus === 'upvote') isUpvote = true;
+    if (voteStatus === 'downvote') isUpvote = false;
+
+    if (prevVoteStatus !== null) {
+      const itemIndexToUpdate = getCurrentUser.votedUsersList.findIndex((item) => item.username === votedUser);
+      console.log("item index: " + itemIndexToUpdate);
+      if (itemIndexToUpdate === -1) {
+        await User.updateOne({ username: currentUser }, {
+          $push: { votedUsersList: { username: votedUser, isUpvote: isUpvote } }
+        });
+      } else if (itemIndexToUpdate > -1) {
+        if (isUpvote === null) {
+          await User.updateOne({ username: currentUser }, {
+            $pull: { votedUsersList: { username: votedUser } }
+          })
+        } else {
+          await User.updateOne({ username: currentUser }, {
+            $set: { [`votedUsersList.${itemIndexToUpdate}.isUpvote`]: isUpvote }
+          });
+        }
+      }
+    }
+
+    res.json({ msg: "UPDATE_VOTE_SUCCESS" })
+
+    console.log(getCurrentUser);
+
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
+// Add review
+const addReview = async (req, res) => {
+  try {
+    await User.updateOne(
+      { _id: req.body.userId },
+      {
+        $push: {
+          reviews: {
+            rating: req.body.rating,
+            content: req.body.content,
+            book: req.body.bookId,
+            date: new Date(),
+          },
+        },
+      }
+    );
+    res.json({ message: "ADD_REVIEW_SUCCESS" });
+  } catch (err) {
+    res.json({ message: err.message });
+  }
+};
+
+const getUsersBySearch = async (req, res) => {
+  try {
+    const regPattern = new RegExp(`${req.params.searchValue}`, "i");
+    const users = await User.find(
+      {
+        nickname: {
+          $regex: regPattern,
+        },
+      },
+      "nickname bio username avatar"
+    ).limit(10);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
+const getTopUsers = async (req, res) => {
+  try {
+    const users = await User.aggregate([
+      {
+        $match: {
+          "userRate.upvote": { $gt: 0 },
+        },
+      },
+      {
+        $sort: {
+          "userRate.upvote": -1,
+        },
+      },
+      {
+        $project: {
+          username: 1,
+          nickname: 1,
+          userRate: 1,
+          avatar: 1,
+        },
+      },
+      {
+        $limit: Number(req.params.top),
+      },
+    ]);
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
+
 module.exports = {
+  getTopUsers,
+  getUsersBySearch,
+  getRecapInfoById,
   checkUserExistByUsername,
   getUserByUsername,
   editUserProfile,
+  uploadAvatar,
   findUserByUsername,
   getUserShelves,
   getBooksOnShelf,
@@ -209,4 +365,6 @@ module.exports = {
   deleteShelf,
   deleteBookOnShelf,
   editShelfName,
+  addReview,
+  voteUser
 };
