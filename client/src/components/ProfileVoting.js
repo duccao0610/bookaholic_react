@@ -57,7 +57,6 @@ const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {
     default:
       break;
   }
-
 };
 
 export default ProfileVoting;

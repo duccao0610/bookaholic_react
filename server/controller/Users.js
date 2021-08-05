@@ -4,7 +4,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const getRecapInfoById = async (req, res) => {
   const user = await User.find(
     { _id: ObjectId(req.params.id) },
-    "nickname username userRate friends avatar votedUsersList"
+    "nickname username userRate friends avatar owning votedUsersList"
   );
   if (user) {
     res.json({ user: user, message: true });

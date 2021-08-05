@@ -51,8 +51,11 @@ const Home = () => {
     <>
       {!sessionStorage.getItem("token") ? null : (
         <div className="w-100 d-flex">
-          <div className="px-3 py-4 d-none d-md-inline-block d-lg-inline-block vh-100 col-md-2 col-lg-3">
+          <div className="px-3 py-4 d-none d-md-inline-block d-lg-inline-block vh-100 col-md-4 col-lg-3">
             <ProfileRecap />
+            <div className="d-md-block d-lg-none">
+              <TopUsers />
+            </div>
           </div>
           <div className="w-100 d-flex flex-column align-items-center py-3 col-12 col-md-8 col-lg-6">
             <Tabs
@@ -116,7 +119,7 @@ const Home = () => {
               </Tab>
             </Tabs>
           </div>
-          <div className="position-relative pl-5 pr-3 py-2 d-none d-md-inline-block d-lg-inline-block col-md-2 col-lg-3 vh-100">
+          <div className="position-relative pl-3 pl-lg-4 pr-3 py-2 d-none d-md-inline-block d-lg-inline-block col-md-0 col-lg-3 vh-100">
             <TopUsers />
           </div>
         </div>

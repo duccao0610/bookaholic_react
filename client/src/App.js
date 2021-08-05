@@ -10,11 +10,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import FloatingButton from "./components/FloatingButton";
 import { useLocation, useHistory } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import UserContext from "./context/userContext";
 import Footer from "./components/Footer";
 import Alert from "./components/Alert";
+import { io } from "socket.io-client";
 function App() {
+  const socketRef = useRef();
   const history = useHistory();
   const { pathname } = useLocation();
   const expTimeTemp = sessionStorage.getItem("expTime");
@@ -25,6 +27,17 @@ function App() {
   const [alertType, setAlertType] = useState();
   const [alertStatus, setAlertStatus] = useState();
   const [alertDetail, setAlertDetail] = useState();
+
+  useEffect(() => {
+    socketRef.current = io("http://localhost:5000");
+    socketRef.current.emit("hello", "world");
+    socketRef.current.on("setCurrentUser", () => {
+      const current = JSON.parse(sessionStorage.getItem("currentUser"));
+      if (current) {
+        handleUpdateCurrentUser(current.id);
+      }
+    });
+  }, []);
 
   const showAlert = (type, status, detail) => {
     setAlertVisibility(true);
@@ -45,23 +58,23 @@ function App() {
     setExpTime(time);
   };
 
-  useEffect(() => {
-    let loadingData = true;
-    const current = JSON.parse(sessionStorage.getItem("currentUser"));
-    if (current) {
-      fetch(`http://localhost:5000/user/id/${current.id}`)
-        .then((res) => res.json())
-        .then((resJson) => {
-          if (resJson.message === true && loadingData) {
-            console.log("CURRENT", resJson);
-            setCurrentUser(resJson.user[0]);
-          }
-        });
-    }
-    return () => {
-      loadingData = false;
-    };
-  }, []);
+  // useEffect(() => {
+  //   let loadingData = true;
+  //   const current = JSON.parse(sessionStorage.getItem("currentUser"));
+  //   if (current) {
+  //     fetch(`http://localhost:5000/user/id/${current.id}`)
+  //       .then((res) => res.json())
+  //       .then((resJson) => {
+  //         if (resJson.message === true && loadingData) {
+  //           console.log("CURRENT", resJson);
+  //           setCurrentUser(resJson.user[0]);
+  //         }
+  //       });
+  //   }
+  //   return () => {
+  //     loadingData = false;
+  //   };
+  // }, []);
 
   const handleUpdateCurrentUser = (userId) => {
     fetch(`http://localhost:5000/user/id/${userId}`)
@@ -90,6 +103,7 @@ function App() {
   return (
     <UserContext.Provider
       value={{
+        socketRef: socketRef.current,
         setCurrentUser: setCurrentUser,
         currentUser: currentUser,
         handleUpdateCurrentUser: handleUpdateCurrentUser,

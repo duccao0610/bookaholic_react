@@ -27,6 +27,7 @@ const login = async (username, password) => {
       votedUsersList: user.votedUsersList,
       friends: user.friends.length,
       avatar: user.avatar,
+      owning: user.owning,
     },
     token: token,
     expireTime: data.exp,

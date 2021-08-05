@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Spinner, Image } from "react-bootstrap";
 import AddReviewForm from "./AddReviewForm";
@@ -11,7 +11,9 @@ import RelatedGenres from "./RelatedGenres";
 import RelatedBooks from "./RelatedBooks";
 import Activity from "./Activity";
 import { FaExclamationTriangle } from "react-icons/fa";
+import UserContext from "../context/userContext";
 const BookDetail = () => {
+  const { currentUser } = useContext(UserContext);
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
@@ -22,6 +24,14 @@ const BookDetail = () => {
   const [relatedBooks, setRelatedBooks] = useState([]);
   const [relatedGenres, setRelatedGenres] = useState([]);
   const reviewInputRef = useRef(null);
+
+  // const reviewed = bookReviews.find((e) =>
+  //   e.reviewInfo.nickname === currentUser ? currentUser.nickname : "BukayoNo77"
+  // );
+
+  console.log("currentUser", currentUser);
+  // console.log("reviewed", reviewed);
+
   const handleShowMoreDesc = () => {
     setShowMore((prev) => !prev);
   };
@@ -214,7 +224,7 @@ const BookDetail = () => {
                           bookName={book.title}
                           authors={book.authors}
                           rating={review.reviewInfo.reviews.rating}
-                          cover={book.cover}
+                          cover={review.reviewInfo.avatar}
                           review={review.reviewInfo.reviews.content}
                           date={review.reviewInfo.reviews.date.slice(0, 10)}
                         />
@@ -223,12 +233,25 @@ const BookDetail = () => {
                   </>
                 )}
               </div>
-              <div ref={reviewInputRef}>
-                <AddReviewForm
-                  refreshReviewsData={handleRefreshReviewsData}
-                  bookId={book._id}
-                />
-              </div>
+              {currentUser ? (
+                bookReviews.find(
+                  (e) => e.reviewInfo.nickname === currentUser.nickname
+                ) === undefined ? (
+                  <div ref={reviewInputRef}>
+                    <AddReviewForm
+                      refreshReviewsData={handleRefreshReviewsData}
+                      bookId={book._id}
+                    />
+                  </div>
+                ) : null
+              ) : (
+                <div ref={reviewInputRef}>
+                  <AddReviewForm
+                    refreshReviewsData={handleRefreshReviewsData}
+                    bookId={book._id}
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="pt-5 d-none d-lg-block col-lg-3  mr-5 vh-100 align-self-lg-start">

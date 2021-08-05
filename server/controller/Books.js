@@ -51,7 +51,9 @@ const getBookDetail = async (req, res) => {
       },
       {
         $project: {
+          "reviewInfo.username": 1,
           "reviewInfo.nickname": 1,
+          "reviewInfo.avatar": 1,
           "reviewInfo.reviews": 1,
         },
       },

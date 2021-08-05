@@ -16,7 +16,9 @@ const PersonalInfo = ({
   upvote,
   currentUser
 }) => {
-  const { handleUpdateCurrentUser } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser, socketRef } =
+    useContext(UserContext);
+
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
   const handleEditProfile = async () => {
@@ -32,9 +34,14 @@ const PersonalInfo = ({
         body: editedProfile,
       }).catch((err) => console.log(err));
     }
-    handleUpdateCurrentUser(
-      JSON.parse(sessionStorage.getItem("currentUser")).id
-    );
+
+    socketRef.emit("updateProfile", "profile update");
+    socketRef.on("updateCurrentUser", () => {
+      handleUpdateCurrentUser(
+        JSON.parse(sessionStorage.getItem("currentUser")).id
+      );
+      console.log("updated");
+    });
 
     setEditProfileBtn(!editProfileBtn);
   };
@@ -179,6 +186,8 @@ const PersonalInfo = ({
                   style={{ objectFit: "contain" }}
                 />
               </div>
+//               {currentUser === null ||
+//               currentUser.username !== username ? null : (
               {isMyProfile ? (
                 <>
                   <label
@@ -197,9 +206,21 @@ const PersonalInfo = ({
                     id="upload-avatar"
                     type="file"
                     className="d-none"
-                    onChange={handleUploadAvatar}
+                    onChange={(e) => {
+                      handleUploadAvatar(e);
+                      socketRef.emit("updateAvatar", "Avatar update");
+                      socketRef.on("updateCurrentUser", () => {
+                        handleUpdateCurrentUser(
+                          JSON.parse(sessionStorage.getItem("currentUser")).id
+                        );
+                      });
+                    }}
                   />
-                </>
+            <div className="d-flex justify-content-evenly">
+              <ProfileVoting isUpvote={true} votesQuant={123} />
+              <ProfileVoting isUpvote={false} votesQuant={3456} />
+            </div>
+      </>
               ) : null}
             </div>
             <ProfileVoting
