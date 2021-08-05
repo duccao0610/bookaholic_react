@@ -32,8 +32,6 @@ const Profile = () => {
     setActiveShelvesGroup(clickedGroup.selected);
   };
 
-  const goToShelvesPage = () => { };
-
   return (
     <div>
       {loading ? (
@@ -55,6 +53,8 @@ const Profile = () => {
               reviewsQuant={120}
               bio={user.bio}
               username={user.username}
+              isMyProfile={currentUser.username === user.username}
+              currentUser={user}
             />
             <div id="book-shelves" className="mb-3">
               <div
@@ -63,11 +63,10 @@ const Profile = () => {
               >
                 <div className="text-uppercase fw-bold">bookshelves</div>
                 {currentUser === null ||
-                currentUser.username !== user.username ? null : (
+                  currentUser.username !== user.username ? null : (
                   <Link
                     className="btn btn-sm btn-primary mb-1"
                     to={`/user/${params.username}/shelves`}
-                    onClick={goToShelvesPage}
                   >
                     Custom my shelves
                   </Link>
