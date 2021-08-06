@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext, useCallback } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Spinner, Image } from "react-bootstrap";
 import AddReviewForm from "./AddReviewForm";
@@ -43,8 +43,9 @@ const BookDetail = () => {
   const handleShowDetailRating = () => {
     setShowDetailRating((prev) => !prev);
   };
-  //get Reviews
-  const handleRefreshReviewsData = useCallback(() => {
+  //handleFetchReviews
+  const [triggerFetchReviews, setTriggerFetchReviews] = useState(false);
+  useEffect(() => {
     const requestOptions = {
       method: "GET",
       headers: {
@@ -55,11 +56,12 @@ const BookDetail = () => {
     fetch(`http://localhost:5000/review/bookId/${params.id}`, requestOptions)
       .then((res) => res.json())
       .then((resJson) => setBookReviews(resJson));
-  }, [params.id]);
+  }, [triggerFetchReviews, params.id]);
   //
 
-  //get Ratings
-  const handleRefreshRatingsData = useCallback(() => {
+  //handleFetchRatings
+  const [triggerFetchRatings, setTriggerFetchRatings] = useState(false);
+  useEffect(() => {
     const requestOptions = {
       method: "GET",
       headers: {
@@ -72,7 +74,7 @@ const BookDetail = () => {
       .then((resJson) => {
         setBookRatings(resJson);
       });
-  }, [params.id]);
+  }, [params.id, triggerFetchRatings]);
   //
 
   useEffect(() => {
@@ -98,13 +100,13 @@ const BookDetail = () => {
         }
       });
 
-    handleRefreshReviewsData();
-    handleRefreshRatingsData();
+    // handleRefreshReviewsData();
+    // handleRefreshRatingsData();
 
     return () => {
       loadingData = false;
     };
-  }, [params.id, handleRefreshReviewsData, handleRefreshRatingsData]);
+  }, [params.id]);
 
   return (
     <div>
@@ -273,8 +275,12 @@ const BookDetail = () => {
                 ) === undefined ? (
                   <div ref={reviewInputRef}>
                     <AddReviewForm
-                      refreshRatingsData={handleRefreshRatingsData}
-                      refreshReviewsData={handleRefreshReviewsData}
+                      refreshReviewsData={() =>
+                        setTriggerFetchReviews((prev) => !prev)
+                      }
+                      refreshRatingsData={() => {
+                        setTriggerFetchRatings((prev) => !prev);
+                      }}
                       bookId={book._id}
                     />
                   </div>
@@ -282,8 +288,12 @@ const BookDetail = () => {
               ) : (
                 <div ref={reviewInputRef}>
                   <AddReviewForm
-                    refreshRatingsData={handleRefreshRatingsData}
-                    refreshReviewsData={handleRefreshReviewsData}
+                    refreshReviewsData={() =>
+                      setTriggerFetchReviews((prev) => !prev)
+                    }
+                    refreshRatingsData={() => {
+                      setTriggerFetchRatings((prev) => !prev);
+                    }}
                     bookId={book._id}
                   />
                 </div>

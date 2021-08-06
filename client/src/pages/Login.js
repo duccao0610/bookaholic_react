@@ -52,10 +52,14 @@ const Login = () => {
   };
 
   useEffect(() => {
+    let loading = true;
     const token = sessionStorage.getItem("token");
-    if (token) {
+    if (token && loading) {
       history.push("/");
     }
+    return () => {
+      loading = false;
+    };
   }, [history]);
 
   return (

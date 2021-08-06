@@ -21,15 +21,6 @@ io.on("connection", (socket) => {
   console.log("An user connected");
   socket.on("hello", (data) => {
     console.log(data);
-    socket.emit("setCurrentUser");
-  });
-  socket.on("updateProfile", (data) => {
-    console.log(data);
-    socket.emit("updateCurrentUser");
-  });
-  socket.on("updateAvatar", (data) => {
-    console.log(data);
-    socket.emit("updateCurrentUser");
   });
 });
 
