@@ -3,7 +3,7 @@ import StarRatings from "react-star-ratings";
 import { useState, useContext } from "react";
 import UserContext from "../context/userContext";
 import Alert from "./Alert";
-const AddReviewForm = ({ bookId, refreshReviewsData }) => {
+const AddReviewForm = ({ bookId, refreshReviewsData, refreshRatingsData }) => {
   const { currentUser } = useContext(UserContext);
   const [rating, setRating] = useState(1);
   const [content, setContent] = useState("");
@@ -25,7 +25,7 @@ const AddReviewForm = ({ bookId, refreshReviewsData }) => {
   const changeRating = (newRating) => {
     setRating(newRating);
   };
-  const handleAddReview = () => {
+  const handleAddReview = async () => {
     if (currentUser !== null) {
       const requestOptions = {
         method: "POST",
@@ -41,8 +41,19 @@ const AddReviewForm = ({ bookId, refreshReviewsData }) => {
         }),
       };
       if (content !== "") {
-        fetch("http://localhost:5000/user/addReview", requestOptions);
-        refreshReviewsData();
+        fetch("http://localhost:5000/review/addReview", requestOptions);
+        fetch("http://localhost:5000/review/calculateAverage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            bookId: bookId,
+          }),
+        });
+        await refreshReviewsData();
+        await refreshRatingsData();
         setRating(1);
         setContent("");
       } else {

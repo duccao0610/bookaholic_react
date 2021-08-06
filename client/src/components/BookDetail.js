@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { Spinner, Image } from "react-bootstrap";
 import AddReviewForm from "./AddReviewForm";
@@ -18,6 +18,7 @@ const BookDetail = () => {
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
   const [bookReviews, setBookReviews] = useState([]);
+  const [bookRatings, setBookRatings] = useState([]);
   const [availability, setAvailability] = useState(false);
   const [showDetailRating, setShowDetailRating] = useState(false);
   const [showMore, setShowMore] = useState(false);
@@ -25,12 +26,15 @@ const BookDetail = () => {
   const [relatedGenres, setRelatedGenres] = useState([]);
   const reviewInputRef = useRef(null);
 
-  // const reviewed = bookReviews.find((e) =>
-  //   e.reviewInfo.nickname === currentUser ? currentUser.nickname : "BukayoNo77"
-  // );
-
-  console.log("currentUser", currentUser);
-  // console.log("reviewed", reviewed);
+  //Rating
+  const total = bookRatings.reduce((total, num) => {
+    return total + num.count;
+  }, 0);
+  const sum = bookRatings.reduce((total, num) => {
+    return total + num.count * num._id;
+  }, 0);
+  const average = (sum / total).toFixed(1);
+  //
 
   const handleShowMoreDesc = () => {
     setShowMore((prev) => !prev);
@@ -39,7 +43,8 @@ const BookDetail = () => {
   const handleShowDetailRating = () => {
     setShowDetailRating((prev) => !prev);
   };
-  const handleRefreshReviewsData = () => {
+  //get Reviews
+  const handleRefreshReviewsData = useCallback(() => {
     const requestOptions = {
       method: "GET",
       headers: {
@@ -47,10 +52,28 @@ const BookDetail = () => {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     };
-    fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
+    fetch(`http://localhost:5000/review/bookId/${params.id}`, requestOptions)
       .then((res) => res.json())
-      .then((resJson) => setBookReviews(resJson.bookReviews));
-  };
+      .then((resJson) => setBookReviews(resJson));
+  }, [params.id]);
+  //
+
+  //get Ratings
+  const handleRefreshRatingsData = useCallback(() => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
+    fetch(`http://localhost:5000/review/ratings/${params.id}`, requestOptions)
+      .then((res) => res.json())
+      .then((resJson) => {
+        setBookRatings(resJson);
+      });
+  }, [params.id]);
+  //
 
   useEffect(() => {
     const requestOptions = {
@@ -72,14 +95,16 @@ const BookDetail = () => {
           setBook(resJson.info[0]);
           setRelatedGenres(resJson.relatedGenres);
           setRelatedBooks(resJson.relatedBooks);
-          setBookReviews(resJson.bookReviews);
         }
       });
+
+    handleRefreshReviewsData();
+    handleRefreshRatingsData();
 
     return () => {
       loadingData = false;
     };
-  }, [params.id]);
+  }, [params.id, handleRefreshReviewsData, handleRefreshRatingsData]);
 
   return (
     <div>
@@ -117,7 +142,7 @@ const BookDetail = () => {
                 <div className="d-flex align-items-end row  justify-content-around justify-content-lg-start">
                   <div className="mr-2 mb-2 mb-lg-0 col-lg-3">
                     <StarRatings
-                      rating={4}
+                      rating={!isNaN(average) ? Number(average) : 0}
                       starSpacing="3px"
                       numberOfStars={5}
                       starDimension="16px"
@@ -145,13 +170,17 @@ const BookDetail = () => {
                           }}
                           className="position-absolute text-nowrap"
                         >
-                          <BookRating ratings={[10, 6, 5, 4, 3]} />
+                          <BookRating
+                            ratings={bookRatings}
+                            total={total}
+                            average={!isNaN(average) ? Number(average) : 0}
+                          />
                         </div>
                       ) : null}
                     </div>
                   </div>
                   <div className="col-12 col-lg-3 text-left pl-lg-0 fw-bold">
-                    {book.reviews.length + " reviews"}
+                    {total + " reviews"}
                   </div>
                 </div>
                 <div className="my-1 d-flex flex-column flex-lg-row align-items-center pr-2 align-items-lg-center ">
@@ -200,7 +229,11 @@ const BookDetail = () => {
                   <h5 className="px-0 py-2 fw-bold">Community reviews</h5>
                 </div>
                 <div
-                  onClick={() => reviewInputRef.current.scrollIntoView()}
+                  onClick={() =>
+                    reviewInputRef.current !== null
+                      ? reviewInputRef.current.scrollIntoView()
+                      : null
+                  }
                   style={{ cursor: "pointer" }}
                   className="font-italic col-12 p-0 col-lg-4 d-flex justify-content-center align-items-center"
                 >
@@ -220,25 +253,27 @@ const BookDetail = () => {
                         <Activity
                           key={idx}
                           inPage="book-detail"
-                          username={review.reviewInfo.nickname}
+                          username={review.userInfo[0].nickname}
                           bookName={book.title}
                           authors={book.authors}
-                          rating={review.reviewInfo.reviews.rating}
-                          cover={review.reviewInfo.avatar}
-                          review={review.reviewInfo.reviews.content}
-                          date={review.reviewInfo.reviews.date.slice(0, 10)}
+                          rating={review.rating}
+                          cover={review.userInfo[0].avatar}
+                          review={review.content}
+                          date={review.date.slice(0, 10)}
                         />
                       );
                     })}
                   </>
                 )}
               </div>
+
               {currentUser ? (
                 bookReviews.find(
-                  (e) => e.reviewInfo.nickname === currentUser.nickname
+                  (e) => e.userInfo[0].nickname === currentUser.nickname
                 ) === undefined ? (
                   <div ref={reviewInputRef}>
                     <AddReviewForm
+                      refreshRatingsData={handleRefreshRatingsData}
                       refreshReviewsData={handleRefreshReviewsData}
                       bookId={book._id}
                     />
@@ -247,6 +282,7 @@ const BookDetail = () => {
               ) : (
                 <div ref={reviewInputRef}>
                   <AddReviewForm
+                    refreshRatingsData={handleRefreshRatingsData}
                     refreshReviewsData={handleRefreshReviewsData}
                     bookId={book._id}
                   />

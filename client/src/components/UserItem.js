@@ -5,10 +5,15 @@ import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 const UserItem = ({ user, inRank, idx }) => {
   return (
     <div
-      className="justify-content-start px-3 py-2 mx-1 row mb-2"
+      className="justify-content-start px-3 py-2 mx-1 row mb-3 mb-lg-2"
       style={
         inRank
-          ? null
+          ? {
+              borderRadius: "5px",
+              background: "#F4F1EA",
+              boxShadow:
+                "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",
+            }
           : {
               boxShadow:
                 "rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px",

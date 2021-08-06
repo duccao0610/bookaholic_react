@@ -36,9 +36,7 @@ const PersonalInfo = ({
 
     socketRef.emit("updateProfile", "profile update");
     socketRef.on("updateCurrentUser", () => {
-      handleUpdateCurrentUser(
-        JSON.parse(sessionStorage.getItem("currentUser")).id
-      );
+      handleUpdateCurrentUser();
       console.log("updated");
     });
 
@@ -108,7 +106,7 @@ const PersonalInfo = ({
   const prevVoteStatusRef = useRef();
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser.votedUsersList) {
       const searchVotedUsersList = currentUser.votedUsersList.findIndex(
         (item) => item.username === username
       );
@@ -122,7 +120,7 @@ const PersonalInfo = ({
         setVoteStatus("notVote");
       }
     }
-  }, [currentUser, username]);
+  }, [currentUser, username, isMyProfile]);
 
   const handleVote = (newVoteStatus) => {
     prevVoteStatusRef.current = voteStatus;
@@ -166,9 +164,7 @@ const PersonalInfo = ({
         }),
       })
         .then(() => {
-          handleUpdateCurrentUser(
-            JSON.parse(sessionStorage.getItem("currentUser")).id
-          );
+          handleUpdateCurrentUser();
         })
         .then(() => {
           setShouldFetchVote(false);
@@ -223,9 +219,7 @@ const PersonalInfo = ({
                       handleUploadAvatar(e);
                       socketRef.emit("updateAvatar", "Avatar update");
                       socketRef.on("updateCurrentUser", () => {
-                        handleUpdateCurrentUser(
-                          JSON.parse(sessionStorage.getItem("currentUser")).id
-                        );
+                        handleUpdateCurrentUser();
                       });
                     }}
                   />

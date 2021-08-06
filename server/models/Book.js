@@ -8,7 +8,6 @@ const BookSchema = mongoose.Schema({
     type: Number,
     default: 0,
   },
-  reviews: [String],
   owners: [String],
   cover: String,
   description: String,

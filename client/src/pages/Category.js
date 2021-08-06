@@ -33,7 +33,10 @@ const Category = () => {
         </div>
       ) : (
         <div className="min-vh-100">
-          <ol className="breadcrumb fs-5 fw-bold bg-white pt-4 pl-lg-5">
+          <ol
+            className="breadcrumb fs-5 fw-bold pt-4 pl-lg-5"
+            style={{ background: "#f7f7fa" }}
+          >
             <li className="breadcrumb-item">Category</li>
             <li className="breadcrumb-item text-primary">{params.category}</li>
           </ol>

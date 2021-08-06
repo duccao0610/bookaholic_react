@@ -22,11 +22,13 @@ function App() {
   const expTimeTemp = sessionStorage.getItem("expTime");
   const [expTime, setExpTime] = useState(expTimeTemp ? expTimeTemp : undefined);
   const currentTemp = JSON.parse(sessionStorage.getItem("currentUser"));
-  const [currentUser, setCurrentUser] = useState(currentTemp ? {} : null);
   const [alertVisibility, setAlertVisibility] = useState(false);
   const [alertType, setAlertType] = useState();
   const [alertStatus, setAlertStatus] = useState();
   const [alertDetail, setAlertDetail] = useState();
+  //currentUser
+  const [currentUser, setCurrentUser] = useState(currentTemp ? {} : null);
+  const [triggerFetch, setTriggerFetch] = useState(false);
 
   useEffect(() => {
     socketRef.current = io("http://localhost:5000");
@@ -34,10 +36,18 @@ function App() {
     socketRef.current.on("setCurrentUser", () => {
       const current = JSON.parse(sessionStorage.getItem("currentUser"));
       if (current) {
-        handleUpdateCurrentUser(current.id);
+        // handleUpdateCurrentUser(current.id);
+        fetch(`http://localhost:5000/user/id/${current.id}`)
+          .then((res) => res.json())
+          .then((resJson) => {
+            if (resJson.message === true) {
+              console.log("CURRENT", resJson);
+              setCurrentUser(resJson.user[0]);
+            }
+          });
       }
     });
-  }, []);
+  }, [triggerFetch]);
 
   const showAlert = (type, status, detail) => {
     setAlertVisibility(true);
@@ -76,15 +86,16 @@ function App() {
   //   };
   // }, []);
 
-  const handleUpdateCurrentUser = (userId) => {
-    fetch(`http://localhost:5000/user/id/${userId}`)
-      .then((res) => res.json())
-      .then((resJson) => {
-        if (resJson.message === true) {
-          console.log("CURRENT", resJson);
-          setCurrentUser(resJson.user[0]);
-        }
-      });
+  const handleUpdateCurrentUser = () => {
+    // fetch(`http://localhost:5000/user/id/${userId}`)
+    //   .then((res) => res.json())
+    //   .then((resJson) => {
+    //     if (resJson.message === true) {
+    //       console.log("CURRENT", resJson);
+    //       setCurrentUser(resJson.user[0]);
+    //     }
+    //   });
+    setTriggerFetch((prev) => !prev);
   };
 
   useEffect(() => {
