@@ -7,6 +7,7 @@ import ReactPaginate from "react-paginate";
 import PersonalInfo from "../components/PersonalInfo";
 import Shelf from "../components/Shelf";
 import UserContext from "../context/userContext";
+import AddFriendStatus from '../components/AddFriendStatus';
 const Profile = () => {
 
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,7 @@ const Profile = () => {
   const params = useParams();
   const userDataRef = useRef();
   const { currentUser } = useContext(UserContext);
+
   useEffect(() => {
     setLoading(true);
     fetch(`http://localhost:5000/user/${params.username}`)
@@ -130,8 +132,10 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          <div className="d-none d-sm-none d-md-inline-block d-lg-inline-block col-md-3 col-lg-4 bg-warning">
-            Right panel
+          <div className="d-none d-sm-none d-md-inline-block d-lg-inline-block col-md-3 col-lg-4">
+            {currentUser.username === user.username ? null : (
+              <AddFriendStatus nickname={user.nickname} sender={currentUser.username} />
+            )}
           </div>
         </div>
       )}

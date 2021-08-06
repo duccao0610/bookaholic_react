@@ -31,6 +31,9 @@ io.on("connection", (socket) => {
     console.log(data);
     socket.emit("updateCurrentUser");
   });
+  socket.on("sendFriendRequest", (data) => {
+    socket.broadcast.emit("receiveFriendRequest", data);
+  });
 });
 
 //Connect MongoDB

@@ -30,6 +30,7 @@ const userSchema = mongoose.Schema({
     },
   ],
   salt: String,
+  pendingFriendRequests: [{ sender: String, receiver: String }]
 });
 
 //Create class with custom methods

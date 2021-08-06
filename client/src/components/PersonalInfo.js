@@ -76,7 +76,6 @@ const PersonalInfo = ({
   const [displayAvatar, setDisplayAvatar] = useState(avatar);
   const handleUploadAvatar = (event) => {
     const inputFile = event.target.files[0];
-    console.log(inputFile.size);
 
     // Check file size
     if (inputFile.size > 5 * 1024 * 1024) {
@@ -108,7 +107,7 @@ const PersonalInfo = ({
   const prevVoteStatusRef = useRef();
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser.votedUsersList) {
       const searchVotedUsersList = currentUser.votedUsersList.findIndex(
         (item) => item.username === username
       );
@@ -175,6 +174,7 @@ const PersonalInfo = ({
           showAlert("vote", "success");
         });
     }
+    return () => { }
   }, [triggerFetchVote]);
 
   switch (inPage) {

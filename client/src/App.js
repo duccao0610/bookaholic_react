@@ -37,6 +37,9 @@ function App() {
         handleUpdateCurrentUser(current.id);
       }
     });
+    socketRef.current.on("receiveFriendRequest", (data) => {
+      console.log(data);
+    });
   }, []);
 
   const showAlert = (type, status, detail) => {

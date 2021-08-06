@@ -6,6 +6,7 @@ import {
   Image,
   Dropdown,
 } from "react-bootstrap";
+import { AiOutlineNotification } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import Logo from "../Logo1.png";
 import { useState } from "react";
@@ -15,7 +16,7 @@ import { useEffect, useContext } from "react";
 import SearchResultsOverlay from "./SearchResultsOverlay";
 import UserContext from "../context/userContext";
 const NavBar = () => {
-  const { currentUser, setCurrentUser, setExpTime } = useContext(UserContext);
+  const { currentUser, setCurrentUser, setExpTime, socketRef } = useContext(UserContext);
   const history = useHistory();
   const { pathname, key } = useLocation();
   const [resultsVisibility, setResultsVisibility] = useState(false);
@@ -62,9 +63,8 @@ const NavBar = () => {
         <img style={{ width: "100px" }} alt="" src={Logo} />
       </Link>
       <div
-        className={`${
-          currentUser ? "col-2" : "col-7"
-        } col-lg-7 col-md-6 p-0 mx-auto row px-0`}
+        className={`${currentUser ? "col-2" : "col-7"
+          } col-lg-7 col-md-6 p-0 mx-auto row px-0`}
       >
         <Form inline className="col-12 col-lg-6 col-md-9 px-0">
           <div className="form_control w-100">
@@ -77,9 +77,8 @@ const NavBar = () => {
             />
             {resultsVisibility ? (
               <div
-                className={`search_overlay_container ${
-                  currentUser ? "overlay_current_user" : ""
-                }`}
+                className={`search_overlay_container ${currentUser ? "overlay_current_user" : ""
+                  }`}
               >
                 <SearchResultsOverlay searchValue={clearedSearchValue} />
               </div>
@@ -89,13 +88,12 @@ const NavBar = () => {
       </div>
       <Link
         to={pathname === "/auth/login" ? "/auth/register" : "/auth/login"}
-        className={`mx-auto p-0 col-lg-1 col-0 col-md-2 ${
-          pathname === "/auth/register"
-            ? "d-md-inline-block d-none"
-            : pathname === "/auth/login"
+        className={`mx-auto p-0 col-lg-1 col-0 col-md-2 ${pathname === "/auth/register"
+          ? "d-md-inline-block d-none"
+          : pathname === "/auth/login"
             ? "d-md-inline-block d-none"
             : "d-none"
-        }`}
+          }`}
       >
         <Button
           className="w-100 btn_auth px-0 "
@@ -122,6 +120,15 @@ const NavBar = () => {
               src={currentUser.avatar}
               style={{ objectFit: "contain" }}
             />
+            <div className='position-relative fs-3 d-inline-flex'>
+              <AiOutlineNotification />
+              <div className='p-1 position-absolute rounded-pill bg-danger d-flex align-items-center justify-content-center'
+                style={{ width: 'auto', height: '1.2rem', left: '60%', bottom: '50%' }}>
+                <span className='text-white' style={{ fontSize: '.8rem' }}>
+                  {currentUser.pendingFriendRequests ? currentUser.pendingFriendRequests.length : null}
+                </span>
+              </div>
+            </div>
             <Dropdown.Toggle
               variant="success"
               id="dropdown-basic"
@@ -138,13 +145,12 @@ const NavBar = () => {
       ) : (
         <Link
           to="/auth/login"
-          className={`mx-auto p-0 col-lg-1 col-0 col-md-2 ${
-            pathname === "/auth/login"
-              ? "d-none"
-              : pathname === "/auth/register"
+          className={`mx-auto p-0 col-lg-1 col-0 col-md-2 ${pathname === "/auth/login"
+            ? "d-none"
+            : pathname === "/auth/register"
               ? "d-none"
               : "d-md-inline-block d-none"
-          }`}
+            }`}
         >
           <Button
             className="w-75 btn_auth px-0 "

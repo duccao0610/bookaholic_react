@@ -4,7 +4,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const getRecapInfoById = async (req, res) => {
   const user = await User.find(
     { _id: ObjectId(req.params.id) },
-    "nickname username userRate friends avatar owning votedUsersList"
+    "nickname username userRate friends avatar owning votedUsersList pendingFriendRequests"
   );
   if (user) {
     res.json({ user: user, message: true });
@@ -350,6 +350,24 @@ const getTopUsers = async (req, res) => {
   }
 };
 
+const sendFriendRequest = async (req, res) => {
+  try {
+    await User.updateMany(
+      {
+        username: { $in: [req.body.sender, req.body.receiver] }
+      },
+      {
+        $push: {
+          pendingFriendRequests: req.body
+        }
+      }
+    );
+    res.json({ request: req.body });
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
 module.exports = {
   getTopUsers,
   getUsersBySearch,
@@ -366,5 +384,6 @@ module.exports = {
   deleteBookOnShelf,
   editShelfName,
   addReview,
-  voteUser
+  voteUser,
+  sendFriendRequest
 };
