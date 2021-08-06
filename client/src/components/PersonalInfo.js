@@ -15,8 +15,7 @@ const PersonalInfo = ({
   downvote,
   upvote,
 }) => {
-  const { currentUser, handleUpdateCurrentUser, socketRef } =
-    useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser } = useContext(UserContext);
 
   const [editProfileBtn, setEditProfileBtn] = useState(true);
 
@@ -34,13 +33,7 @@ const PersonalInfo = ({
       }).catch((err) => console.log(err));
     }
 
-    socketRef.emit("updateProfile", "profile update");
-    socketRef.on("updateCurrentUser", () => {
-      handleUpdateCurrentUser(
-        JSON.parse(sessionStorage.getItem("currentUser")).id
-      );
-      console.log("updated");
-    });
+    handleUpdateCurrentUser();
 
     setEditProfileBtn(!editProfileBtn);
   };
@@ -108,7 +101,7 @@ const PersonalInfo = ({
   const prevVoteStatusRef = useRef();
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser.votedUsersList) {
       const searchVotedUsersList = currentUser.votedUsersList.findIndex(
         (item) => item.username === username
       );
@@ -122,7 +115,7 @@ const PersonalInfo = ({
         setVoteStatus("notVote");
       }
     }
-  }, [currentUser, username]);
+  }, [currentUser, username, isMyProfile]);
 
   const handleVote = (newVoteStatus) => {
     prevVoteStatusRef.current = voteStatus;
@@ -166,9 +159,7 @@ const PersonalInfo = ({
         }),
       })
         .then(() => {
-          handleUpdateCurrentUser(
-            JSON.parse(sessionStorage.getItem("currentUser")).id
-          );
+          handleUpdateCurrentUser();
         })
         .then(() => {
           setShouldFetchVote(false);
@@ -221,12 +212,7 @@ const PersonalInfo = ({
                     className="d-none"
                     onChange={(e) => {
                       handleUploadAvatar(e);
-                      socketRef.emit("updateAvatar", "Avatar update");
-                      socketRef.on("updateCurrentUser", () => {
-                        handleUpdateCurrentUser(
-                          JSON.parse(sessionStorage.getItem("currentUser")).id
-                        );
-                      });
+                      handleUpdateCurrentUser();
                     }}
                   />
                 </>

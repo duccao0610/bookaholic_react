@@ -61,12 +61,21 @@ const Home = () => {
             <Tabs
               variant="pills"
               defaultActiveKey="trending"
-              className="row tabs_container "
+              className="row tabs_container w-100 justify-content-center"
             >
+              <Tab
+                eventKey="info"
+                title="Info"
+                tabClassName="d-flex justify-content-center col-3 d-md-none"
+              >
+                <div className="d-md-none">
+                  <ProfileRecap />
+                </div>
+              </Tab>
               <Tab
                 eventKey="feeds"
                 title="Feeds"
-                tabClassName="d-flex justify-content-center col-6"
+                tabClassName="d-flex justify-content-center col-md-2 col-3"
               >
                 <div className="tab_feeds_content mt-3 w-100 d-flex flex-column">
                   <Activity
@@ -90,7 +99,7 @@ const Home = () => {
               <Tab
                 eventKey="trending"
                 title="Trending"
-                tabClassName="col-6 d-flex justify-content-center"
+                tabClassName="col-3 col-md-2 d-flex justify-content-center"
               >
                 <div className="tab_trending_content mt-3 text-center">
                   {loading ? (
@@ -115,6 +124,16 @@ const Home = () => {
                       </Row>
                     </Container>
                   )}
+                </div>
+              </Tab>
+
+              <Tab
+                eventKey="ranking"
+                title="Ranking"
+                tabClassName="d-flex justify-content-center col-3 d-md-none"
+              >
+                <div className="d-md-none">
+                  <TopUsers onTab />
                 </div>
               </Tab>
             </Tabs>

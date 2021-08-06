@@ -2,12 +2,13 @@ const Book = require("../models/Book.js");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const getBooksTrending = async (req, res) => {
-  //receive data from prev middleware via req
-  console.log("USER", req.user);
   try {
-    const books = await Book.find({
-      $expr: { $lt: [0.5, { $rand: {} }] },
-    }).limit(10);
+    const books = await Book.find(
+      {
+        $expr: { $lt: [0.5, { $rand: {} }] },
+      },
+      "title cover categories averageRating authors"
+    ).limit(10);
     res.status(200).json({ books: books, message: true });
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -39,46 +40,10 @@ const getBookDetail = async (req, res) => {
       $expr: { $lt: [0.5, { $rand: {} }] },
     }).limit(10);
 
-    const bookReviews = await Book.aggregate([
-      { $match: { _id: ObjectId(req.params.id) } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "reviews.book",
-          as: "reviewInfo",
-        },
-      },
-      {
-        $project: {
-          "reviewInfo.username": 1,
-          "reviewInfo.nickname": 1,
-          "reviewInfo.avatar": 1,
-          "reviewInfo.reviews": 1,
-        },
-      },
-      {
-        $unwind: {
-          path: "$reviewInfo",
-        },
-      },
-      {
-        $unwind: {
-          path: "$reviewInfo.reviews",
-        },
-      },
-      {
-        $match: {
-          "reviewInfo.reviews.book": ObjectId(req.params.id),
-        },
-      },
-    ]);
-
     const bookInfo = {
       info: book,
       relatedGenres: relatedCategories,
       relatedBooks: relatedBooks,
-      bookReviews: bookReviews,
     };
     res.status(200).json(bookInfo);
   } catch (error) {
@@ -149,10 +114,28 @@ const getOtherCategories = async (req, res) => {
   }
 };
 
+const updateAverageRatingById = async (bookId, average) => {
+  try {
+    await Book.updateOne(
+      {
+        _id: ObjectId(bookId),
+      },
+      {
+        $set: {
+          averageRating: average,
+        },
+      }
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 module.exports = {
   getBooksByCategory,
   getBookDetail,
   getBooksBySearch,
   getBooksTrending,
   getOtherCategories,
+  updateAverageRatingById,
 };
