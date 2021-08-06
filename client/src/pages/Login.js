@@ -25,7 +25,7 @@ const Login = () => {
       sessionStorage.setItem("token", loginResData.token);
       sessionStorage.setItem("currentUser", JSON.stringify(loginResData.user));
       sessionStorage.setItem("expTime", loginResData.expireTime);
-      handleUpdateCurrentUser(loginResData.user.id);
+      handleUpdateCurrentUser();
       setExpTime(loginResData.expireTime);
       history.push("/");
     }
@@ -52,10 +52,14 @@ const Login = () => {
   };
 
   useEffect(() => {
+    let loading = true;
     const token = sessionStorage.getItem("token");
-    if (token) {
+    if (token && loading) {
       history.push("/");
     }
+    return () => {
+      loading = false;
+    };
   }, [history]);
 
   return (

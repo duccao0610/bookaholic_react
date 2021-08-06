@@ -232,73 +232,71 @@ const voteUser = async (req, res) => {
     upvoteCount,
     downvoteCount,
     prevVoteStatus,
-    voteStatus
+    voteStatus,
   } = req.body;
   try {
     // Update userRate field of the rated user
-    await User.updateOne({ username: votedUser }, {
-      $set: {
-        userRate: {
-          upvote: upvoteCount,
-          downvote: downvoteCount
-        }
-      }
-    });
-
-    // Update votedUsersList field of the currentUser
-    const getCurrentUser = await User.findOne({ username: currentUser }, { votedUsersList: 1, _id: 0 });
-    let isUpvote = null;
-    if (voteStatus === 'upvote') isUpvote = true;
-    if (voteStatus === 'downvote') isUpvote = false;
-
-    if (prevVoteStatus !== null) {
-      const itemIndexToUpdate = getCurrentUser.votedUsersList.findIndex((item) => item.username === votedUser);
-      console.log("item index: " + itemIndexToUpdate);
-      if (itemIndexToUpdate === -1) {
-        await User.updateOne({ username: currentUser }, {
-          $push: { votedUsersList: { username: votedUser, isUpvote: isUpvote } }
-        });
-      } else if (itemIndexToUpdate > -1) {
-        if (isUpvote === null) {
-          await User.updateOne({ username: currentUser }, {
-            $pull: { votedUsersList: { username: votedUser } }
-          })
-        } else {
-          await User.updateOne({ username: currentUser }, {
-            $set: { [`votedUsersList.${itemIndexToUpdate}.isUpvote`]: isUpvote }
-          });
-        }
-      }
-    }
-
-    res.json({ msg: "UPDATE_VOTE_SUCCESS" })
-
-    console.log(getCurrentUser);
-
-  } catch (err) {
-    throw new Error(err);
-  }
-}
-
-// Add review
-const addReview = async (req, res) => {
-  try {
     await User.updateOne(
-      { _id: req.body.userId },
+      { username: votedUser },
       {
-        $push: {
-          reviews: {
-            rating: req.body.rating,
-            content: req.body.content,
-            book: req.body.bookId,
-            date: new Date(),
+        $set: {
+          userRate: {
+            upvote: upvoteCount,
+            downvote: downvoteCount,
           },
         },
       }
     );
-    res.json({ message: "ADD_REVIEW_SUCCESS" });
+
+    // Update votedUsersList field of the currentUser
+    const getCurrentUser = await User.findOne(
+      { username: currentUser },
+      { votedUsersList: 1, _id: 0 }
+    );
+    let isUpvote = null;
+    if (voteStatus === "upvote") isUpvote = true;
+    if (voteStatus === "downvote") isUpvote = false;
+
+    if (prevVoteStatus !== null) {
+      const itemIndexToUpdate = getCurrentUser.votedUsersList.findIndex(
+        (item) => item.username === votedUser
+      );
+      console.log("item index: " + itemIndexToUpdate);
+      if (itemIndexToUpdate === -1) {
+        await User.updateOne(
+          { username: currentUser },
+          {
+            $push: {
+              votedUsersList: { username: votedUser, isUpvote: isUpvote },
+            },
+          }
+        );
+      } else if (itemIndexToUpdate > -1) {
+        if (isUpvote === null) {
+          await User.updateOne(
+            { username: currentUser },
+            {
+              $pull: { votedUsersList: { username: votedUser } },
+            }
+          );
+        } else {
+          await User.updateOne(
+            { username: currentUser },
+            {
+              $set: {
+                [`votedUsersList.${itemIndexToUpdate}.isUpvote`]: isUpvote,
+              },
+            }
+          );
+        }
+      }
+    }
+
+    res.json({ msg: "UPDATE_VOTE_SUCCESS" });
+
+    console.log(getCurrentUser);
   } catch (err) {
-    res.json({ message: err.message });
+    throw new Error(err);
   }
 };
 
@@ -383,7 +381,5 @@ module.exports = {
   deleteShelf,
   deleteBookOnShelf,
   editShelfName,
-  addReview,
   voteUser,
-  sendFriendRequest
 };
