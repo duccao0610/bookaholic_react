@@ -67,6 +67,12 @@ const Alert = ({
               : ""}
           </div>
         );
+      case "friend":
+        return (
+          <div className="alert_message">
+            {status === "fail" ? "Please login first to add friend." : ""}
+          </div>
+        );
       default:
         return;
     }
