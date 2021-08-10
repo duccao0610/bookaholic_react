@@ -1,15 +1,18 @@
 import BookOnShelf from "../components/BookOnShelf";
 import Shelf from "../components/Shelf";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import UserContext from "../context/userContext";
 
 const Shelves = () => {
   const [loading, setLoading] = useState(true);
   const [triggerFetchShelvesList, setTriggerFetchShelvesList] = useState(false);
+  const params = useParams();
+  const { currentUser } = useContext(UserContext);
+  const isMyShelves = currentUser.username === params.username;
 
   // Show shelves list
   const [userShelves, setUserShelves] = useState([]);
-  const params = useParams();
   useEffect(() => {
     fetch(`http://localhost:5000/user/${params.username}/shelves`)
       .then((res) => res.json())
@@ -91,15 +94,21 @@ const Shelves = () => {
   return loading ? (
     <></>
   ) : (
-    <div className='d-md-flex container px-0'>
+    <div className='d-md-flex container px-0 py-3'>
       <div
         id='left-panel'
-        className='col-md-3 d-flex flex-column align-items-center align-items-md-start'>
-        <div>ALL SHELVES</div>
+        className='col-md-3 d-flex flex-column align-items-center align-items-md-start border rounded py-3'
+        style={{
+          background: "rgba(244, 241, 234,0.3)",
+          boxShadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px",
+        }}
+      >
+        <div className='fw-bold'>ALL SHELVES</div>
         <div>
           <div
             id='shelves-list'
-            className='d-flex flex-column align-items-start'>
+            className='d-flex flex-column align-items-start'
+          >
             {userShelves.map((item, i) => {
               return (
                 <Shelf
@@ -108,6 +117,7 @@ const Shelves = () => {
                   shelfId={item._id}
                   onShowBooksOnShelf={handleShowBooksOnShelf}
                   onDeleteShelf={handleDeleteShelf}
+                  isMyShelves={isMyShelves}
                 />
               );
             })}
@@ -125,7 +135,10 @@ const Shelves = () => {
             )}
           </div>
         </div>
-        <div className='btn btn-sm btn-primary' onClick={handleAddShelf}>
+        <div
+          className={isMyShelves ? "btn btn-sm btn-primary" : "d-none"}
+          onClick={handleAddShelf}
+        >
           {addShelfBtn ? "Add a shelf" : "Save"}
         </div>
       </div>
@@ -150,6 +163,7 @@ const Shelves = () => {
                   book={item}
                   shelfId={currShowingShelf.shelfId}
                   onDeleteBookOnShelf={handleDeleteBookOnShelf}
+                  isMyShelves={isMyShelves}
                 />
               );
             })}

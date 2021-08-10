@@ -27,24 +27,43 @@ function App() {
   const [alertStatus, setAlertStatus] = useState();
   const [alertDetail, setAlertDetail] = useState();
   //currentUser
-  const [currentUser, setCurrentUser] = useState(currentTemp ? {} : null);
+  const [currentUser, setCurrentUser] = useState(currentTemp);
   const [triggerFetch, setTriggerFetch] = useState(false);
+  const currentUserRef = useRef();
 
   useEffect(() => {
     socketRef.current = io("http://localhost:5000");
-    socketRef.current.emit("hello", "world");
     const current = JSON.parse(sessionStorage.getItem("currentUser"));
     if (current) {
       fetch(`http://localhost:5000/user/id/${current.id}`)
         .then((res) => res.json())
         .then((resJson) => {
           if (resJson.message === true) {
-            console.log("CURRENT", resJson);
+            console.log("CURRENT", resJson.user[0]);
             setCurrentUser(resJson.user[0]);
+            currentUserRef.current = resJson.user[0];
           }
         });
+      socketRef.current.emit("setOnline", current.username);
     }
   }, [triggerFetch]);
+
+  useEffect(() => {
+    socketRef.current.on(
+      "receiveFriendReq",
+      (senderUsername, receiverUsername) => {
+        if (currentUser.pendingFriendRequests) {
+          const updateForCurrentUser = { ...currentUser };
+          updateForCurrentUser.pendingFriendRequests.push({
+            senderUsername: senderUsername,
+            receiverUsername: receiverUsername,
+          });
+          setCurrentUser(updateForCurrentUser);
+        }
+        handleUpdateCurrentUser();
+      }
+    );
+  }, [currentUser]);
 
   const showAlert = (type, status, detail) => {
     setAlertVisibility(true);
@@ -66,7 +85,7 @@ function App() {
   };
 
   const handleUpdateCurrentUser = () => {
-    setTriggerFetch((prev) => !prev);
+    setTriggerFetch(!triggerFetch);
   };
 
   useEffect(() => {
@@ -93,11 +112,11 @@ function App() {
         setExpTime: handleSetExpTime,
       }}
     >
-      <div className="App bg-white min-vh-100  border border-light px-0">
+      <div className='App bg-white min-vh-100  border border-light px-0'>
         {pathname === "/" && !sessionStorage.getItem("token") ? null : (
           <NavBar />
         )}
-        <div className="content">
+        <div className='content'>
           <Alert
             alertClose={alertClose}
             alertVisibility={alertVisibility}
@@ -105,16 +124,16 @@ function App() {
             alertStatus={alertStatus}
             alertDetail={alertDetail}
           />
-          <Route path="/user/:username/shelves" component={Shelves} />
-          <Route path="/user/:username" exact component={Profile} />
+          <Route path='/user/:username/shelves' component={Shelves} />
+          <Route path='/user/:username' exact component={Profile} />
           <Route
-            path="/book/:id"
+            path='/book/:id'
             render={() => <BookDetail key={Date.now()} />}
           />
-          <Route path="/category/:category" component={Category} />
-          <Route path="/auth/login" component={Login} />
-          <Route path="/auth/register" component={Register} />
-          <Route path="/" exact component={Home} />
+          <Route path='/category/:category' component={Category} />
+          <Route path='/auth/login' component={Login} />
+          <Route path='/auth/register' component={Register} />
+          <Route path='/' exact component={Home} />
         </div>
         {pathname === "/auth/login" ? null : pathname ===
           "/auth/register" ? null : (

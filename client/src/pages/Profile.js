@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import { Link, useParams } from "react-router-dom";
 
@@ -7,18 +7,25 @@ import ReactPaginate from "react-paginate";
 import PersonalInfo from "../components/PersonalInfo";
 import Shelf from "../components/Shelf";
 import UserContext from "../context/userContext";
+import AddFriendStatus from "../components/AddFriendStatus";
 const Profile = () => {
+
+  const { currentUser, socketRef, setCurrentUser, handleUpdateCurrentUser } =
+    useContext(UserContext);
+  const isCurrentUserDataLoaded =
+    currentUser && currentUser.friends && currentUser.pendingFriendRequests;
+
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
-  const userDataRef = useRef();
-  const { currentUser } = useContext(UserContext);
+  const [userData, setUserData] = useState({});
+
   useEffect(() => {
     setLoading(true);
     fetch(`http://localhost:5000/user/${params.username}`)
       .then((res) => res.json())
       .then((resJson) => {
-        userDataRef.current = resJson;
+        setUserData(resJson);
         setLoading(false);
       });
   }, [params.username]);
@@ -41,6 +48,7 @@ const Profile = () => {
   //
   const user = userDataRef.current;
 
+
   const shelvesPerGroup = 4;
   const [activeShelvesGroup, setActiveShelvesGroup] = useState(0);
 
@@ -49,50 +57,92 @@ const Profile = () => {
     setActiveShelvesGroup(clickedGroup.selected);
   };
 
+  const [friendStatus, setFriendStatus] = useState("noAction");
+
+  useEffect(() => {
+    if (isCurrentUserDataLoaded) {
+      const findInFriends = currentUser.friends.filter(
+        (item) => item._id === userData._id
+      ).length;
+      if (findInFriends > 0) setFriendStatus("friend");
+      const findIfSender = currentUser.pendingFriendRequests.filter(
+        (item) => item.senderUsername === userData.username
+      ).length;
+      if (findIfSender > 0) setFriendStatus("reqReceived");
+      const findIfReceiver = currentUser.pendingFriendRequests.filter(
+        (item) => item.receiverUsername === userData.username
+      ).length;
+      if (findIfReceiver > 0) setFriendStatus("reqSent");
+    }
+  }, [currentUser]);
+
+  const handleSendFriendReq = () => {
+    socketRef.emit(
+      "sendFriendReq",
+      currentUser.username,
+      userData.username,
+      currentUser._id
+    );
+
+    const pendingFriendReq = {
+      senderUsername: currentUser.username,
+      receiverUsername: userData.username,
+      senderId: currentUser._id,
+    };
+
+    const updateForCurrentUser = { ...currentUser };
+    updateForCurrentUser.pendingFriendRequests.push(pendingFriendReq);
+    setCurrentUser(updateForCurrentUser);
+
+    const updateForDisplayingUser = { ...userData };
+    updateForDisplayingUser.pendingFriendRequests.push(pendingFriendReq);
+    setUserData(updateForDisplayingUser);
+
+    setFriendStatus("reqSent");
+    handleUpdateCurrentUser();
+  };
+
   return (
     <div>
       {loading ? (
         <div></div>
       ) : (
-        <div className="d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center container px-0 pt-3">
+        <div className='d-flex col-12 col-sm-12 col-md-12 col-lg-8 justify-content-center container px-0 pt-3'>
           <div
-            id="profile-main-content"
-            className="col-sm-12 col-md-9 col-lg-8"
+            id='profile-main-content'
+            className='col-sm-12 col-md-9 col-lg-8'
           >
             <PersonalInfo
-              id="1"
-              inPage="profile"
-              avatar={user.avatar}
-              upvote={user.userRate.upvote}
-              downvote={user.userRate.downvote}
-              nickname={user.nickname}
-              owningQuant={user.owning.length}
+              id='1'
+              inPage='profile'
+              avatar={userData.avatar}
+              upvote={userData.userRate.upvote}
+              downvote={userData.userRate.downvote}
+              nickname={userData.nickname}
+              owningQuant={userData.owning.length}
               reviewsQuant={120}
-              bio={user.bio}
-              username={user.username}
-              isMyProfile={
-                currentUser ? currentUser.username === user.username : false
-              }
+              bio={userData.bio}
+              username={userData.username}
+              isMyProfile={currentUser.username === userData.username}
             />
-            <div id="book-shelves" className="mb-3">
+            <div id='book-shelves' className='mb-3'>
               <div
-                id="book-shelves-header"
-                className="d-flex justify-content-between align-items-end border-bottom"
+                id='book-shelves-header'
+                className='d-flex justify-content-between align-items-end border-bottom'
               >
-                <div className="text-uppercase fw-bold">bookshelves</div>
-                {currentUser === null ||
-                currentUser.username !== user.username ? null : (
+                <div className='text-uppercase fw-bold'>bookshelves</div>
+                {currentUser === null ? null : (
                   <Link
                     style={{ background: "#5a3434" }}
-                    className="btn btn-sm mb-1 text-white"
+                    className='btn btn-sm mb-1 text-white'
                     to={`/user/${params.username}/shelves`}
                   >
-                    Custom my shelves
+                    More detail
                   </Link>
                 )}
               </div>
-              <div className="d-flex my-3">
-                {[...user.shelves]
+              <div className='d-flex my-3'>
+                {[...userData.shelves]
                   .slice(
                     activeShelvesGroup * shelvesPerGroup,
                     activeShelvesGroup * shelvesPerGroup + shelvesPerGroup
@@ -101,34 +151,36 @@ const Profile = () => {
                     return (
                       <Shelf
                         key={i}
-                        inPage="profile"
+                        inPage='profile'
                         shelfName={item.shelfName}
                       />
                     );
                   })}
               </div>
 
-              <div className="w-100 d-flex justify-content-center">
+              <div className='w-100 d-flex justify-content-center'>
                 <ReactPaginate
-                  pageCount={Math.ceil(user.shelves.length / shelvesPerGroup)}
+                  pageCount={Math.ceil(
+                    userData.shelves.length / shelvesPerGroup
+                  )}
                   pageRangeDisplayed={shelvesPerGroup}
                   marginPagesDisplayed={1}
-                  containerClassName="d-flex align-items-center"
-                  previousClassName="fw-bold py-0 px-2 me-2 btn btn-primary"
-                  previousLabel="Prev"
-                  nextClassName="fw-bold py-0 px-2 ms-2 btn btn-primary"
-                  nextLabel="Next"
-                  pageClassName="list-group-item fw-bold py-0 px-2"
-                  breakClassName="list-group-item fw-bold py-0 px-2"
-                  activeClassName="active"
+                  containerClassName='d-flex align-items-center'
+                  previousClassName='fw-bold py-0 px-2 me-2 btn btn-primary'
+                  previousLabel='Prev'
+                  nextClassName='fw-bold py-0 px-2 ms-2 btn btn-primary'
+                  nextLabel='Next'
+                  pageClassName='list-group-item fw-bold py-0 px-2'
+                  breakClassName='list-group-item fw-bold py-0 px-2'
+                  activeClassName='active'
                   onPageChange={handleClickShelvesList}
                 />
               </div>
             </div>
-            <div id="recent-activities">
+            <div id='recent-activities'>
               <div
-                id="activities-header"
-                className="text-uppercase fw-bold border-bottom"
+                id='activities-header'
+                className='text-uppercase fw-bold border-bottom'
               >
                 {`${user.nickname}'s recent activities`}
               </div>
@@ -152,8 +204,14 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          <div className="d-none d-sm-none d-md-inline-block d-lg-inline-block col-md-3 col-lg-4 bg-warning">
-            Right panel
+          <div className='d-none d-sm-none d-md-inline-block d-lg-inline-block col-md-3 col-lg-4'>
+            {currentUser.username === userData.username ? null : (
+              <AddFriendStatus
+                nickname={userData.nickname}
+                friendStatus={friendStatus}
+                onSendFriendReq={handleSendFriendReq}
+              />
+            )}
           </div>
         </div>
       )}
