@@ -6,7 +6,7 @@ const Shelf = ({
   shelfName,
   shelfId,
   inPage,
-
+  isMyShelves,
   onShowBooksOnShelf,
   onDeleteShelf,
 }) => {
@@ -57,15 +57,19 @@ const Shelf = ({
     // default = Shelves page
     default:
       return (
-        <div className='d-flex justify-content-between'>
-          <div className='d-flex align-items-center'>
-            <div className='pointer me-2' onClick={handleEditShelfName}>
+        <div className='d-flex justify-content-between border-bottom my-1 py-2 w-100'>
+          <div className='d-flex align-items-start'>
+            <div
+              className={isMyShelves ? "pointer me-1 p-0 align-top" : "d-none"}
+              onClick={handleEditShelfName}
+            >
               {editShelfNameBtn ? <FaEdit /> : <FaCheckSquare />}
             </div>
             {editShelfNameBtn ? (
               <div
                 className='text-decoration-underline pointer pt-0'
-                onClick={handleShowBooksOnShelf}>
+                onClick={handleShowBooksOnShelf}
+              >
                 {inputNewShelfNameVal}
               </div>
             ) : (
@@ -77,7 +81,10 @@ const Shelf = ({
               />
             )}
           </div>
-          <div className='pointer ms-3' onClick={handleDeleteShelf}>
+          <div
+            className={isMyShelves ? "pointer p-0" : "d-none"}
+            onClick={handleDeleteShelf}
+          >
             <FaTrashAlt />
           </div>
         </div>
