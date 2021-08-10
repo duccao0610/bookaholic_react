@@ -11,7 +11,6 @@ const TopUsers = ({ onTab }) => {
     fetch(`http://localhost:5000/user/ranking/${top}`)
       .then((res) => res.json())
       .then((resJson) => {
-        console.log("TopUsers", resJson);
         if (loadingData) {
           setLoading(false);
           setTopUsersData(resJson);

@@ -5,6 +5,7 @@ const reviewSchema = mongoose.Schema({
   rating: Number,
   bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book" },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  username: String,
   date: Date,
 });
 

@@ -117,10 +117,10 @@ const NavBar = () => {
             <Image
               width={35}
               height={35}
-              className="rounded-circle border border-dark"
+              className="rounded-circle"
               alt="avatar"
               src={currentUser.avatar}
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "cover" }}
             />
             <Dropdown.Toggle
               variant="success"

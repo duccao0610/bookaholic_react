@@ -101,7 +101,7 @@ const PersonalInfo = ({
   const prevVoteStatusRef = useRef();
 
   useEffect(() => {
-    if (currentUser.votedUsersList) {
+    if (currentUser && currentUser.votedUsersList) {
       const searchVotedUsersList = currentUser.votedUsersList.findIndex(
         (item) => item.username === username
       );
@@ -189,7 +189,7 @@ const PersonalInfo = ({
                   className="border rounded-circle overflow-hidden"
                   width="150px"
                   height="150px"
-                  style={{ objectFit: "contain" }}
+                  style={{ objectFit: "cover" }}
                 />
               </div>
               {isMyProfile ? (
@@ -230,7 +230,7 @@ const PersonalInfo = ({
           <div className="ms-lg-5 w-100">
             <div className="border-bottom pb-2 d-flex justify-content-between">
               {editProfileBtn ? (
-                <h4 className="text-uppercase m-0">{nicknameInputVal}</h4>
+                <h4 className="m-0">{nicknameInputVal}</h4>
               ) : (
                 <input
                   placeholder="Max 10 characters"

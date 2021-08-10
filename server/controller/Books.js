@@ -3,12 +3,30 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const getBooksTrending = async (req, res) => {
   try {
-    const books = await Book.find(
+    const books = await Book.aggregate([
       {
-        $expr: { $lt: [0.5, { $rand: {} }] },
+        $match: {
+          $expr: { $lt: [0.5, { $rand: {} }] },
+          $expr: { $lt: [0, "$averageRating"] },
+        },
       },
-      "title cover categories averageRating authors"
-    ).limit(10);
+      // "title cover categories averageRating authors"
+      {
+        $project: {
+          title: 1,
+          cover: 1,
+          categories: 1,
+          averageRating: 1,
+          authors: 1,
+        },
+      },
+      {
+        $sort: {
+          averageRating: -1,
+        },
+      },
+    ]);
+
     res.status(200).json({ books: books, message: true });
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -53,11 +71,24 @@ const getBookDetail = async (req, res) => {
 
 const getBooksByCategory = async (req, res, next) => {
   try {
-    const books = await Book.find({ categories: req.params.category });
+    const books = await Book.find({ categories: req.params.category }).limit(
+      12
+    );
     res.locals.books = books;
     next();
   } catch (error) {
     res.status(404).json({ message: error.message });
+  }
+};
+
+const getMoreBooksByCategory = async (req, res) => {
+  try {
+    const books = await Book.find({ categories: req.params.category })
+      .skip(Number(req.params.skip))
+      .limit(12);
+    res.json(books);
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -138,4 +169,5 @@ module.exports = {
   getBooksTrending,
   getOtherCategories,
   updateAverageRatingById,
+  getMoreBooksByCategory,
 };

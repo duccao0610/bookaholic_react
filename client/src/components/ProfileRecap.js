@@ -19,9 +19,9 @@ const ProfileRecap = () => {
             top: "-20%",
             left: "50%",
             transform: "translateX(-50%)",
-            objectFit: "contain",
+            objectFit: "cover",
           }}
-          className="rounded-circle border border-dark"
+          className="rounded-circle"
           width="70px"
           height="70px"
           alt="avatar"
