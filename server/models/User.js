@@ -22,7 +22,10 @@ const userSchema = mongoose.Schema({
   votedUsersList: [{ username: String, isUpvote: Boolean }],
   owning: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
   salt: String,
-  pendingFriendRequests: [{ sender: String, receiver: String }]
+  pendingFriendRequests: [
+    { senderUsername: String, receiverUsername: String, senderId: String },
+  ],
+  onlineStatus: { isOnline: Boolean, socketId: String },
 });
 
 //Create class with custom methods

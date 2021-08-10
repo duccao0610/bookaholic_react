@@ -4,6 +4,15 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const router = require("./api");
 const mongoose = require("mongoose");
+const {
+  setOnline,
+  getReceiverSocketId,
+  setOffline,
+} = require("./services/onlineStatus");
+const {
+  updatePendingFriendReq,
+  acceptFriendReq,
+} = require("./services/friendRequest");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,11 +28,35 @@ app.use(router);
 
 io.on("connection", (socket) => {
   console.log("An user connected");
-  socket.on("hello", (data) => {
-    console.log(data);
+  let user;
+  socket.on("setOnline", async (username) => {
+    user = username;
+    await setOnline(username, socket.id);
   });
-  socket.on("sendFriendRequest", (data) => {
-    socket.broadcast.emit("receiveFriendRequest", data);
+
+  socket.on(
+    "sendFriendReq",
+    async (senderUsername, receiverUsername, senderId) => {
+      updatePendingFriendReq(senderUsername, receiverUsername, senderId);
+      const receiverSocketId = await getReceiverSocketId(receiverUsername);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit(
+          "receiveFriendReq",
+          senderUsername,
+          receiverUsername
+        );
+        io.to(receiverSocketId).emit("updateIfInProfilePage");
+      }
+    }
+  );
+
+  socket.on("acceptFriendReq", (senderId, receiverId, requestId) => {
+    acceptFriendReq(senderId, receiverId, requestId);
+  });
+
+  socket.on("disconnect", async () => {
+    await setOffline(user);
+    console.log("An user disconnected");
   });
 });
 

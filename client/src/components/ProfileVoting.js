@@ -1,4 +1,4 @@
-// import { useState, useContext, useEffect } from 'react';
+
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 
 const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {

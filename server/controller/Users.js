@@ -348,7 +348,7 @@ const getTopUsers = async (req, res) => {
   }
 };
 
-const sendFriendRequest = async (req, res) => {
+const sendFriendReq = async (req, res) => {
   try {
     await User.updateMany(
       {
@@ -382,4 +382,5 @@ module.exports = {
   deleteBookOnShelf,
   editShelfName,
   voteUser,
+  sendFriendReq
 };

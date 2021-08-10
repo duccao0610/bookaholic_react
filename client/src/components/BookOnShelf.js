@@ -1,7 +1,7 @@
 import { FaTrashAlt } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 
-const BookOnShelf = ({ book, shelfId, onDeleteBookOnShelf }) => {
+const BookOnShelf = ({ book, shelfId, onDeleteBookOnShelf, isMyShelves }) => {
   const { cover, title, authors, averageRating, _id } = book;
 
   const params = useParams();
@@ -24,7 +24,7 @@ const BookOnShelf = ({ book, shelfId, onDeleteBookOnShelf }) => {
       <td>{title}</td>
       <td>{authors}</td>
       <td>{averageRating}</td>
-      <td>
+      <td className={isMyShelves ? "" : "d-none"}>
         <FaTrashAlt className='pointer' onClick={handleDeleteBookOnShelf} />
       </td>
     </tr>
