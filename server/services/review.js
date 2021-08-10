@@ -1,12 +1,13 @@
 const Review = require("../models/Reviews");
 const { getRatingsToCalculate } = require("../controller/Reviews");
 const { updateAverageRatingById } = require("../controller/Books");
-const addReview = async (content, rating, userId, bookId) => {
+const addReview = async (content, rating, userId, bookId, username) => {
   const review = new Review({
     content: content,
     rating: rating,
     userId: userId,
     bookId: bookId,
+    username: username,
     date: new Date(),
   });
   review.save();

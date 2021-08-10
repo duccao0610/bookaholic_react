@@ -9,10 +9,12 @@ import Shelf from "../components/Shelf";
 import UserContext from "../context/userContext";
 import AddFriendStatus from "../components/AddFriendStatus";
 const Profile = () => {
+
   const { currentUser, socketRef, setCurrentUser, handleUpdateCurrentUser } =
     useContext(UserContext);
   const isCurrentUserDataLoaded =
     currentUser && currentUser.friends && currentUser.pendingFriendRequests;
+
   const [loading, setLoading] = useState(true);
 
   const params = useParams();
@@ -27,6 +29,25 @@ const Profile = () => {
         setLoading(false);
       });
   }, [params.username]);
+
+  //fetch reviews
+  const [reviews, setReviews] = useState([]);
+  useEffect(() => {
+    let isLoading = true;
+    fetch(`http://localhost:5000/review/${params.username}`)
+      .then((res) => res.json())
+      .then((resJson) => {
+        if (isLoading) {
+          setReviews(resJson);
+        }
+      });
+    return () => {
+      isLoading = false;
+    };
+  }, [params.username]);
+  //
+  const user = userDataRef.current;
+
 
   const shelvesPerGroup = 4;
   const [activeShelvesGroup, setActiveShelvesGroup] = useState(0);
@@ -161,19 +182,25 @@ const Profile = () => {
                 id='activities-header'
                 className='text-uppercase fw-bold border-bottom'
               >
-                nickname's recent activities
+                {`${user.nickname}'s recent activities`}
               </div>
-              <div id='activities-list'>
-                <Activity
-                  inPage='profile'
-                  username='Nguyen Khac Hung'
-                  bookName='Chuoi An Mang A.B.C'
-                  authors={["Agatha Christie", "Someone Else"]}
-                  rating={2}
-                  cover='https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1435375133l/25802987._SY475_.jpg'
-                  review='Khi một sát nhân giết người hàng loạt bí danh ABC chế nhạo Poirot bằng những lá thư úp mở và giết người theo thứ tự chữ cái, Poirot tiến hành một phương pháp điều tra bất thường để truy tìm ABC. Chữ A là bà Ascher ờ Andover, B là Betty Barnard ở Bexhill, C là ngài Carmichael Clarke ở Churston. Qua từng vụ án, kẻ giết người càng tự tin hơn - nhưng để lại một vệt manh mối rõ ràng để chế nhạo Hercule Poirot tài ba có thể lại sai lầm đầu tiên và chí tử.'
-                  date='12/07/2021'
-                />
+              <div id="activities-list">
+                {reviews.map((review, idx) => {
+                  return (
+                    <Activity
+                      inPage="profile"
+                      username={user.nickname}
+                      bookName={review.book[0].title}
+                      authors={review.book[0].authors}
+                      rating={review.rating}
+                      cover={review.book[0].cover}
+                      review={review.content}
+                      date={review.date.slice(0, 10)}
+                      bookId={review.bookId}
+                      key={idx}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>

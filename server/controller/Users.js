@@ -39,7 +39,10 @@ const findUserByUsername = async (username) => {
 
 // Find user for loading page
 const getUserByUsername = async (req, res) => {
-  const user = await User.findOne({ username: req.params.username });
+  const user = await User.findOne(
+    { username: req.params.username },
+    "avatar bio friends nickname owning shelves userRate username votedUsersList"
+  );
   if (user) {
     res.json(user);
   } else {

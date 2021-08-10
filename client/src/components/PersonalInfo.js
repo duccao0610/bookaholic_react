@@ -101,6 +101,18 @@ const PersonalInfo = ({
   const searchVotedUsersListRef = useRef()
 
   useEffect(() => {
+
+//     if (currentUser && currentUser.votedUsersList) {
+//       const searchVotedUsersList = currentUser.votedUsersList.findIndex(
+//         (item) => item.username === username
+//       );
+//       if (searchVotedUsersList !== -1) {
+//         if (currentUser.votedUsersList[searchVotedUsersList].isUpvote) {
+//           setVoteStatus("upvote");
+//         } else {
+//           setVoteStatus("downvote");
+//         }
+
     searchVotedUsersListRef.current = currentUser.votedUsersList.findIndex(
       (item) => item.username === username
     );

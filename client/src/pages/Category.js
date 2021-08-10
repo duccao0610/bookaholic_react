@@ -8,6 +8,7 @@ const Category = () => {
   const [loading, setLoading] = useState(true);
   const [booksData, setBooksData] = useState([]);
   const [genresData, setGenresData] = useState([]);
+  const [noMore, setNoMore] = useState(false);
   useEffect(() => {
     let loadingData = true;
     setLoading(true);
@@ -19,12 +20,31 @@ const Category = () => {
           console.log("CategoryData", resJson);
           setBooksData(resJson.books);
           setGenresData(resJson.otherCategories);
+          if (resJson.books.length < 12) {
+            setNoMore(true);
+          }
         }
       });
     return () => {
       loadingData = false;
     };
   }, [params.category]);
+
+  useEffect(() => {
+    setNoMore(false);
+  }, [params.category]);
+
+  const handleLoadMoreBooks = () => {
+    const skip = booksData.length;
+    fetch(`http://localhost:5000/category/${params.category}/skip/${skip}`)
+      .then((res) => res.json())
+      .then((resJson) => {
+        setBooksData((prev) => [...prev, ...resJson]);
+        if (resJson.length < 12) {
+          setNoMore(true);
+        }
+      });
+  };
   return (
     <>
       {loading ? (
@@ -47,6 +67,15 @@ const Category = () => {
                   <BookItem key={book._id} book={book} onlyImage onCategory />
                 );
               })}
+              {!noMore ? (
+                <div
+                  onClick={handleLoadMoreBooks}
+                  className="text-primary text-center font-italic"
+                  style={{ cursor: "pointer" }}
+                >
+                  Load more...
+                </div>
+              ) : null}
             </div>
             <div className="ml-5 d-none d-md-inline-block col-md-3 col-lg-3">
               <RelatedGenres genres={genresData} />

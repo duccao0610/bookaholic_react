@@ -25,6 +25,7 @@ const BookDetail = () => {
   const [relatedBooks, setRelatedBooks] = useState([]);
   const [relatedGenres, setRelatedGenres] = useState([]);
   const reviewInputRef = useRef(null);
+  const [noMore, setNoMore] = useState(false);
 
   //Rating
   const total = bookRatings.reduce((total, num) => {
@@ -55,9 +56,30 @@ const BookDetail = () => {
     };
     fetch(`http://localhost:5000/review/bookId/${params.id}`, requestOptions)
       .then((res) => res.json())
-      .then((resJson) => setBookReviews(resJson));
+      .then(async (resJson) => {
+        await setBookReviews(resJson);
+        if (resJson.length < 3) {
+          setNoMore(true);
+        }
+      });
   }, [triggerFetchReviews, params.id]);
   //
+
+  //handle load more reviews
+  useEffect(() => {
+    setNoMore(false);
+  }, [params.id]);
+  const handleLoadMoreReviews = () => {
+    const skip = bookReviews.length;
+    fetch(`http://localhost:5000/review/bookId/${params.id}/skip/${skip}`)
+      .then((res) => res.json())
+      .then((resJson) => {
+        setBookReviews((prev) => [...prev, ...resJson]);
+        if (resJson.length < 3) {
+          setNoMore(true);
+        }
+      });
+  };
 
   //handleFetchRatings
   const [triggerFetchRatings, setTriggerFetchRatings] = useState(false);
@@ -100,13 +122,29 @@ const BookDetail = () => {
         }
       });
 
-    // handleRefreshReviewsData();
-    // handleRefreshRatingsData();
-
     return () => {
       loadingData = false;
     };
   }, [params.id]);
+
+  //check reviewed
+  const [isReviewed, setIsReviewed] = useState(false);
+  useEffect(() => {
+    if (currentUser && currentUser.username) {
+      fetch(
+        `http://localhost:5000/review/isReviewed/${currentUser.username}/${params.id}`
+      )
+        .then((res) => res.json())
+        .then((resJson) => {
+          console.log("isReviewed", resJson);
+          if (resJson.msg === true) {
+            setIsReviewed(true);
+          } else {
+            setIsReviewed(false);
+          }
+        });
+    }
+  }, [currentUser, params.id, triggerFetchReviews]);
 
   return (
     <div>
@@ -262,41 +300,48 @@ const BookDetail = () => {
                           cover={review.userInfo[0].avatar}
                           review={review.content}
                           date={review.date.slice(0, 10)}
+                          userRate={review.userInfo[0].userRate}
+                          userLink={review.userInfo[0].username}
+                          isMyReview={
+                            currentUser
+                              ? review.userInfo[0].username ===
+                                currentUser.username
+                              : false
+                          }
+                          reviewId={review._id}
+                          refreshReviewsData={() =>
+                            setTriggerFetchReviews((prev) => !prev)
+                          }
+                          refreshRatingsData={() => {
+                            setTriggerFetchRatings((prev) => !prev);
+                          }}
+                          setNoMore={() => setNoMore(false)}
                         />
                       );
                     })}
                   </>
                 )}
-              </div>
-
-              {currentUser ? (
-                bookReviews.find(
-                  (e) => e.userInfo[0].nickname === currentUser.nickname
-                ) === undefined ? (
-                  <div ref={reviewInputRef}>
-                    <AddReviewForm
-                      refreshReviewsData={() =>
-                        setTriggerFetchReviews((prev) => !prev)
-                      }
-                      refreshRatingsData={() => {
-                        setTriggerFetchRatings((prev) => !prev);
-                      }}
-                      bookId={book._id}
-                    />
+                {!noMore ? (
+                  <div
+                    onClick={handleLoadMoreReviews}
+                    className="text-primary text-center font-italic"
+                    style={{ cursor: "pointer" }}
+                  >
+                    Load more..
                   </div>
-                ) : null
-              ) : (
-                <div ref={reviewInputRef}>
-                  <AddReviewForm
-                    refreshReviewsData={() =>
-                      setTriggerFetchReviews((prev) => !prev)
-                    }
-                    refreshRatingsData={() => {
-                      setTriggerFetchRatings((prev) => !prev);
-                    }}
-                    bookId={book._id}
-                  />
-                </div>
+                ) : null}
+              </div>
+              {isReviewed ? null : (
+                <AddReviewForm
+                  refreshReviewsData={() =>
+                    setTriggerFetchReviews((prev) => !prev)
+                  }
+                  refreshRatingsData={() => {
+                    setTriggerFetchRatings((prev) => !prev);
+                  }}
+                  bookId={book._id}
+                  setNoMore={() => setNoMore(false)}
+                />
               )}
             </div>
           </div>

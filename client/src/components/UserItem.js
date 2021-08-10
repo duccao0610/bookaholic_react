@@ -20,13 +20,13 @@ const UserItem = ({ user, inRank, idx }) => {
             }
       }
     >
-      <div className="col-3 d-flex align-items-center justify-content-center">
+      <div className="col-3 d-flex align-items-center justify-content-center position-relative">
         {idx <= 2 ? (
           <div
             style={{
               position: "absolute",
               top: -20,
-              right: -5,
+              right: -10,
               transform: "rotate(30deg)",
             }}
           >
@@ -38,7 +38,7 @@ const UserItem = ({ user, inRank, idx }) => {
         ) : null}
 
         <img
-          className="border border-dark rounded-circle"
+          className="rounded-circle"
           width="50px"
           height="50px"
           alt="avatar"

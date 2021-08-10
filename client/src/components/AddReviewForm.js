@@ -3,7 +3,12 @@ import StarRatings from "react-star-ratings";
 import { useState, useContext } from "react";
 import UserContext from "../context/userContext";
 import Alert from "./Alert";
-const AddReviewForm = ({ bookId, refreshReviewsData, refreshRatingsData }) => {
+const AddReviewForm = ({
+  bookId,
+  refreshReviewsData,
+  refreshRatingsData,
+  setNoMore,
+}) => {
   const { currentUser } = useContext(UserContext);
   const [rating, setRating] = useState(1);
   const [content, setContent] = useState("");
@@ -35,6 +40,7 @@ const AddReviewForm = ({ bookId, refreshReviewsData, refreshRatingsData }) => {
         },
         body: JSON.stringify({
           userId: currentUser._id,
+          username: currentUser.username,
           bookId: bookId,
           rating: rating,
           content: content,
@@ -54,6 +60,7 @@ const AddReviewForm = ({ bookId, refreshReviewsData, refreshRatingsData }) => {
         });
         await refreshReviewsData();
         await refreshRatingsData();
+        await setNoMore();
         setRating(1);
         setContent("");
       } else {
