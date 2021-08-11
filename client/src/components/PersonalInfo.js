@@ -251,7 +251,7 @@ const PersonalInfo = ({
           <div className="ms-lg-5 w-100">
             <div className="border-bottom pb-2 d-flex justify-content-between">
               {editProfileBtn ? (
-                <h4 className="text-uppercase m-0">{nicknameInputVal}</h4>
+                <h4 className="m-0">{nicknameInputVal}</h4>
               ) : (
                 <input
                   placeholder="Max 10 characters"

@@ -30,7 +30,9 @@ function App() {
   const [currentUser, setCurrentUser] = useState(currentTemp);
   const [triggerFetch, setTriggerFetch] = useState(false);
   const currentUserRef = useRef();
-
+  const handleUpdateCurrentUser = () => {
+    setTriggerFetch(!triggerFetch);
+  };
   useEffect(() => {
     socketRef.current = io("http://localhost:5000");
     const current = JSON.parse(sessionStorage.getItem("currentUser"));
@@ -90,10 +92,6 @@ function App() {
     setExpTime(time);
   };
 
-  const handleUpdateCurrentUser = () => {
-    setTriggerFetch(!triggerFetch);
-  };
-
   useEffect(() => {
     let timer;
     if (expTime !== undefined) {
@@ -118,11 +116,11 @@ function App() {
         setExpTime: handleSetExpTime,
       }}
     >
-      <div className='App bg-white min-vh-100  border border-light px-0'>
+      <div className="App bg-white min-vh-100  border border-light px-0">
         {pathname === "/" && !sessionStorage.getItem("token") ? null : (
           <NavBar />
         )}
-        <div className='content'>
+        <div className="content">
           <Alert
             alertClose={alertClose}
             alertVisibility={alertVisibility}
@@ -130,16 +128,16 @@ function App() {
             alertStatus={alertStatus}
             alertDetail={alertDetail}
           />
-          <Route path='/user/:username/shelves' component={Shelves} />
-          <Route path='/user/:username' exact component={Profile} />
+          <Route path="/user/:username/shelves" component={Shelves} />
+          <Route path="/user/:username" exact component={Profile} />
           <Route
-            path='/book/:id'
+            path="/book/:id"
             render={() => <BookDetail key={Date.now()} />}
           />
-          <Route path='/category/:category' component={Category} />
-          <Route path='/auth/login' component={Login} />
-          <Route path='/auth/register' component={Register} />
-          <Route path='/' exact component={Home} />
+          <Route path="/category/:category" component={Category} />
+          <Route path="/auth/login" component={Login} />
+          <Route path="/auth/register" component={Register} />
+          <Route path="/" exact component={Home} />
         </div>
         {pathname === "/auth/login" ? null : pathname ===
           "/auth/register" ? null : (
