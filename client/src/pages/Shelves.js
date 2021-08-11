@@ -27,6 +27,7 @@ const Shelves = () => {
   const [currShowingShelf, setCurrShowingShelf] = useState({
     shelfId: "",
     bookList: [],
+    shelfName: "",
   });
 
   const handleShowBooksOnShelf = async (shelfId) => {
@@ -38,6 +39,7 @@ const Shelves = () => {
         setCurrShowingShelf({
           shelfId: shelfId,
           bookList: resJson[0].bookDetailList,
+          shelfName: resJson[0].shelves.shelfName,
         });
       });
   };
@@ -100,8 +102,6 @@ const Shelves = () => {
       )
     ] = [...currShowingShelf.bookList];
     setCurrentUser(update);
-    console.log(currShowingShelf.bookList);
-
     handleUpdateCurrentUser();
   };
 
@@ -111,14 +111,15 @@ const Shelves = () => {
     <div className='d-md-flex container px-0 py-3'>
       <div
         id='left-panel'
-        className='col-md-3 d-flex flex-column align-items-center align-items-md-start border rounded py-3'
+        className='col-md-3 d-flex flex-column align-items-center align-items-md-start border rounded py-3 me-0 me-md-2'
         style={{
           background: "rgba(244, 241, 234,0.3)",
           boxShadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px",
+          height: "fit-content",
         }}
       >
         <div className='fw-bold'>ALL SHELVES</div>
-        <div>
+        <div className='col-12'>
           <div
             id='shelves-list'
             className='d-flex flex-column align-items-start'
@@ -136,6 +137,7 @@ const Shelves = () => {
               );
             })}
           </div>
+
           <div>
             {addShelfBtn ? (
               <></>
@@ -148,25 +150,46 @@ const Shelves = () => {
               />
             )}
           </div>
-        </div>
-        <div
-          className={isMyShelves ? "btn btn-sm btn-primary" : "d-none"}
-          onClick={handleAddShelf}
-        >
-          {addShelfBtn ? "Add a shelf" : "Save"}
+          <div
+            className={isMyShelves ? "btn btn-primary" : "d-none"}
+            onClick={handleAddShelf}
+            style={{
+              background: "#5A3434",
+              color: "white",
+            }}
+          >
+            {addShelfBtn ? "Add a shelf" : "Save"}
+          </div>
         </div>
       </div>
-      <div id='right-panel' className='col-md-9'>
-        <table className='table'>
+      <div
+        id='right-panel'
+        className='col-md-9 border rounded'
+        style={{
+          background: "rgba(244, 241, 234,0.3)",
+          boxShadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px",
+          height: "fit-content",
+        }}
+      >
+        <div className='text-center fs-4'>{currShowingShelf.shelfName}</div>
+        <table className='table' style={{ tableLayout: "fixed" }}>
           <thead>
             <tr>
-              <th scope='col' className='d-none d-md-table-cell'>
+              <th
+                scope='col'
+                className='d-none d-md-table-cell'
+                style={{ width: "10%" }}
+              >
                 Cover
               </th>
-              <th scope='col'>Title</th>
+              <th scope='col' style={{ width: "40%" }}>
+                Title
+              </th>
               <th scope='col'>Author(s)</th>
-              <th scope='col'>Avg. rating</th>
-              <th scope='col'></th>
+              <th scope='col' style={{ width: "10%" }}>
+                Rating
+              </th>
+              <th scope='col' style={{ width: "10%" }}></th>
             </tr>
           </thead>
           <tbody id='books-on-shelf'>
