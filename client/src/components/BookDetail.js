@@ -14,7 +14,7 @@ import { FaExclamationTriangle } from "react-icons/fa";
 import UserContext from "../context/userContext";
 import Modal from "react-bootstrap/Modal";
 const BookDetail = () => {
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser } = useContext(UserContext);
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
@@ -164,14 +164,7 @@ const BookDetail = () => {
         method: "PUT",
       }
     );
-    // const update = { ...currentUser };
-    // const index = update.owning.findIndex((item) => item === book._id);
-    // if (index === -1) {
-    //   update.owning.push(book._id);
-    // } else {
-    //   update.owning.splice(index, 1);
-    // }
-    // setCurrentUser(update);
+    handleUpdateCurrentUser();
   };
 
   const handleShowShelves = () => {
@@ -195,15 +188,6 @@ const BookDetail = () => {
         checkedShelves.push(e.target[i].value);
       }
     }
-
-    // const update = { ...currentUser };
-    // update.shelves.forEach((shelf) => {
-    //   if (checkedShelves.includes(shelf._id)) {
-    //     shelf.bookList.push(book._id);
-    //   }
-    // });
-    // setCurrentUser(update);
-
     fetch(
       `http://localhost:5000/user/${currentUser.username}/addBookToShelves`,
       {
@@ -215,6 +199,7 @@ const BookDetail = () => {
         }),
       }
     );
+    handleUpdateCurrentUser();
   };
 
   return (
@@ -383,7 +368,6 @@ const BookDetail = () => {
                       type="submit"
                       form="shelves"
                       onClick={handleCloseShelves}
-                      // onClick={handleAddBookToShelf}
                     >
                       Save
                     </button>

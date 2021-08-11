@@ -58,7 +58,9 @@ const Category = () => {
             style={{ background: "#f7f7fa" }}
           >
             <li className="breadcrumb-item">Category</li>
-            <li className="breadcrumb-item text-primary">{params.category}</li>
+            <li className="breadcrumb-item" style={{ color: "#5a3434" }}>
+              {params.category}
+            </li>
           </ol>
           <div className="col-12 row justify-content-around mx-auto">
             <div className="mt-lg-2 col-12 col-md-8 col-lg-8 d-flex justify-content-start mx-auto mx-md-2 mx-lg-2 px-lg-0 py-2 py-lg-2 row">
