@@ -23,7 +23,7 @@ const Profile = () => {
   useEffect(() => {
     setLoading(true);
     handleUpdateCurrentUser();
-    fetch(`http://localhost:5000/user/${params.username}`)
+    fetch(`https://polar-savannah-23530.herokuapp.com/user/${params.username}`)
       .then((res) => res.json())
       .then((resJson) => {
         setUserData(resJson);
@@ -35,7 +35,9 @@ const Profile = () => {
   const [reviews, setReviews] = useState([]);
   useEffect(() => {
     let isLoading = true;
-    fetch(`http://localhost:5000/review/${params.username}`)
+    fetch(
+      `https://polar-savannah-23530.herokuapp.com/review/${params.username}`
+    )
       .then((res) => res.json())
       .then((resJson) => {
         if (isLoading) {

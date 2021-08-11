@@ -27,11 +27,14 @@ const PersonalInfo = ({
     });
 
     if (!editProfileBtn) {
-      await fetch(`http://localhost:5000/user/${username}/editProfile`, {
-        method: "PUT",
-        headers: { "Content-type": "application/json" },
-        body: editedProfile,
-      }).catch((err) => console.log(err));
+      await fetch(
+        `https://polar-savannah-23530.herokuapp.com/user/${username}/editProfile`,
+        {
+          method: "PUT",
+          headers: { "Content-type": "application/json" },
+          body: editedProfile,
+        }
+      ).catch((err) => console.log(err));
     }
 
     handleUpdateCurrentUser();
@@ -78,11 +81,14 @@ const PersonalInfo = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         // Update on database
-        fetch(`http://localhost:5000/user/${username}/uploadAvatar`, {
-          method: "PUT",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify({ base64ImgSrc: e.target.result }),
-        });
+        fetch(
+          `https://polar-savannah-23530.herokuapp.com/user/${username}/uploadAvatar`,
+          {
+            method: "PUT",
+            headers: { "Content-type": "application/json" },
+            body: JSON.stringify({ base64ImgSrc: e.target.result }),
+          }
+        );
 
         // Update UI
         setDisplayAvatar(e.target.result);
@@ -158,7 +164,7 @@ const PersonalInfo = ({
 
   useEffect(() => {
     if (shouldFetchVote) {
-      fetch("http://localhost:5000/user/voteUser", {
+      fetch("https://polar-savannah-23530.herokuapp.com/user/voteUser", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -181,7 +187,7 @@ const PersonalInfo = ({
   switch (inPage) {
     case "profile":
       return (
-        <div className="d-flex flex-column flex-sm-row flex-md-row flex-lg-row mb-md-3">
+        <div className='d-flex flex-column flex-sm-row flex-md-row flex-lg-row mb-md-3'>
           <Alert
             alertClose={alertClose}
             alertVisibility={alertVisibility}
@@ -189,24 +195,24 @@ const PersonalInfo = ({
             alertStatus={alertStatus}
             alertDetail={alertDetail}
           />
-          <div className="d-flex flex-column align-items-center">
-            <div className="position-relative">
-              <div className="border rounded-circle p-1">
+          <div className='d-flex flex-column align-items-center'>
+            <div className='position-relative'>
+              <div className='border rounded-circle p-1'>
                 <img
-                  id="avatar"
-                  alt=""
+                  id='avatar'
+                  alt=''
                   src={displayAvatar}
-                  className="border rounded-circle overflow-hidden"
-                  width="150px"
-                  height="150px"
+                  className='border rounded-circle overflow-hidden'
+                  width='150px'
+                  height='150px'
                   style={{ objectFit: "cover" }}
                 />
               </div>
               {isMyProfile ? (
                 <>
                   <label
-                    className="mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light"
-                    htmlFor="upload-avatar"
+                    className='mb-0 text-black position-absolute rounded-circle border text-center pointer bg-light'
+                    htmlFor='upload-avatar'
                     style={{
                       width: "30px",
                       height: "30px",
@@ -214,12 +220,12 @@ const PersonalInfo = ({
                       bottom: "15px",
                     }}
                   >
-                    <AiFillCamera className="p-1 fs-3" />
+                    <AiFillCamera className='p-1 fs-3' />
                   </label>
                   <input
-                    id="upload-avatar"
-                    type="file"
-                    className="d-none"
+                    id='upload-avatar'
+                    type='file'
+                    className='d-none'
                     onChange={(e) => {
                       handleUploadAvatar(e);
                       handleUpdateCurrentUser();
@@ -228,7 +234,7 @@ const PersonalInfo = ({
                 </>
               ) : (
                 <ProfileVoting
-                  inPage="profile"
+                  inPage='profile'
                   upvote={upvoteCount}
                   downvote={downvoteCount}
                   voteStatus={voteStatus}
@@ -237,16 +243,16 @@ const PersonalInfo = ({
               )}
             </div>
           </div>
-          <div className="ms-lg-5 w-100">
-            <div className="border-bottom pb-2 d-flex justify-content-between">
+          <div className='ms-lg-5 w-100'>
+            <div className='border-bottom pb-2 d-flex justify-content-between'>
               {editProfileBtn ? (
-                <h4 className="m-0">{nicknameInputVal}</h4>
+                <h4 className='m-0'>{nicknameInputVal}</h4>
               ) : (
                 <input
-                  placeholder="Max 10 characters"
+                  placeholder='Max 10 characters'
                   maxLength={10}
-                  className="w-100"
-                  type="text"
+                  className='w-100'
+                  type='text'
                   value={nicknameInputVal}
                   onChange={handleChangeNickname}
                 />
@@ -254,21 +260,21 @@ const PersonalInfo = ({
               {isMyProfile ? (
                 <div
                   style={{ background: "#5a3434" }}
-                  className="btn btn-sm text-white"
+                  className='btn btn-sm text-white'
                   onClick={handleEditProfile}
                 >
                   {editProfileBtn ? "Edit" : "Save"}
                 </div>
               ) : null}
             </div>
-            <table className="table table-sm table-borderless align-top">
+            <table className='table table-sm table-borderless align-top'>
               <tbody>
                 <tr>
                   <th>Books</th>
                   <td>{owningQuant}</td>
                 </tr>
                 <tr>
-                  <th className="col-2">Reviews</th>
+                  <th className='col-2'>Reviews</th>
                   <td>{reviewsQuant}</td>
                 </tr>
                 <tr>
@@ -278,9 +284,9 @@ const PersonalInfo = ({
                       `${bioInputVal}`
                     ) : (
                       <textarea
-                        className="w-100"
+                        className='w-100'
                         style={{ height: "90px" }}
-                        type="text"
+                        type='text'
                         value={bioInputVal}
                         onChange={handleChangeBio}
                       />

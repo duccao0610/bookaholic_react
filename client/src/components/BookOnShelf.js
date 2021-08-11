@@ -8,7 +8,7 @@ const BookOnShelf = ({ book, shelfId, onDeleteBookOnShelf, isMyShelves }) => {
 
   const handleDeleteBookOnShelf = () => {
     fetch(
-      `http://localhost:5000/user/${params.username}/shelves/${shelfId}/deleteBook/book=${_id}`,
+      `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/${shelfId}/deleteBook/book=${_id}`,
       {
         method: "PUT",
       }

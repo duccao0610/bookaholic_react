@@ -47,17 +47,23 @@ const AddReviewForm = ({
         }),
       };
       if (content !== "") {
-        fetch("http://localhost:5000/review/addReview", requestOptions);
-        fetch("http://localhost:5000/review/calculateAverage", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            bookId: bookId,
-          }),
-        });
+        fetch(
+          "https://polar-savannah-23530.herokuapp.com/review/addReview",
+          requestOptions
+        );
+        fetch(
+          "https://polar-savannah-23530.herokuapp.com/review/calculateAverage",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({
+              bookId: bookId,
+            }),
+          }
+        );
         await refreshReviewsData();
         await refreshRatingsData();
         await setNoMore();
@@ -72,7 +78,7 @@ const AddReviewForm = ({
   };
 
   return (
-    <Form className="mt-3 row mx-1 px-0">
+    <Form className='mt-3 row mx-1 px-0'>
       <Alert
         alertClose={alertClose}
         alertVisibility={alertVisibility}
@@ -80,33 +86,33 @@ const AddReviewForm = ({
         alertStatus={alertStatus}
         alertDetail={alertDetail}
       />
-      <Form.Group className="mb-3 p-0" controlId="exampleForm.ControlTextarea1">
-        <Form.Label className="fw-bold fs-5">Write a review </Form.Label>
+      <Form.Group className='mb-3 p-0' controlId='exampleForm.ControlTextarea1'>
+        <Form.Label className='fw-bold fs-5'>Write a review </Form.Label>
         <Form.Control
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          as="textarea"
+          as='textarea'
           rows={3}
-          placeholder="Leave a review here..."
+          placeholder='Leave a review here...'
         />
       </Form.Group>
-      <div className="pl-0">
+      <div className='pl-0'>
         <StarRatings
           rating={rating}
-          starRatedColor="yellow"
-          starHoverColor="yellow"
+          starRatedColor='yellow'
+          starHoverColor='yellow'
           changeRating={changeRating}
           numberOfStars={5}
-          name="rating"
-          starDimension="20px"
+          name='rating'
+          starDimension='20px'
         />
       </div>
       <Button
         onClick={handleAddReview}
-        className="d-block mt-3 col-3 col-lg-1 px-2"
+        className='d-block mt-3 col-3 col-lg-1 px-2'
         style={{ background: "#5A3434" }}
-        variant="primary"
-        size="md"
+        variant='primary'
+        size='md'
       >
         Send
       </Button>
