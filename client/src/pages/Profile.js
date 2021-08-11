@@ -90,16 +90,9 @@ const Profile = () => {
     const updateForCurrentUser = { ...currentUser };
     updateForCurrentUser.pendingFriendRequests.push(pendingFriendReq);
     setCurrentUser(updateForCurrentUser);
-
-    // const updateForDisplayingUser = { ...userData };
-    // updateForDisplayingUser.pendingFriendRequests.push(pendingFriendReq);
-    // setUserData(updateForDisplayingUser);
-
     setFriendStatus("reqSent");
     handleUpdateCurrentUser();
   };
-
-  console.log(userData);
   return (
     <div>
       {loading ? (
