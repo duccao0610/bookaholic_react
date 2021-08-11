@@ -30,9 +30,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(currentTemp);
   const [triggerFetch, setTriggerFetch] = useState(false);
   const currentUserRef = useRef();
-  const handleUpdateCurrentUser = () => {
-    setTriggerFetch(!triggerFetch);
-  };
+
   useEffect(() => {
     socketRef.current = io("http://localhost:5000");
     const current = JSON.parse(sessionStorage.getItem("currentUser"));
@@ -92,6 +90,10 @@ function App() {
     setExpTime(time);
   };
 
+  const handleUpdateCurrentUser = () => {
+    setTriggerFetch(!triggerFetch);
+  };
+
   useEffect(() => {
     let timer;
     if (expTime !== undefined) {
@@ -130,10 +132,7 @@ function App() {
           />
           <Route path="/user/:username/shelves" component={Shelves} />
           <Route path="/user/:username" exact component={Profile} />
-          <Route
-            path="/book/:id"
-            render={() => <BookDetail key={Date.now()} />}
-          />
+          <Route path="/book/:id" component={BookDetail} />
           <Route path="/category/:category" component={Category} />
           <Route path="/auth/login" component={Login} />
           <Route path="/auth/register" component={Register} />

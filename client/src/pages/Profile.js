@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 
 import { Link, useParams } from "react-router-dom";
-
+import { Spinner } from "react-bootstrap";
 import Activity from "../components/Activity";
 import ReactPaginate from "react-paginate";
 import PersonalInfo from "../components/PersonalInfo";
@@ -102,7 +102,9 @@ const Profile = () => {
   return (
     <div>
       {loading ? (
-        <div></div>
+        <div className="text-center">
+          <Spinner animation="border" variant="primary" className="mt-3" />
+        </div>
       ) : (
         <div className='d-flex col-12 col-md-8 col-lg-8 justify-content-center container px-0 pt-3'>
           <div
