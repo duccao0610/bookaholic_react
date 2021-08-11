@@ -127,7 +127,11 @@ const BookDetail = () => {
           setBook(resJson.info[0]);
           setRelatedGenres(resJson.relatedGenres);
           setRelatedBooks(resJson.relatedBooks);
-          setAvailability(currentUser.owning.includes(resJson.info[0]._id));
+          setAvailability(
+            currentUser
+              ? currentUser.owning.includes(resJson.info[0]._id)
+              : false
+          );
         }
       });
 
@@ -145,7 +149,6 @@ const BookDetail = () => {
       )
         .then((res) => res.json())
         .then((resJson) => {
-          console.log("isReviewed", resJson);
           if (resJson.msg === true) {
             setIsReviewed(true);
           } else {
@@ -175,14 +178,11 @@ const BookDetail = () => {
     setShowShelves(false);
   };
 
-  const handleCheckShelf = (e) => {
-    // console.log(e.target.value);
-  };
+  const handleCheckShelf = (e) => {};
 
   const handleAddBookToShelves = (e) => {
     e.preventDefault();
     let checkedShelves = [];
-    console.log(e.target[0].checked);
     for (let i = 0; i < e.target.length - 1; i++) {
       if (e.target[i].checked && !e.target[i].disabled) {
         checkedShelves.push(e.target[i].value);
@@ -280,22 +280,24 @@ const BookDetail = () => {
                   </div>
                 </div>
                 <div className="my-1 d-flex flex-column flex-lg-row align-items-center pr-2 align-items-lg-center ">
-                  <div className="col-12 col-lg-5 p-0">
-                    <span className="mr-1 font-italic col-8  pl-0">
-                      You own this book ?
-                    </span>
-                    <div className=" col-3 pl-0">
-                      <Switch
-                        offColor="#E43712"
-                        handleDiameter={20}
-                        checked={availability}
-                        onChange={() => {
-                          setAvailability(!availability);
-                          toggleOwning(!availability);
-                        }}
-                      />
+                  {currentUser ? (
+                    <div className="col-12 col-lg-5 p-0">
+                      <span className="mr-1 font-italic col-8  pl-0">
+                        You own this book ?
+                      </span>
+                      <div className=" col-3 pl-0">
+                        <Switch
+                          offColor="#E43712"
+                          handleDiameter={20}
+                          checked={availability}
+                          onChange={() => {
+                            setAvailability(!availability);
+                            toggleOwning(!availability);
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
                   <div className="p-0 col-lg-5 d-inline-block d-lg-none">
                     <Social />
                   </div>
@@ -315,12 +317,16 @@ const BookDetail = () => {
                     </span>
                   ) : null}
                 </div>
-                <div
-                  className="btn btn-primary mt-2"
-                  onClick={handleShowShelves}
-                >
-                  Add to my shelves
-                </div>
+                {currentUser ? (
+                  <div
+                    className="btn mt-2 text-white"
+                    onClick={handleShowShelves}
+                    style={{ background: "#5a3434" }}
+                  >
+                    Add to my shelves
+                  </div>
+                ) : null}
+
                 <Modal show={showShelves} onHide={handleCloseShelves}>
                   <Modal.Header closeButton>
                     <Modal.Title>My shelves</Modal.Title>
@@ -331,40 +337,43 @@ const BookDetail = () => {
                       id="shelves"
                       onSubmit={handleAddBookToShelves}
                     >
-                      {currentUser.shelves
-                        ? currentUser.shelves.map((item, index) => {
-                            return (
-                              <div
-                                className="form-check"
-                                id={index}
-                                key={index}
-                              >
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  value={item._id}
-                                  id={item._id}
-                                  defaultChecked={item.bookList.includes(
-                                    book._id
-                                  )}
-                                  disabled={item.bookList.includes(book._id)}
-                                  onChange={handleCheckShelf}
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor={item._id}
+                      {currentUser
+                        ? currentUser.shelves
+                          ? currentUser.shelves.map((item, index) => {
+                              return (
+                                <div
+                                  className="form-check"
+                                  id={index}
+                                  key={index}
                                 >
-                                  {item.shelfName}
-                                </label>
-                              </div>
-                            );
-                          })
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    value={item._id}
+                                    id={item._id}
+                                    defaultChecked={item.bookList.includes(
+                                      book._id
+                                    )}
+                                    disabled={item.bookList.includes(book._id)}
+                                    onChange={handleCheckShelf}
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor={item._id}
+                                  >
+                                    {item.shelfName}
+                                  </label>
+                                </div>
+                              );
+                            })
+                          : null
                         : null}
                     </form>
                   </Modal.Body>
                   <Modal.Footer>
                     <button
-                      className="btn btn-primary"
+                      style={{ background: "#5a3434 " }}
+                      className="btn text-white"
                       type="submit"
                       form="shelves"
                       onClick={handleCloseShelves}

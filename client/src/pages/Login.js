@@ -41,7 +41,6 @@ const Login = () => {
     fetch("http://localhost:5000/auth/login", requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
-        console.log(resJson);
         if (resJson.message === false) {
           showAlert("login", "fail");
         } else {

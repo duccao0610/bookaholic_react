@@ -72,7 +72,6 @@ const Activity = ({
 
   const alertClose = (status) => {
     if (status === "confirm") {
-      console.log("to delete");
       const requestOptions = {
         method: "DELETE",
         headers: {

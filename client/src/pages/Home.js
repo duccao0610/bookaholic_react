@@ -32,7 +32,6 @@ const Home = () => {
     fetch("http://localhost:5000/book/", requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
-        console.log(resJson);
         if (
           resJson.message === true &&
           loadingData &&
@@ -69,7 +68,6 @@ const Home = () => {
       )
         .then((res) => res.json())
         .then((resJson) => {
-          console.log("FEEDS", resJson);
           setLoadingFeeds(false);
           setFeedsData((prev) => [...prev, ...resJson]);
           if (resJson.length < 4) {

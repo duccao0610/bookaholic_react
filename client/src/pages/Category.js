@@ -17,7 +17,6 @@ const Category = () => {
       .then((resJson) => {
         if (loadingData) {
           setLoading(false);
-          console.log("CategoryData", resJson);
           setBooksData(resJson.books);
           setGenresData(resJson.otherCategories);
           if (resJson.books.length < 12) {

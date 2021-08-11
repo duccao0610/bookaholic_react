@@ -39,7 +39,6 @@ function App() {
         .then((res) => res.json())
         .then((resJson) => {
           if (resJson.message === true) {
-            console.log("CURRENT", resJson.user[0]);
             setCurrentUser(resJson.user[0]);
             currentUserRef.current = resJson.user[0];
           }
