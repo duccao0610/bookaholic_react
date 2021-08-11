@@ -16,7 +16,7 @@ const Shelves = () => {
   const [userShelves, setUserShelves] = useState([]);
   useEffect(() => {
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves`
+      `https://limitless-ravine-54816.herokuapp.com/user/${params.username}/shelves`
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -34,7 +34,7 @@ const Shelves = () => {
 
   const handleShowBooksOnShelf = async (shelfId) => {
     await fetch(
-      `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/${shelfId}`
+      `https://limitless-ravine-54816.herokuapp.com/user/${params.username}/shelves/${shelfId}`
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -58,7 +58,7 @@ const Shelves = () => {
     const newShelf = { shelfName: inputShelfNameVal, bookList: [] };
     if (!addShelfBtn) {
       await fetch(
-        `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/addShelf`,
+        `https://limitless-ravine-54816.herokuapp.com/user/${params.username}/shelves/addShelf`,
         {
           method: "PUT",
           headers: { "Content-type": "application/json" },
@@ -75,7 +75,7 @@ const Shelves = () => {
   // Delete shelf
   const handleDeleteShelf = async (shelfId) => {
     await fetch(
-      `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/${shelfId}/deleteShelf`,
+      `https://limitless-ravine-54816.herokuapp.com/user/${params.username}/shelves/${shelfId}/deleteShelf`,
       {
         method: "PUT",
       }
@@ -110,21 +110,21 @@ const Shelves = () => {
   return loading ? (
     <></>
   ) : (
-    <div className='d-md-flex container px-0 py-3'>
+    <div className="d-md-flex container px-0 py-3">
       <div
-        id='left-panel'
-        className='col-md-3 d-flex flex-column align-items-center align-items-md-start border rounded py-3 me-0 me-md-2'
+        id="left-panel"
+        className="col-md-3 d-flex flex-column align-items-center align-items-md-start border rounded py-3 me-0 me-md-2"
         style={{
           background: "rgba(244, 241, 234,0.3)",
           boxShadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px",
           height: "fit-content",
         }}
       >
-        <div className='fw-bold'>ALL SHELVES</div>
-        <div className='col-12'>
+        <div className="fw-bold">ALL SHELVES</div>
+        <div className="col-12">
           <div
-            id='shelves-list'
-            className='d-flex flex-column align-items-start'
+            id="shelves-list"
+            className="d-flex flex-column align-items-start"
           >
             {userShelves.map((item, i) => {
               return (
@@ -145,8 +145,8 @@ const Shelves = () => {
               <></>
             ) : (
               <input
-                className='form-control form-control-sm'
-                type='text'
+                className="form-control form-control-sm"
+                type="text"
                 onChange={handleInputShelfName}
                 value={inputShelfNameVal}
               />
@@ -165,36 +165,36 @@ const Shelves = () => {
         </div>
       </div>
       <div
-        id='right-panel'
-        className='col-md-9 border rounded'
+        id="right-panel"
+        className="col-md-9 border rounded"
         style={{
           background: "rgba(244, 241, 234,0.3)",
           boxShadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px",
           height: "fit-content",
         }}
       >
-        <div className='text-center fs-4'>{currShowingShelf.shelfName}</div>
-        <table className='table' style={{ tableLayout: "fixed" }}>
+        <div className="text-center fs-4">{currShowingShelf.shelfName}</div>
+        <table className="table" style={{ tableLayout: "fixed" }}>
           <thead>
             <tr>
               <th
-                scope='col'
-                className='d-none d-md-table-cell'
+                scope="col"
+                className="d-none d-md-table-cell"
                 style={{ width: "10%" }}
               >
                 Cover
               </th>
-              <th scope='col' style={{ width: "40%" }}>
+              <th scope="col" style={{ width: "40%" }}>
                 Title
               </th>
-              <th scope='col'>Author(s)</th>
-              <th scope='col' style={{ width: "10%" }}>
+              <th scope="col">Author(s)</th>
+              <th scope="col" style={{ width: "10%" }}>
                 Rating
               </th>
-              <th scope='col' style={{ width: "10%" }}></th>
+              <th scope="col" style={{ width: "10%" }}></th>
             </tr>
           </thead>
-          <tbody id='books-on-shelf'>
+          <tbody id="books-on-shelf">
             {currShowingShelf.bookList.map((item, i) => {
               return (
                 <BookOnShelf

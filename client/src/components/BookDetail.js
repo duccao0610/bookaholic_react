@@ -58,7 +58,7 @@ const BookDetail = () => {
       },
     };
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/review/bookId/${params.id}`,
+      `https://limitless-ravine-54816.herokuapp.com/review/bookId/${params.id}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -78,7 +78,7 @@ const BookDetail = () => {
   const handleLoadMoreReviews = () => {
     const skip = bookReviews.length;
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/review/bookId/${params.id}/skip/${skip}`
+      `https://limitless-ravine-54816.herokuapp.com/review/bookId/${params.id}/skip/${skip}`
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -101,7 +101,7 @@ const BookDetail = () => {
       },
     };
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/review/ratings/${params.id}`,
+      `https://limitless-ravine-54816.herokuapp.com/review/ratings/${params.id}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -128,7 +128,7 @@ const BookDetail = () => {
     setLoading(true);
     setShowMore(false);
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/book/${params.id}`,
+      `https://limitless-ravine-54816.herokuapp.com/book/${params.id}`,
       requestOptions
     )
       .then((res) => res.json())
@@ -156,7 +156,7 @@ const BookDetail = () => {
   useEffect(() => {
     if (currentUser && currentUser.username) {
       fetch(
-        `https://polar-savannah-23530.herokuapp.com/review/isReviewed/${currentUser.username}/${params.id}`
+        `https://limitless-ravine-54816.herokuapp.com/review/isReviewed/${currentUser.username}/${params.id}`
       )
         .then((res) => res.json())
         .then((resJson) => {
@@ -171,7 +171,7 @@ const BookDetail = () => {
 
   const toggleOwning = (isAdd) => {
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/user/${
+      `https://limitless-ravine-54816.herokuapp.com/user/${
         currentUser._id
       }/owning/${book._id}/${String(isAdd)}`,
       {
@@ -200,7 +200,7 @@ const BookDetail = () => {
       }
     }
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/user/${currentUser.username}/addBookToShelves`,
+      `https://limitless-ravine-54816.herokuapp.com/user/${currentUser.username}/addBookToShelves`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

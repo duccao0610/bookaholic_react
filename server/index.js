@@ -78,14 +78,15 @@ io.on("connection", (socket) => {
 //Connect MongoDB
 const CONNECTION_URL =
   "mongodb+srv://duccao0610:duccao0610@cluster0.0etmy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-const PORT = 5000;
 mongoose
   .connect(CONNECTION_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+    server.listen(process.env.PORT, () =>
+      console.log(`Server running on port ${process.env.PORT}`)
+    );
   })
   .catch((err) => console.log(err));
 

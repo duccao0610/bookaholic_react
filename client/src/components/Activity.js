@@ -50,7 +50,7 @@ const Activity = ({
       }),
     };
     fetch(
-      `https://polar-savannah-23530.herokuapp.com/review/${reviewId}/editReview`,
+      `https://limitless-ravine-54816.herokuapp.com/review/${reviewId}/editReview`,
       requestOptions
     ).catch((err) => console.log(err));
     refreshReviewsData();
@@ -85,7 +85,7 @@ const Activity = ({
       };
 
       fetch(
-        `https://polar-savannah-23530.herokuapp.com/review/${reviewId}/deleteReview`,
+        `https://limitless-ravine-54816.herokuapp.com/review/${reviewId}/deleteReview`,
         requestOptions
       ).catch((err) => console.log(err));
       setNoMore();

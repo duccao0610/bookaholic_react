@@ -27,7 +27,7 @@ const Shelf = ({
   const handleEditShelfName = () => {
     if (!editShelfNameBtn) {
       fetch(
-        `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/${shelfId}/editShelfName`,
+        `https://limitless-ravine-54816.herokuapp.com/user/${params.username}/shelves/${shelfId}/editShelfName`,
         {
           method: "PUT",
           headers: { "Content-type": "application/json" },
@@ -41,24 +41,24 @@ const Shelf = ({
   switch (inPage) {
     case "profile":
       return (
-        <div className='col-3'>
-          <div className='col-12'>
+        <div className="col-3">
+          <div className="col-12">
             <img
-              className='w-100'
+              className="w-100"
               // style={{ width: '50px', height: '60px' }}
-              src='https://img.icons8.com/ios/452/book-shelf.png'
-              alt=''
+              src="https://img.icons8.com/ios/452/book-shelf.png"
+              alt=""
             />
           </div>
-          <div className='text-center'>{shelfName}</div>
+          <div className="text-center">{shelfName}</div>
         </div>
       );
 
     // default = Shelves page
     default:
       return (
-        <div className='d-flex justify-content-between border-bottom my-1 py-2 w-100'>
-          <div className='d-flex align-items-start'>
+        <div className="d-flex justify-content-between border-bottom my-1 py-2 w-100">
+          <div className="d-flex align-items-start">
             <div
               className={isMyShelves ? "pointer me-1 p-0 align-top" : "d-none"}
               onClick={handleEditShelfName}
@@ -67,15 +67,15 @@ const Shelf = ({
             </div>
             {editShelfNameBtn ? (
               <div
-                className='text-decoration-underline pointer pt-0'
+                className="text-decoration-underline pointer pt-0"
                 onClick={handleShowBooksOnShelf}
               >
                 {inputNewShelfNameVal}
               </div>
             ) : (
               <input
-                className='form-control form-control-sm'
-                type='text'
+                className="form-control form-control-sm"
+                type="text"
                 value={inputNewShelfNameVal}
                 onChange={handleInputNewShelfName}
               />

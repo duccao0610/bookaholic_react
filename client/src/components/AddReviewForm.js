@@ -49,11 +49,11 @@ const AddReviewForm = ({
       };
       if (content !== "") {
         fetch(
-          "https://polar-savannah-23530.herokuapp.com/review/addReview",
+          "https://limitless-ravine-54816.herokuapp.com/review/addReview",
           requestOptions
         );
         fetch(
-          "https://polar-savannah-23530.herokuapp.com/review/calculateAverage",
+          "https://limitless-ravine-54816.herokuapp.com/review/calculateAverage",
           {
             method: "POST",
             headers: {
