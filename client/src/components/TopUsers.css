@@ -1,0 +1,15 @@
+.rank {
+  min-height: 400px;
+  max-width: 300px;
+  background: rgba(244, 241, 234, 0.3);
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+@media (max-width: 600px) {
+  .rank {
+    min-width: 85vw;
+    min-height: 80vh;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+      rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+  }
+}

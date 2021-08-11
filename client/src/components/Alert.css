@@ -15,15 +15,15 @@
   display: flex !important;
   justify-content: center !important;
 }
-.alert_footer button {
+.alert_footer .button_primary {
   background: rgb(90, 52, 52);
   padding: 5px 20px;
 }
-.alert_footer button:hover {
+.alert_footer .button_primary:hover {
   background: rgb(90, 52, 52) !important;
   opacity: 0.8 !important;
 }
-.alert_footer button:focus {
+.alert_footer .button_primary:focus {
   background: rgb(90, 52, 52) !important;
 }
 .alert_header span {

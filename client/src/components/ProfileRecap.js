@@ -2,13 +2,13 @@ import { useContext } from "react";
 import UserContext from "../context/userContext";
 const ProfileRecap = () => {
   const { currentUser } = useContext(UserContext);
-  // console.log("CUrrentRECAP", currentUser);
   return (
     <div
       className="mt-5 px-3 py-4 d-flex flex-column rounded"
       style={{
+        position: "relative",
         boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
-        background: "rgba(244, 241, 234,0.3)",
+        background: "#F4F1EA",
         minHeight: "150px",
       }}
     >
@@ -16,12 +16,12 @@ const ProfileRecap = () => {
         <img
           style={{
             position: "absolute",
-            top: 35,
+            top: "-20%",
             left: "50%",
             transform: "translateX(-50%)",
-            objectFit: "contain",
+            objectFit: "cover",
           }}
-          className="rounded-circle border border-dark"
+          className="rounded-circle"
           width="70px"
           height="70px"
           alt="avatar"

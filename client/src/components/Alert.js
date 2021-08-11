@@ -46,6 +46,8 @@ const Alert = ({
               ? detail === "empty"
                 ? "Please write your review first"
                 : "Please login to review"
+              : status === "confirm"
+              ? "Do you want to delete this review ?"
               : null}
           </div>
         );
@@ -63,6 +65,12 @@ const Alert = ({
             {status === "fail"
               ? "Please choose image with smaller size (< 5kB)"
               : ""}
+          </div>
+        );
+      case "friend":
+        return (
+          <div className="alert_message">
+            {status === "fail" ? "Please login first to add friend." : ""}
           </div>
         );
       default:
@@ -91,7 +99,20 @@ const Alert = ({
         {renderSwitch(alertType, alertStatus, alertDetail)}
       </Modal.Body>
       <Modal.Footer className="alert_footer">
-        <Button onClick={() => alertClose(alertStatus)}>Ok</Button>
+        <Button
+          onClick={() => alertClose(alertStatus)}
+          className="button_primary"
+        >
+          Ok
+        </Button>
+        {alertStatus === "confirm" ? (
+          <Button
+            onClick={() => alertClose("cancel")}
+            className="btn-secondary"
+          >
+            Cancel
+          </Button>
+        ) : null}
       </Modal.Footer>
     </Modal>
   );

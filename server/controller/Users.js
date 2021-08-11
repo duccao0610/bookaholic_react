@@ -4,7 +4,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const getRecapInfoById = async (req, res) => {
   const user = await User.find(
     { _id: ObjectId(req.params.id) },
-    "nickname username userRate friends avatar owning votedUsersList"
+    "nickname username userRate friends avatar owning votedUsersList pendingFriendRequests shelves"
   );
   if (user) {
     res.json({ user: user, message: true });
@@ -39,7 +39,10 @@ const findUserByUsername = async (username) => {
 
 // Find user for loading page
 const getUserByUsername = async (req, res) => {
-  const user = await User.findOne({ username: req.params.username });
+  const user = await User.findOne(
+    { username: req.params.username },
+    "avatar bio friends nickname owning shelves userRate username votedUsersList"
+  );
   if (user) {
     res.json(user);
   } else {
@@ -103,6 +106,7 @@ const getBooksOnShelf = async (req, res) => {
     {
       $project: {
         bookDetailList: true,
+        shelves: true,
       },
     },
   ]);
@@ -232,73 +236,71 @@ const voteUser = async (req, res) => {
     upvoteCount,
     downvoteCount,
     prevVoteStatus,
-    voteStatus
+    voteStatus,
   } = req.body;
   try {
     // Update userRate field of the rated user
-    await User.updateOne({ username: votedUser }, {
-      $set: {
-        userRate: {
-          upvote: upvoteCount,
-          downvote: downvoteCount
-        }
-      }
-    });
-
-    // Update votedUsersList field of the currentUser
-    const getCurrentUser = await User.findOne({ username: currentUser }, { votedUsersList: 1, _id: 0 });
-    let isUpvote = null;
-    if (voteStatus === 'upvote') isUpvote = true;
-    if (voteStatus === 'downvote') isUpvote = false;
-
-    if (prevVoteStatus !== null) {
-      const itemIndexToUpdate = getCurrentUser.votedUsersList.findIndex((item) => item.username === votedUser);
-      console.log("item index: " + itemIndexToUpdate);
-      if (itemIndexToUpdate === -1) {
-        await User.updateOne({ username: currentUser }, {
-          $push: { votedUsersList: { username: votedUser, isUpvote: isUpvote } }
-        });
-      } else if (itemIndexToUpdate > -1) {
-        if (isUpvote === null) {
-          await User.updateOne({ username: currentUser }, {
-            $pull: { votedUsersList: { username: votedUser } }
-          })
-        } else {
-          await User.updateOne({ username: currentUser }, {
-            $set: { [`votedUsersList.${itemIndexToUpdate}.isUpvote`]: isUpvote }
-          });
-        }
-      }
-    }
-
-    res.json({ msg: "UPDATE_VOTE_SUCCESS" })
-
-    console.log(getCurrentUser);
-
-  } catch (err) {
-    throw new Error(err);
-  }
-}
-
-// Add review
-const addReview = async (req, res) => {
-  try {
     await User.updateOne(
-      { _id: req.body.userId },
+      { username: votedUser },
       {
-        $push: {
-          reviews: {
-            rating: req.body.rating,
-            content: req.body.content,
-            book: req.body.bookId,
-            date: new Date(),
+        $set: {
+          userRate: {
+            upvote: upvoteCount,
+            downvote: downvoteCount,
           },
         },
       }
     );
-    res.json({ message: "ADD_REVIEW_SUCCESS" });
+
+    // Update votedUsersList field of the currentUser
+    const getCurrentUser = await User.findOne(
+      { username: currentUser },
+      { votedUsersList: 1, _id: 0 }
+    );
+    let isUpvote = null;
+    if (voteStatus === "upvote") isUpvote = true;
+    if (voteStatus === "downvote") isUpvote = false;
+
+    if (prevVoteStatus !== null) {
+      const itemIndexToUpdate = getCurrentUser.votedUsersList.findIndex(
+        (item) => item.username === votedUser
+      );
+      console.log("item index: " + itemIndexToUpdate);
+      if (itemIndexToUpdate === -1) {
+        await User.updateOne(
+          { username: currentUser },
+          {
+            $push: {
+              votedUsersList: { username: votedUser, isUpvote: isUpvote },
+            },
+          }
+        );
+      } else if (itemIndexToUpdate > -1) {
+        if (isUpvote === null) {
+          await User.updateOne(
+            { username: currentUser },
+            {
+              $pull: { votedUsersList: { username: votedUser } },
+            }
+          );
+        } else {
+          await User.updateOne(
+            { username: currentUser },
+            {
+              $set: {
+                [`votedUsersList.${itemIndexToUpdate}.isUpvote`]: isUpvote,
+              },
+            }
+          );
+        }
+      }
+    }
+
+    res.json({ msg: "UPDATE_VOTE_SUCCESS" });
+
+    console.log(getCurrentUser);
   } catch (err) {
-    res.json({ message: err.message });
+    throw new Error(err);
   }
 };
 
@@ -350,6 +352,136 @@ const getTopUsers = async (req, res) => {
   }
 };
 
+const sendFriendReq = async (req, res) => {
+  try {
+    await User.updateMany(
+      {
+        username: { $in: [req.body.sender, req.body.receiver] },
+      },
+      {
+        $push: {
+          pendingFriendRequests: req.body,
+        },
+      }
+    );
+    res.json({ request: req.body });
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+const getFeedsById = async (req, res) => {
+  try {
+    const feeds = await User.aggregate([
+      {
+        $match: {
+          _id: ObjectId(req.params.id),
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          as: "feed",
+          let: { friends_arr: "$friends" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ["$userId", "$$friends_arr"],
+                },
+              },
+            },
+            {
+              $sort: {
+                date: -1,
+              },
+            },
+            {
+              $skip: Number(req.params.skip),
+            },
+            {
+              $limit: 4,
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$feed",
+        },
+      },
+      {
+        $lookup: {
+          from: "books",
+          localField: "feed.bookId",
+          foreignField: "_id",
+          as: "book",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "feed.userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $project: {
+          feed: 1,
+          "book.title": 1,
+          "book.cover": 1,
+          "book.authors": 1,
+          "user.nickname": 1,
+          "user.avatar": 1,
+        },
+      },
+    ]);
+    res.json(feeds);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const toggleOwning = async (req, res) => {
+  try {
+    if (req.params.isAdd === "true") {
+      await User.updateOne(
+        { _id: req.params.userId },
+        {
+          $push: { owning: ObjectId(req.params.bookId) },
+        }
+      );
+    } else if (req.params.isAdd === "false") {
+      await User.updateOne(
+        { _id: req.params.userId },
+        {
+          $pull: { owning: ObjectId(req.params.bookId) },
+        }
+      );
+    }
+    return;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+const addBookToShelves = async (req, _) => {
+  try {
+    await User.updateOne(
+      { username: req.params.username },
+      {
+        $push: { "shelves.$[element].bookList": req.body.bookId },
+      },
+      {
+        arrayFilters: [{ "element._id": { $in: req.body.checkedShelves } }],
+      }
+    );
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
 module.exports = {
   getTopUsers,
   getUsersBySearch,
@@ -365,6 +497,9 @@ module.exports = {
   deleteShelf,
   deleteBookOnShelf,
   editShelfName,
-  addReview,
-  voteUser
+  voteUser,
+  sendFriendReq,
+  getFeedsById,
+  toggleOwning,
+  addBookToShelves,
 };

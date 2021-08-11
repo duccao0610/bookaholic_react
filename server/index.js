@@ -4,6 +4,17 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const router = require("./api");
 const mongoose = require("mongoose");
+const User = require("./models/User");
+const {
+  setOnline,
+  getReceiverSocketId,
+  setOffline,
+} = require("./services/onlineStatus");
+const {
+  updatePendingFriendReq,
+  acceptFriendReq,
+  declineFriendReq,
+} = require("./services/friendRequest");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,17 +30,48 @@ app.use(router);
 
 io.on("connection", (socket) => {
   console.log("An user connected");
-  socket.on("hello", (data) => {
-    console.log(data);
-    socket.emit("setCurrentUser");
+  let user;
+  socket.on("setOnline", async (username) => {
+    user = username;
+    await setOnline(username, socket.id);
   });
-  socket.on("updateProfile", (data) => {
-    console.log(data);
-    socket.emit("updateCurrentUser");
+
+  socket.on(
+    "sendFriendReq",
+    async (senderUsername, receiverUsername, senderId) => {
+      updatePendingFriendReq(senderUsername, receiverUsername, senderId);
+      const receiverSocketId = await getReceiverSocketId(receiverUsername);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit(
+          "receiveFriendReq",
+          senderUsername,
+          receiverUsername
+        );
+        io.to(receiverSocketId).emit("updateIfInProfilePage");
+      }
+    }
+  );
+
+  socket.on("acceptFriendReq", async (senderId, receiverId, requestId) => {
+    acceptFriendReq(senderId, receiverId, requestId);
+    const sender = await User.findOne({ _id: senderId });
+    if (sender.onlineStatus.isOnline) {
+      io.to(sender.onlineStatus.socketId).emit("acceptFriendReq");
+    }
   });
-  socket.on("updateAvatar", (data) => {
-    console.log(data);
-    socket.emit("updateCurrentUser");
+
+  socket.on("declineFriendReq", async (senderUsername, receiverUsername) => {
+    declineFriendReq(senderUsername, receiverUsername);
+    const sender = await User.findOne({ username: senderUsername });
+    if (sender.onlineStatus.isOnline) {
+      io.to(sender.onlineStatus.socketId).emit("declineFriendReq");
+      console.log(1);
+    }
+  });
+
+  socket.on("disconnect", async () => {
+    await setOffline(user);
+    console.log("An user disconnected");
   });
 });
 

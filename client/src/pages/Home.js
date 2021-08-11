@@ -1,16 +1,19 @@
 import { Tabs, Tab, Spinner, Container, Row, Col } from "react-bootstrap";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import BookItem from "../components/BookItem";
 import Activity from "../components/Activity";
 import { useHistory } from "react-router";
 import "./Home.css";
 import TopUsers from "../components/TopUsers";
 import ProfileRecap from "../components/ProfileRecap";
+import UserContext from "../context/userContext";
+import { FaExclamationTriangle } from "react-icons/fa";
 const Home = () => {
   const history = useHistory();
   const [booksData, setBooksData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [loadingFeeds, setLoadingFeeds] = useState(false);
+  const { currentUser } = useContext(UserContext);
   useEffect(() => {
     if (!sessionStorage.getItem("token")) {
       history.push("/auth/login");
@@ -29,7 +32,6 @@ const Home = () => {
     fetch("http://localhost:5000/book/", requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
-        console.log(resJson);
         if (
           resJson.message === true &&
           loadingData &&
@@ -47,6 +49,34 @@ const Home = () => {
     };
   }, [history]);
 
+  const [feedsData, setFeedsData] = useState([]);
+  const [noMore, setNoMore] = useState(false);
+  const fetchFeeds = (skip) => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
+    if (currentUser) {
+      fetch(
+        `http://localhost:5000/user/feeds/${currentUser._id}/skip/${Number(
+          skip
+        )}`,
+        requestOptions
+      )
+        .then((res) => res.json())
+        .then((resJson) => {
+          setLoadingFeeds(false);
+          setFeedsData((prev) => [...prev, ...resJson]);
+          if (resJson.length < 4) {
+            setNoMore(true);
+          }
+        });
+    }
+  };
+
   return (
     <>
       {!sessionStorage.getItem("token") ? null : (
@@ -61,36 +91,82 @@ const Home = () => {
             <Tabs
               variant="pills"
               defaultActiveKey="trending"
-              className="row tabs_container "
+              className="row tabs_container w-100 justify-content-center"
             >
               <Tab
+                eventKey="info"
+                title="Info"
+                tabClassName="d-flex justify-content-center col-3 d-md-none"
+              >
+                <div className="d-md-none">
+                  <ProfileRecap />
+                </div>
+              </Tab>
+              <Tab
+                onEntered={() => {
+                  setLoadingFeeds(true);
+                  fetchFeeds(0);
+                }}
+                onExited={() => {
+                  setFeedsData([]);
+                  setNoMore(false);
+                }}
                 eventKey="feeds"
                 title="Feeds"
-                tabClassName="d-flex justify-content-center col-6"
+                tabClassName="d-flex justify-content-center col-md-2 col-3"
               >
-                <div className="tab_feeds_content mt-3 w-100 d-flex flex-column">
-                  <Activity
-                    username="username"
-                    bookName="Mat Biec"
-                    date="08/07/2021"
-                    rating={4}
-                    review="(theo lời một bài hát)."
-                    cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546928634l/43505141.jpg"
-                  />
-                  <Activity
-                    username="username"
-                    bookName="Mat Biec"
-                    date="08/07/2021"
-                    rating={4}
-                    review="Một tác phẩm được nhiều người bình chọn là hay nhất của nhà văn này. Một tác phẩm đang được dịch và giới thiệu tại Nhật Bản (theo thông tin từ các báo)… Bởi sự trong sáng của một tình cảm, bởi cái kết thúc rất, rất buồn khi suốt câu chuyện vẫn là những điều vui, buồn lẫn lộn (cái kết thúc không như mong đợi của mọi người). Cũng bởi, mắt biếc… năm xưa nay đâu (theo lời một bài hát)."
-                    cover="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1546928634l/43505141.jpg"
-                  />
+                <div
+                  style={{ width: "400px" }}
+                  className="mt-3 d-flex flex-column row"
+                >
+                  {loadingFeeds ? (
+                    <div className="text-center">
+                      <Spinner animation="border" variant="primary" />
+                    </div>
+                  ) : (
+                    <>
+                      {feedsData.length === 0 ? (
+                        <div className="d-flex align-items-center gap-1 font-italic justify-content-center">
+                          <FaExclamationTriangle />
+                          No Feeds
+                        </div>
+                      ) : (
+                        <>
+                          {feedsData.map((feed, idx) => {
+                            return (
+                              <Activity
+                                key={idx}
+                                username={feed.user[0].nickname}
+                                bookName={feed.book[0].title}
+                                date={feed.feed.date.slice(0, 10)}
+                                rating={feed.feed.rating}
+                                review={feed.feed.content}
+                                cover={feed.book[0].cover}
+                                avatar={feed.user[0].avatar}
+                                bookId={feed.feed.bookId}
+                                userId={feed.feed.username}
+                              />
+                            );
+                          })}
+                          {!noMore ? (
+                            <div
+                              style={{ cursor: "pointer" }}
+                              className="text-center text-primary font-italic"
+                              onClick={() => fetchFeeds(feedsData.length)}
+                            >
+                              Load more...
+                            </div>
+                          ) : null}
+                        </>
+                      )}
+                    </>
+                  )}
                 </div>
               </Tab>
               <Tab
                 eventKey="trending"
                 title="Trending"
-                tabClassName="col-6 d-flex justify-content-center"
+                tabClassName="col-3 col-md-2 d-flex justify-content-center"
               >
                 <div className="tab_trending_content mt-3 text-center">
                   {loading ? (
@@ -115,6 +191,16 @@ const Home = () => {
                       </Row>
                     </Container>
                   )}
+                </div>
+              </Tab>
+
+              <Tab
+                eventKey="ranking"
+                title="Ranking"
+                tabClassName="d-flex justify-content-center col-3 d-md-none"
+              >
+                <div className="d-md-none">
+                  <TopUsers onTab />
                 </div>
               </Tab>
             </Tabs>

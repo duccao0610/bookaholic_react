@@ -12,25 +12,32 @@ import RelatedBooks from "./RelatedBooks";
 import Activity from "./Activity";
 import { FaExclamationTriangle } from "react-icons/fa";
 import UserContext from "../context/userContext";
+import Modal from "react-bootstrap/Modal";
 const BookDetail = () => {
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser } = useContext(UserContext);
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
   const [bookReviews, setBookReviews] = useState([]);
+  const [bookRatings, setBookRatings] = useState([]);
   const [availability, setAvailability] = useState(false);
   const [showDetailRating, setShowDetailRating] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [relatedBooks, setRelatedBooks] = useState([]);
   const [relatedGenres, setRelatedGenres] = useState([]);
   const reviewInputRef = useRef(null);
+  const [showShelves, setShowShelves] = useState(false);
 
-  // const reviewed = bookReviews.find((e) =>
-  //   e.reviewInfo.nickname === currentUser ? currentUser.nickname : "BukayoNo77"
-  // );
-
-  console.log("currentUser", currentUser);
-  // console.log("reviewed", reviewed);
+  //Rating
+  const total = bookRatings.reduce((total, num) => {
+    return total + num.count;
+  }, 0);
+  const sum = bookRatings.reduce((total, num) => {
+    return total + num.count * num._id;
+  }, 0);
+  const average = (sum / total).toFixed(1);
+  //
+  const [noMore, setNoMore] = useState(total < 3 ? true : false);
 
   const handleShowMoreDesc = () => {
     setShowMore((prev) => !prev);
@@ -39,7 +46,10 @@ const BookDetail = () => {
   const handleShowDetailRating = () => {
     setShowDetailRating((prev) => !prev);
   };
-  const handleRefreshReviewsData = () => {
+  //handleFetchReviews
+  const [triggerFetchReviews, setTriggerFetchReviews] = useState(false);
+  useEffect(() => {
+    let loadingData = true;
     const requestOptions = {
       method: "GET",
       headers: {
@@ -47,10 +57,56 @@ const BookDetail = () => {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     };
-    fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
+    fetch(`http://localhost:5000/review/bookId/${params.id}`, requestOptions)
       .then((res) => res.json())
-      .then((resJson) => setBookReviews(resJson.bookReviews));
+      .then(async (resJson) => {
+        await setBookReviews(resJson);
+        if (resJson.length < 3 && loadingData) {
+          setNoMore(true);
+        }
+      });
+  }, [triggerFetchReviews, params.id]);
+  //
+
+  //handle load more reviews
+  useEffect(() => {
+    setNoMore(false);
+  }, [params.id]);
+  const handleLoadMoreReviews = () => {
+    const skip = bookReviews.length;
+    fetch(`http://localhost:5000/review/bookId/${params.id}/skip/${skip}`)
+      .then((res) => res.json())
+      .then((resJson) => {
+        setBookReviews((prev) => [...prev, ...resJson]);
+        if (resJson.length < 3) {
+          setNoMore(true);
+        }
+      });
   };
+
+  //handleFetchRatings
+  const [triggerFetchRatings, setTriggerFetchRatings] = useState(false);
+  useEffect(() => {
+    let loadingData = true;
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    };
+    fetch(`http://localhost:5000/review/ratings/${params.id}`, requestOptions)
+      .then((res) => res.json())
+      .then((resJson) => {
+        if (loadingData) {
+          setBookRatings(resJson);
+        }
+      });
+    return () => {
+      loadingData = false;
+    };
+  }, [params.id, triggerFetchRatings]);
+  //
 
   useEffect(() => {
     const requestOptions = {
@@ -66,13 +122,16 @@ const BookDetail = () => {
     fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
-        console.log("resjson", resJson);
         if (loadingData) {
           setLoading(false);
           setBook(resJson.info[0]);
           setRelatedGenres(resJson.relatedGenres);
           setRelatedBooks(resJson.relatedBooks);
-          setBookReviews(resJson.bookReviews);
+          setAvailability(
+            currentUser
+              ? currentUser.owning.includes(resJson.info[0]._id)
+              : false
+          );
         }
       });
 
@@ -80,6 +139,68 @@ const BookDetail = () => {
       loadingData = false;
     };
   }, [params.id]);
+
+  //check reviewed
+  const [isReviewed, setIsReviewed] = useState(false);
+  useEffect(() => {
+    if (currentUser && currentUser.username) {
+      fetch(
+        `http://localhost:5000/review/isReviewed/${currentUser.username}/${params.id}`
+      )
+        .then((res) => res.json())
+        .then((resJson) => {
+          if (resJson.msg === true) {
+            setIsReviewed(true);
+          } else {
+            setIsReviewed(false);
+          }
+        });
+    }
+  }, [currentUser, params.id, triggerFetchReviews]);
+
+  const toggleOwning = (isAdd) => {
+    fetch(
+      `http://localhost:5000/user/${currentUser._id}/owning/${
+        book._id
+      }/${String(isAdd)}`,
+      {
+        method: "PUT",
+      }
+    );
+    handleUpdateCurrentUser();
+  };
+
+  const handleShowShelves = () => {
+    setShowShelves(true);
+  };
+
+  const handleCloseShelves = () => {
+    setShowShelves(false);
+  };
+
+  const handleCheckShelf = (e) => {};
+
+  const handleAddBookToShelves = (e) => {
+    e.preventDefault();
+    let checkedShelves = [];
+    for (let i = 0; i < e.target.length - 1; i++) {
+      if (e.target[i].checked && !e.target[i].disabled) {
+        checkedShelves.push(e.target[i].value);
+      }
+    }
+    fetch(
+      `http://localhost:5000/user/${currentUser.username}/addBookToShelves`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookId: book._id,
+          checkedShelves: checkedShelves,
+        }),
+      }
+    );
+    handleUpdateCurrentUser();
+  };
 
   return (
     <div>
@@ -117,7 +238,7 @@ const BookDetail = () => {
                 <div className="d-flex align-items-end row  justify-content-around justify-content-lg-start">
                   <div className="mr-2 mb-2 mb-lg-0 col-lg-3">
                     <StarRatings
-                      rating={4}
+                      rating={!isNaN(average) ? Number(average) : 0}
                       starSpacing="3px"
                       numberOfStars={5}
                       starDimension="16px"
@@ -145,31 +266,38 @@ const BookDetail = () => {
                           }}
                           className="position-absolute text-nowrap"
                         >
-                          <BookRating ratings={[10, 6, 5, 4, 3]} />
+                          <BookRating
+                            ratings={bookRatings}
+                            total={total}
+                            average={!isNaN(average) ? Number(average) : 0}
+                          />
                         </div>
                       ) : null}
                     </div>
                   </div>
                   <div className="col-12 col-lg-3 text-left pl-lg-0 fw-bold">
-                    {book.reviews.length + " reviews"}
+                    {total + " reviews"}
                   </div>
                 </div>
                 <div className="my-1 d-flex flex-column flex-lg-row align-items-center pr-2 align-items-lg-center ">
-                  <div className="col-12 col-lg-5 p-0">
-                    <span className="mr-1 font-italic col-8  pl-0">
-                      You own this book ?
-                    </span>
-                    <div className=" col-3 pl-0">
-                      <Switch
-                        offColor="#E43712"
-                        handleDiameter={20}
-                        checked={availability}
-                        onChange={() => {
-                          setAvailability(!availability);
-                        }}
-                      />
+                  {currentUser ? (
+                    <div className="col-12 col-lg-5 p-0">
+                      <span className="mr-1 font-italic col-8  pl-0">
+                        You own this book ?
+                      </span>
+                      <div className=" col-3 pl-0">
+                        <Switch
+                          offColor="#E43712"
+                          handleDiameter={20}
+                          checked={availability}
+                          onChange={() => {
+                            setAvailability(!availability);
+                            toggleOwning(!availability);
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
                   <div className="p-0 col-lg-5 d-inline-block d-lg-none">
                     <Social />
                   </div>
@@ -189,6 +317,71 @@ const BookDetail = () => {
                     </span>
                   ) : null}
                 </div>
+                {currentUser ? (
+                  <div
+                    className="btn mt-2 text-white"
+                    onClick={handleShowShelves}
+                    style={{ background: "#5a3434" }}
+                  >
+                    Add to my shelves
+                  </div>
+                ) : null}
+
+                <Modal show={showShelves} onHide={handleCloseShelves}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>My shelves</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <form
+                      className="form-group"
+                      id="shelves"
+                      onSubmit={handleAddBookToShelves}
+                    >
+                      {currentUser
+                        ? currentUser.shelves
+                          ? currentUser.shelves.map((item, index) => {
+                              return (
+                                <div
+                                  className="form-check"
+                                  id={index}
+                                  key={index}
+                                >
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    value={item._id}
+                                    id={item._id}
+                                    defaultChecked={item.bookList.includes(
+                                      book._id
+                                    )}
+                                    disabled={item.bookList.includes(book._id)}
+                                    onChange={handleCheckShelf}
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor={item._id}
+                                  >
+                                    {item.shelfName}
+                                  </label>
+                                </div>
+                              );
+                            })
+                          : null
+                        : null}
+                    </form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <button
+                      style={{ background: "#5a3434 " }}
+                      className="btn text-white"
+                      type="submit"
+                      form="shelves"
+                      onClick={handleCloseShelves}
+                    >
+                      Save
+                    </button>
+                  </Modal.Footer>
+                </Modal>
                 <div className="mt-4 d-lg-none">
                   <RelatedBooks books={relatedBooks} />
                 </div>
@@ -200,7 +393,11 @@ const BookDetail = () => {
                   <h5 className="px-0 py-2 fw-bold">Community reviews</h5>
                 </div>
                 <div
-                  onClick={() => reviewInputRef.current.scrollIntoView()}
+                  onClick={() =>
+                    reviewInputRef.current !== null
+                      ? reviewInputRef.current.scrollIntoView()
+                      : null
+                  }
                   style={{ cursor: "pointer" }}
                   className="font-italic col-12 p-0 col-lg-4 d-flex justify-content-center align-items-center"
                 >
@@ -220,37 +417,55 @@ const BookDetail = () => {
                         <Activity
                           key={idx}
                           inPage="book-detail"
-                          username={review.reviewInfo.nickname}
+                          username={review.userInfo[0].nickname}
                           bookName={book.title}
                           authors={book.authors}
-                          rating={review.reviewInfo.reviews.rating}
-                          cover={review.reviewInfo.avatar}
-                          review={review.reviewInfo.reviews.content}
-                          date={review.reviewInfo.reviews.date.slice(0, 10)}
+                          rating={review.rating}
+                          cover={review.userInfo[0].avatar}
+                          review={review.content}
+                          date={review.date.slice(0, 10)}
+                          userRate={review.userInfo[0].userRate}
+                          userLink={review.userInfo[0].username}
+                          isMyReview={
+                            currentUser
+                              ? review.userInfo[0].username ===
+                                currentUser.username
+                              : false
+                          }
+                          reviewId={review._id}
+                          refreshReviewsData={() =>
+                            setTriggerFetchReviews((prev) => !prev)
+                          }
+                          refreshRatingsData={() => {
+                            setTriggerFetchRatings((prev) => !prev);
+                          }}
+                          setNoMore={() => setNoMore(false)}
                         />
                       );
                     })}
                   </>
                 )}
-              </div>
-              {currentUser ? (
-                bookReviews.find(
-                  (e) => e.reviewInfo.nickname === currentUser.nickname
-                ) === undefined ? (
-                  <div ref={reviewInputRef}>
-                    <AddReviewForm
-                      refreshReviewsData={handleRefreshReviewsData}
-                      bookId={book._id}
-                    />
+                {!noMore ? (
+                  <div
+                    onClick={handleLoadMoreReviews}
+                    className="text-primary text-center font-italic"
+                    style={{ cursor: "pointer" }}
+                  >
+                    Load more..
                   </div>
-                ) : null
-              ) : (
-                <div ref={reviewInputRef}>
-                  <AddReviewForm
-                    refreshReviewsData={handleRefreshReviewsData}
-                    bookId={book._id}
-                  />
-                </div>
+                ) : null}
+              </div>
+              {isReviewed ? null : (
+                <AddReviewForm
+                  refreshReviewsData={() =>
+                    setTriggerFetchReviews((prev) => !prev)
+                  }
+                  refreshRatingsData={() => {
+                    setTriggerFetchRatings((prev) => !prev);
+                  }}
+                  bookId={book._id}
+                  setNoMore={() => setNoMore(false)}
+                />
               )}
             </div>
           </div>

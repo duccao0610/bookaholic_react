@@ -1,5 +1,5 @@
 import ProfileVoting from "./ProfileVoting";
-import { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import UserContext from "../context/userContext";
 import { AiFillCamera } from "react-icons/ai";
 import Alert from "./Alert";
@@ -15,7 +15,7 @@ const PersonalInfo = ({
   downvote,
   upvote,
 }) => {
-  const { currentUser, handleUpdateCurrentUser, socketRef } =
+  const { currentUser, handleUpdateCurrentUser, setCurrentUser } =
     useContext(UserContext);
 
   const [editProfileBtn, setEditProfileBtn] = useState(true);
@@ -34,13 +34,7 @@ const PersonalInfo = ({
       }).catch((err) => console.log(err));
     }
 
-    socketRef.emit("updateProfile", "profile update");
-    socketRef.on("updateCurrentUser", () => {
-      handleUpdateCurrentUser(
-        JSON.parse(sessionStorage.getItem("currentUser")).id
-      );
-      console.log("updated");
-    });
+    handleUpdateCurrentUser();
 
     setEditProfileBtn(!editProfileBtn);
   };
@@ -76,7 +70,6 @@ const PersonalInfo = ({
   const [displayAvatar, setDisplayAvatar] = useState(avatar);
   const handleUploadAvatar = (event) => {
     const inputFile = event.target.files[0];
-    console.log(inputFile.size);
 
     // Check file size
     if (inputFile.size > 5 * 1024 * 1024) {
@@ -102,27 +95,32 @@ const PersonalInfo = ({
 
   const [upvoteCount, setUpvoteCount] = useState(upvote);
   const [downvoteCount, setDownvoteCount] = useState(downvote);
-  const [shouldFetchVote, setShouldFetchVote] = useState(false);
-  const [triggerFetchVote, setTriggerFetchVote] = useState(false);
-  const [voteStatus, setVoteStatus] = useState();
+
+  // Initialize vote status when direct to profile page
   const prevVoteStatusRef = useRef();
+  const [voteStatus, setVoteStatus] = useState("notVote");
+  const searchVotedUsersListRef = useRef();
 
   useEffect(() => {
-    if (currentUser) {
-      const searchVotedUsersList = currentUser.votedUsersList.findIndex(
+    if (currentUser && currentUser.votedUsersList) {
+      searchVotedUsersListRef.current = currentUser.votedUsersList.findIndex(
         (item) => item.username === username
       );
-      if (searchVotedUsersList !== -1) {
-        if (currentUser.votedUsersList[searchVotedUsersList].isUpvote) {
+      if (searchVotedUsersListRef.current !== -1) {
+        if (
+          currentUser.votedUsersList[searchVotedUsersListRef.current].isUpvote
+        ) {
           setVoteStatus("upvote");
         } else {
           setVoteStatus("downvote");
         }
-      } else {
-        setVoteStatus("notVote");
       }
     }
   }, [currentUser, username]);
+
+  // Handle on voting an user
+  const [shouldFetchVote, setShouldFetchVote] = useState(false);
+  const [triggerFetchVote, setTriggerFetchVote] = useState(false);
 
   const handleVote = (newVoteStatus) => {
     prevVoteStatusRef.current = voteStatus;
@@ -130,22 +128,29 @@ const PersonalInfo = ({
       showAlert("vote", "fail");
       return;
     }
-
+    let update = { ...currentUser };
     if (newVoteStatus === "upvote" && voteStatus === "notVote") {
-      setUpvoteCount((prev) => (prev += 1));
+      setUpvoteCount(upvoteCount + 1);
+      update.votedUsersList.push({ username: username, isUpvote: true });
     } else if (newVoteStatus === "upvote" && voteStatus === "downvote") {
-      setUpvoteCount((prev) => (prev += 1));
-      setDownvoteCount((prev) => (prev -= 1));
+      setUpvoteCount(upvoteCount + 1);
+      setDownvoteCount(downvoteCount - 1);
+      update.votedUsersList[searchVotedUsersListRef.current].isUpvote = true;
     } else if (newVoteStatus === "downvote" && voteStatus === "notVote") {
-      setDownvoteCount((prev) => (prev += 1));
+      setDownvoteCount(downvoteCount + 1);
+      update.votedUsersList.push({ username: username, isUpvote: false });
     } else if (newVoteStatus === "downvote" && voteStatus === "upvote") {
-      setDownvoteCount((prev) => (prev += 1));
-      setUpvoteCount((prev) => (prev -= 1));
+      setDownvoteCount(downvoteCount + 1);
+      setUpvoteCount(upvoteCount - 1);
+      update.votedUsersList[searchVotedUsersListRef.current].isUpvote = false;
     } else if (newVoteStatus === "notVote" && voteStatus === "upvote") {
-      setUpvoteCount((prev) => (prev -= 1));
+      setUpvoteCount(upvoteCount - 1);
+      update.votedUsersList.splice(searchVotedUsersListRef.current, 1);
     } else if (newVoteStatus === "notVote" && voteStatus === "downvote") {
-      setDownvoteCount((prev) => (prev -= 1));
+      setDownvoteCount(downvoteCount - 1);
+      update.votedUsersList.splice(searchVotedUsersListRef.current, 1);
     }
+    setCurrentUser(update);
     setVoteStatus(newVoteStatus);
     setShouldFetchVote(true);
     setTriggerFetchVote(!triggerFetchVote);
@@ -166,21 +171,17 @@ const PersonalInfo = ({
         }),
       })
         .then(() => {
-          handleUpdateCurrentUser(
-            JSON.parse(sessionStorage.getItem("currentUser")).id
-          );
-        })
-        .then(() => {
           setShouldFetchVote(false);
-          showAlert("vote", "success");
-        });
+          handleUpdateCurrentUser();
+        })
+        .then(showAlert("vote", "success"));
     }
   }, [triggerFetchVote]);
 
   switch (inPage) {
     case "profile":
       return (
-        <div className="d-flex mb-4 flex-column flex-sm-row flex-md-row flex-lg-row">
+        <div className="d-flex flex-column flex-sm-row flex-md-row flex-lg-row mb-md-3">
           <Alert
             alertClose={alertClose}
             alertVisibility={alertVisibility}
@@ -198,7 +199,7 @@ const PersonalInfo = ({
                   className="border rounded-circle overflow-hidden"
                   width="150px"
                   height="150px"
-                  style={{ objectFit: "contain" }}
+                  style={{ objectFit: "cover" }}
                 />
               </div>
               {isMyProfile ? (
@@ -221,12 +222,7 @@ const PersonalInfo = ({
                     className="d-none"
                     onChange={(e) => {
                       handleUploadAvatar(e);
-                      socketRef.emit("updateAvatar", "Avatar update");
-                      socketRef.on("updateCurrentUser", () => {
-                        handleUpdateCurrentUser(
-                          JSON.parse(sessionStorage.getItem("currentUser")).id
-                        );
-                      });
+                      handleUpdateCurrentUser();
                     }}
                   />
                 </>
@@ -244,7 +240,7 @@ const PersonalInfo = ({
           <div className="ms-lg-5 w-100">
             <div className="border-bottom pb-2 d-flex justify-content-between">
               {editProfileBtn ? (
-                <h4 className="text-uppercase m-0">{nicknameInputVal}</h4>
+                <h4 className="m-0">{nicknameInputVal}</h4>
               ) : (
                 <input
                   placeholder="Max 10 characters"

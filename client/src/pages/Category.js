@@ -8,6 +8,7 @@ const Category = () => {
   const [loading, setLoading] = useState(true);
   const [booksData, setBooksData] = useState([]);
   const [genresData, setGenresData] = useState([]);
+  const [noMore, setNoMore] = useState(false);
   useEffect(() => {
     let loadingData = true;
     setLoading(true);
@@ -16,15 +17,33 @@ const Category = () => {
       .then((resJson) => {
         if (loadingData) {
           setLoading(false);
-          console.log("CategoryData", resJson);
           setBooksData(resJson.books);
           setGenresData(resJson.otherCategories);
+          if (resJson.books.length < 12) {
+            setNoMore(true);
+          }
         }
       });
     return () => {
       loadingData = false;
     };
   }, [params.category]);
+
+  useEffect(() => {
+    setNoMore(false);
+  }, [params.category]);
+
+  const handleLoadMoreBooks = () => {
+    const skip = booksData.length;
+    fetch(`http://localhost:5000/category/${params.category}/skip/${skip}`)
+      .then((res) => res.json())
+      .then((resJson) => {
+        setBooksData((prev) => [...prev, ...resJson]);
+        if (resJson.length < 12) {
+          setNoMore(true);
+        }
+      });
+  };
   return (
     <>
       {loading ? (
@@ -33,9 +52,14 @@ const Category = () => {
         </div>
       ) : (
         <div className="min-vh-100">
-          <ol className="breadcrumb fs-5 fw-bold bg-white pt-4 pl-lg-5">
+          <ol
+            className="breadcrumb fs-5 fw-bold pt-4 pl-lg-5"
+            style={{ background: "#f7f7fa" }}
+          >
             <li className="breadcrumb-item">Category</li>
-            <li className="breadcrumb-item text-primary">{params.category}</li>
+            <li className="breadcrumb-item" style={{ color: "#5a3434" }}>
+              {params.category}
+            </li>
           </ol>
           <div className="col-12 row justify-content-around mx-auto">
             <div className="mt-lg-2 col-12 col-md-8 col-lg-8 d-flex justify-content-start mx-auto mx-md-2 mx-lg-2 px-lg-0 py-2 py-lg-2 row">
@@ -44,6 +68,15 @@ const Category = () => {
                   <BookItem key={book._id} book={book} onlyImage onCategory />
                 );
               })}
+              {!noMore ? (
+                <div
+                  onClick={handleLoadMoreBooks}
+                  className="text-primary text-center font-italic"
+                  style={{ cursor: "pointer" }}
+                >
+                  Load more...
+                </div>
+              ) : null}
             </div>
             <div className="ml-5 d-none d-md-inline-block col-md-3 col-lg-3">
               <RelatedGenres genres={genresData} />

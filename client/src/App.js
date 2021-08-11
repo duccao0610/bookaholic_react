@@ -22,22 +22,53 @@ function App() {
   const expTimeTemp = sessionStorage.getItem("expTime");
   const [expTime, setExpTime] = useState(expTimeTemp ? expTimeTemp : undefined);
   const currentTemp = JSON.parse(sessionStorage.getItem("currentUser"));
-  const [currentUser, setCurrentUser] = useState(currentTemp ? {} : null);
   const [alertVisibility, setAlertVisibility] = useState(false);
   const [alertType, setAlertType] = useState();
   const [alertStatus, setAlertStatus] = useState();
   const [alertDetail, setAlertDetail] = useState();
+  //currentUser
+  const [currentUser, setCurrentUser] = useState(currentTemp);
+  const [triggerFetch, setTriggerFetch] = useState(false);
+  const currentUserRef = useRef();
 
   useEffect(() => {
     socketRef.current = io("http://localhost:5000");
-    socketRef.current.emit("hello", "world");
-    socketRef.current.on("setCurrentUser", () => {
-      const current = JSON.parse(sessionStorage.getItem("currentUser"));
-      if (current) {
-        handleUpdateCurrentUser(current.id);
+    const current = JSON.parse(sessionStorage.getItem("currentUser"));
+    if (current) {
+      fetch(`http://localhost:5000/user/id/${current.id}`)
+        .then((res) => res.json())
+        .then((resJson) => {
+          if (resJson.message === true) {
+            setCurrentUser(resJson.user[0]);
+            currentUserRef.current = resJson.user[0];
+          }
+        });
+      socketRef.current.emit("setOnline", current.username);
+    }
+  }, [triggerFetch]);
+
+  useEffect(() => {
+    socketRef.current.on(
+      "receiveFriendReq",
+      (senderUsername, receiverUsername) => {
+        if (currentUser.pendingFriendRequests) {
+          const updateForCurrentUser = { ...currentUser };
+          updateForCurrentUser.pendingFriendRequests.push({
+            senderUsername: senderUsername,
+            receiverUsername: receiverUsername,
+          });
+          setCurrentUser(updateForCurrentUser);
+        }
+        handleUpdateCurrentUser();
       }
+    );
+    socketRef.current.on("acceptFriendReq", () => {
+      handleUpdateCurrentUser();
     });
-  }, []);
+    socketRef.current.on("declineFriendReq", () => {
+      handleUpdateCurrentUser();
+    });
+  }, [currentUser]);
 
   const showAlert = (type, status, detail) => {
     setAlertVisibility(true);
@@ -58,33 +89,8 @@ function App() {
     setExpTime(time);
   };
 
-  // useEffect(() => {
-  //   let loadingData = true;
-  //   const current = JSON.parse(sessionStorage.getItem("currentUser"));
-  //   if (current) {
-  //     fetch(`http://localhost:5000/user/id/${current.id}`)
-  //       .then((res) => res.json())
-  //       .then((resJson) => {
-  //         if (resJson.message === true && loadingData) {
-  //           console.log("CURRENT", resJson);
-  //           setCurrentUser(resJson.user[0]);
-  //         }
-  //       });
-  //   }
-  //   return () => {
-  //     loadingData = false;
-  //   };
-  // }, []);
-
-  const handleUpdateCurrentUser = (userId) => {
-    fetch(`http://localhost:5000/user/id/${userId}`)
-      .then((res) => res.json())
-      .then((resJson) => {
-        if (resJson.message === true) {
-          console.log("CURRENT", resJson);
-          setCurrentUser(resJson.user[0]);
-        }
-      });
+  const handleUpdateCurrentUser = () => {
+    setTriggerFetch(!triggerFetch);
   };
 
   useEffect(() => {
@@ -125,10 +131,7 @@ function App() {
           />
           <Route path="/user/:username/shelves" component={Shelves} />
           <Route path="/user/:username" exact component={Profile} />
-          <Route
-            path="/book/:id"
-            render={() => <BookDetail key={Date.now()} />}
-          />
+          <Route path="/book/:id" component={BookDetail} />
           <Route path="/category/:category" component={Category} />
           <Route path="/auth/login" component={Login} />
           <Route path="/auth/register" component={Register} />

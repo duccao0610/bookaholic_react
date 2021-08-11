@@ -8,7 +8,7 @@ const SearchResultsOverlay = ({ searchValue }) => {
   const [usersData, setUsersData] = useState([]);
   const [option, setOption] = useState("book");
   const [loading, setLoading] = useState(true);
-  console.log("usersData", usersData);
+
   useEffect(() => {
     const requestOptions = {
       method: "GET",
@@ -32,7 +32,6 @@ const SearchResultsOverlay = ({ searchValue }) => {
           .then((resJson) => {
             if (loadingData) {
               setLoading(false);
-              console.log("Search", resJson);
               if (option === "book") {
                 setBooksData(resJson);
               } else {

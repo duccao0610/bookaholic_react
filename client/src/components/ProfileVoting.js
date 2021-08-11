@@ -1,4 +1,3 @@
-// import { useState, useContext, useEffect } from 'react';
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 
 const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {
@@ -24,12 +23,12 @@ const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {
 
     case "profile":
       return (
-        <div className="row w-100 mt-2">
+        <div className="row w-100 mt-2 mx-0">
           <div className="form-check col-6 p-0">
             <input
               className="btn-check"
               type="checkbox"
-              value='upvote'
+              value="upvote"
               id="upvote"
               checked={voteStatus === "upvote"}
               onChange={handleVote}
@@ -46,7 +45,7 @@ const ProfileVoting = ({ upvote, downvote, inPage, voteStatus, onVote }) => {
             <input
               className="btn-check"
               type="checkbox"
-              value='downvote'
+              value="downvote"
               id="downvote"
               checked={voteStatus === "downvote"}
               onChange={handleVote}
