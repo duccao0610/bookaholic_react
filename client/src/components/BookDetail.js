@@ -14,8 +14,7 @@ import { FaExclamationTriangle } from "react-icons/fa";
 import UserContext from "../context/userContext";
 import Modal from "react-bootstrap/Modal";
 const BookDetail = () => {
-  const { currentUser, handleUpdateCurrentUser, setCurrentUser } =
-    useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
@@ -123,7 +122,6 @@ const BookDetail = () => {
     fetch(`http://localhost:5000/book/${params.id}`, requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
-        console.log("resjson", resJson);
         if (loadingData) {
           setLoading(false);
           setBook(resJson.info[0]);

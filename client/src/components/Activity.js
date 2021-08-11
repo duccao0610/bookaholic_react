@@ -28,18 +28,8 @@ const Activity = ({
   userId,
 }) => {
   const [reviewContent, setReviewContent] = useState(review);
-  const [editReviewBtn, setEditReviewBtn] = useState("Edit");
   const [showMore, setShowMore] = useState(false);
 
-  const handleEditReview = () => {
-    if (editReviewBtn === "Edit") {
-      // Press 'Edit'
-      setEditReviewBtn("Save");
-    } else {
-      // Press 'Save'
-      setEditReviewBtn("Edit");
-    }
-  };
   const [reviewRating, setReviewRating] = useState(rating);
   const [editActivity, setEditActivity] = useState(false);
   const handleEditActivity = () => {
