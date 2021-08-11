@@ -47,4 +47,18 @@ const acceptFriendReq = async (senderId, receiverId, requestId) => {
   );
 };
 
-module.exports = { updatePendingFriendReq, acceptFriendReq };
+const declineFriendReq = async (senderUsername, receiverUsername) => {
+  await User.updateMany(
+    { username: { $in: [senderUsername, receiverUsername] } },
+    {
+      $pull: {
+        pendingFriendRequests: {
+          senderUsername: senderUsername,
+          receiverUsername: receiverUsername,
+        },
+      },
+    }
+  );
+};
+
+module.exports = { updatePendingFriendReq, acceptFriendReq, declineFriendReq };

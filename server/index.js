@@ -4,6 +4,7 @@ const socketIo = require("socket.io");
 const cors = require("cors");
 const router = require("./api");
 const mongoose = require("mongoose");
+const User = require("./models/User");
 const {
   setOnline,
   getReceiverSocketId,
@@ -12,6 +13,7 @@ const {
 const {
   updatePendingFriendReq,
   acceptFriendReq,
+  declineFriendReq,
 } = require("./services/friendRequest");
 
 const app = express();
@@ -50,8 +52,21 @@ io.on("connection", (socket) => {
     }
   );
 
-  socket.on("acceptFriendReq", (senderId, receiverId, requestId) => {
+  socket.on("acceptFriendReq", async (senderId, receiverId, requestId) => {
     acceptFriendReq(senderId, receiverId, requestId);
+    const sender = await User.findOne({ _id: senderId });
+    if (sender.onlineStatus.isOnline) {
+      io.to(sender.onlineStatus.socketId).emit("acceptFriendReq");
+    }
+  });
+
+  socket.on("declineFriendReq", async (senderUsername, receiverUsername) => {
+    declineFriendReq(senderUsername, receiverUsername);
+    const sender = await User.findOne({ username: senderUsername });
+    if (sender.onlineStatus.isOnline) {
+      io.to(sender.onlineStatus.socketId).emit("declineFriendReq");
+      console.log(1);
+    }
   });
 
   socket.on("disconnect", async () => {

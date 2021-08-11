@@ -12,8 +12,10 @@ import RelatedBooks from "./RelatedBooks";
 import Activity from "./Activity";
 import { FaExclamationTriangle } from "react-icons/fa";
 import UserContext from "../context/userContext";
+import Modal from "react-bootstrap/Modal";
 const BookDetail = () => {
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser, setCurrentUser } =
+    useContext(UserContext);
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [book, setBook] = useState(null);
@@ -26,6 +28,7 @@ const BookDetail = () => {
   const [relatedGenres, setRelatedGenres] = useState([]);
   const reviewInputRef = useRef(null);
   const [noMore, setNoMore] = useState(false);
+  const [showShelves, setShowShelves] = useState(false);
 
   //Rating
   const total = bookRatings.reduce((total, num) => {
@@ -119,6 +122,7 @@ const BookDetail = () => {
           setBook(resJson.info[0]);
           setRelatedGenres(resJson.relatedGenres);
           setRelatedBooks(resJson.relatedBooks);
+          setAvailability(currentUser.owning.includes(resJson.info[0]._id));
         }
       });
 
@@ -146,31 +150,93 @@ const BookDetail = () => {
     }
   }, [currentUser, params.id, triggerFetchReviews]);
 
+  const toggleOwning = (isAdd) => {
+    fetch(
+      `http://localhost:5000/user/${currentUser._id}/owning/${
+        book._id
+      }/${String(isAdd)}`,
+      {
+        method: "PUT",
+      }
+    );
+    const update = { ...currentUser };
+    const index = update.owning.findIndex((item) => item === book._id);
+    if (index === -1) {
+      update.owning.push(book._id);
+    } else {
+      update.owning.splice(index, 1);
+    }
+    setCurrentUser(update);
+  };
+
+  const handleShowShelves = () => {
+    setShowShelves(true);
+  };
+
+  const handleCloseShelves = () => {
+    setShowShelves(false);
+  };
+
+  const handleCheckShelf = (e) => {
+    // console.log(e.target.value);
+  };
+
+  const handleAddBookToShelves = (e) => {
+    e.preventDefault();
+    let checkedShelves = [];
+    console.log(e.target[0].checked);
+    for (let i = 0; i < e.target.length - 1; i++) {
+      if (e.target[i].checked && !e.target[i].disabled) {
+        checkedShelves.push(e.target[i].value);
+      }
+    }
+
+    const update = { ...currentUser };
+    update.shelves.forEach((shelf) => {
+      if (checkedShelves.includes(shelf._id)) {
+        shelf.bookList.push(book._id);
+      }
+    });
+    setCurrentUser(update);
+
+    fetch(
+      `http://localhost:5000/user/${currentUser.username}/addBookToShelves`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookId: book._id,
+          checkedShelves: checkedShelves,
+        }),
+      }
+    );
+  };
+
   return (
     <div>
       {loading ? (
-        <div className="text-center vh-100 ">
-          <Spinner animation="border" variant="primary" className="mt-3" />
+        <div className='text-center vh-100 '>
+          <Spinner animation='border' variant='primary' className='mt-3' />
         </div>
       ) : book === null ? (
         <div>Not Found</div>
       ) : (
-        <div className="book_detail_container d-flex flex-column flex-lg-row align-items-center justify-content-lg-center">
-          <div className="d-flex flex-column book_detail_info col-9 col-lg-7 mx-auto py-5 min-vh-100">
-            <div className=" p-0 d-flex flex-column flex-lg-row pb-2 row">
-              <div className="book_detail_cover p-0 mb-1 col-9 col-lg-3 h-100">
+        <div className='book_detail_container d-flex flex-column flex-lg-row align-items-center justify-content-lg-center'>
+          <div className='d-flex flex-column book_detail_info col-9 col-lg-7 mx-auto py-5 min-vh-100'>
+            <div className=' p-0 d-flex flex-column flex-lg-row pb-2 row'>
+              <div className='book_detail_cover p-0 mb-1 col-9 col-lg-3 h-100'>
                 <Image
-                  className="rounded border-0 w-100 "
+                  className='rounded border-0 w-100 '
                   style={{ boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px" }}
-                  alt=""
+                  alt=''
                   src={book.cover}
                 />
               </div>
-              <div className="col-12 col-lg-9 pl-0 pl-lg-3">
-                <div className="book_detail_title fw-normal fs-2 fw-bold">
+              <div className='col-12 col-lg-9 pl-0 pl-lg-3'>
+                <div className='book_detail_title fw-normal fs-2 fw-bold'>
                   {book.title}
                 </div>
-                <div className="book_detail_authors font-italic fw-light fs-5">
+                <div className='book_detail_authors font-italic fw-light fs-5'>
                   <span>by </span>
                   {book.authors.map((author, idx) => (
                     <span key={idx}>
@@ -179,28 +245,28 @@ const BookDetail = () => {
                     </span>
                   ))}
                 </div>
-                <div className="d-flex align-items-end row  justify-content-around justify-content-lg-start">
-                  <div className="mr-2 mb-2 mb-lg-0 col-lg-3">
+                <div className='d-flex align-items-end row  justify-content-around justify-content-lg-start'>
+                  <div className='mr-2 mb-2 mb-lg-0 col-lg-3'>
                     <StarRatings
                       rating={!isNaN(average) ? Number(average) : 0}
-                      starSpacing="3px"
+                      starSpacing='3px'
                       numberOfStars={5}
-                      starDimension="16px"
-                      starRatedColor="yellow"
+                      starDimension='16px'
+                      starRatedColor='yellow'
                     />
                   </div>
                   <div
-                    className="mb-0 d-flex align-items-end mr-2 col-12 col-lg-3  p-lg-0"
+                    className='mb-0 d-flex align-items-end mr-2 col-12 col-lg-3  p-lg-0'
                     style={{ cursor: "pointer" }}
                   >
-                    <BiBarChart size="22" color="green" />
+                    <BiBarChart size='22' color='green' />
                     <div
-                      className="position-relative "
+                      className='position-relative '
                       onClick={handleShowDetailRating}
                       onMouseOver={handleShowDetailRating}
                       onMouseLeave={handleShowDetailRating}
                     >
-                      <span className="text-success ">Rating detail</span>
+                      <span className='text-success '>Rating detail</span>
                       {showDetailRating ? (
                         <div
                           style={{
@@ -208,7 +274,7 @@ const BookDetail = () => {
                             left: "10px",
                             zIndex: "3",
                           }}
-                          className="position-absolute text-nowrap"
+                          className='position-absolute text-nowrap'
                         >
                           <BookRating
                             ratings={bookRatings}
@@ -219,54 +285,109 @@ const BookDetail = () => {
                       ) : null}
                     </div>
                   </div>
-                  <div className="col-12 col-lg-3 text-left pl-lg-0 fw-bold">
+                  <div className='col-12 col-lg-3 text-left pl-lg-0 fw-bold'>
                     {total + " reviews"}
                   </div>
                 </div>
-                <div className="my-1 d-flex flex-column flex-lg-row align-items-center pr-2 align-items-lg-center ">
-                  <div className="col-12 col-lg-5 p-0">
-                    <span className="mr-1 font-italic col-8  pl-0">
+                <div className='my-1 d-flex flex-column flex-lg-row align-items-center pr-2 align-items-lg-center '>
+                  <div className='col-12 col-lg-5 p-0'>
+                    <span className='mr-1 font-italic col-8  pl-0'>
                       You own this book ?
                     </span>
-                    <div className=" col-3 pl-0">
+                    <div className=' col-3 pl-0'>
                       <Switch
-                        offColor="#E43712"
+                        offColor='#E43712'
                         handleDiameter={20}
                         checked={availability}
                         onChange={() => {
                           setAvailability(!availability);
+                          toggleOwning(!availability);
                         }}
                       />
                     </div>
                   </div>
-                  <div className="p-0 col-lg-5 d-inline-block d-lg-none">
+                  <div className='p-0 col-lg-5 d-inline-block d-lg-none'>
                     <Social />
                   </div>
                 </div>
                 <div>
-                  <h6 className="fw-bold">Description</h6>
+                  <h6 className='fw-bold'>Description</h6>
                   {showMore
                     ? book.description
                     : book.description.substring(0, 300)}
                   {book.description.length > 300 ? (
                     <span
                       style={{ cursor: "pointer" }}
-                      className="text-info"
+                      className='text-info'
                       onClick={handleShowMoreDesc}
                     >
                       {showMore ? " (less)" : " ...more"}
                     </span>
                   ) : null}
                 </div>
-                <div className="mt-4 d-lg-none">
+                <div
+                  className='btn btn-primary mt-2'
+                  onClick={handleShowShelves}
+                >
+                  Add to my shelves
+                </div>
+                <Modal show={showShelves} onHide={handleCloseShelves}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>My shelves</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    <form
+                      className='form-group'
+                      id='shelves'
+                      onSubmit={handleAddBookToShelves}
+                    >
+                      {currentUser.shelves
+                        ? currentUser.shelves.map((item, index) => {
+                            return (
+                              <div className='form-check' id={index}>
+                                <input
+                                  className='form-check-input'
+                                  type='checkbox'
+                                  value={item._id}
+                                  id={item._id}
+                                  defaultChecked={item.bookList.includes(
+                                    book._id
+                                  )}
+                                  disabled={item.bookList.includes(book._id)}
+                                  onChange={handleCheckShelf}
+                                />
+                                <label
+                                  className='form-check-label'
+                                  htmlFor={item._id}
+                                >
+                                  {item.shelfName}
+                                </label>
+                              </div>
+                            );
+                          })
+                        : null}
+                    </form>
+                  </Modal.Body>
+                  <Modal.Footer>
+                    <button
+                      className='btn btn-primary'
+                      type='submit'
+                      form='shelves'
+                      // onClick={handleAddBookToShelf}
+                    >
+                      Save
+                    </button>
+                  </Modal.Footer>
+                </Modal>
+                <div className='mt-4 d-lg-none'>
                   <RelatedBooks books={relatedBooks} />
                 </div>
               </div>
             </div>
-            <div className="row mt-5">
-              <div className="row mb-3 py-1 mx-auto">
-                <div className="col-12 col-lg-8 d-flex align-items-center justify-content-center justify-content-lg-start">
-                  <h5 className="px-0 py-2 fw-bold">Community reviews</h5>
+            <div className='row mt-5'>
+              <div className='row mb-3 py-1 mx-auto'>
+                <div className='col-12 col-lg-8 d-flex align-items-center justify-content-center justify-content-lg-start'>
+                  <h5 className='px-0 py-2 fw-bold'>Community reviews</h5>
                 </div>
                 <div
                   onClick={() =>
@@ -275,14 +396,14 @@ const BookDetail = () => {
                       : null
                   }
                   style={{ cursor: "pointer" }}
-                  className="font-italic col-12 p-0 col-lg-4 d-flex justify-content-center align-items-center"
+                  className='font-italic col-12 p-0 col-lg-4 d-flex justify-content-center align-items-center'
                 >
                   <u>Write your review ...</u>
                 </div>
               </div>
-              <div className="p-0">
+              <div className='p-0'>
                 {bookReviews.length === 0 ? (
-                  <div className="d-flex align-items-center justify-content-center my-3 font-italic">
+                  <div className='d-flex align-items-center justify-content-center my-3 font-italic'>
                     <FaExclamationTriangle />
                     Not have a review yet
                   </div>
@@ -292,7 +413,7 @@ const BookDetail = () => {
                       return (
                         <Activity
                           key={idx}
-                          inPage="book-detail"
+                          inPage='book-detail'
                           username={review.userInfo[0].nickname}
                           bookName={book.title}
                           authors={book.authors}
@@ -324,7 +445,7 @@ const BookDetail = () => {
                 {!noMore ? (
                   <div
                     onClick={handleLoadMoreReviews}
-                    className="text-primary text-center font-italic"
+                    className='text-primary text-center font-italic'
                     style={{ cursor: "pointer" }}
                   >
                     Load more..
@@ -345,7 +466,7 @@ const BookDetail = () => {
               )}
             </div>
           </div>
-          <div className="pt-5 d-none d-lg-block col-lg-3  mr-5 vh-100 align-self-lg-start">
+          <div className='pt-5 d-none d-lg-block col-lg-3  mr-5 vh-100 align-self-lg-start'>
             <Social />
             <RelatedBooks books={relatedBooks} />
             <RelatedGenres genres={relatedGenres} related />

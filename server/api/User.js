@@ -16,6 +16,8 @@ const {
   voteUser,
   sendFriendReq,
   getFeedsById,
+  toggleOwning,
+  addBookToShelves,
 } = require("../controller/Users.js");
 
 const authentication = require("../middlewares/authentication");
@@ -41,5 +43,7 @@ router.put("/:username/editProfile", editUserProfile);
 router.put("/:username/uploadAvatar", uploadAvatar);
 router.put("/voteUser", voteUser);
 router.put("/sendFriendReq", sendFriendReq);
+router.put("/:userId/owning/:bookId/:isAdd", toggleOwning);
+router.put("/:username/addBookToShelves", addBookToShelves);
 
 module.exports = router;

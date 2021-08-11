@@ -4,7 +4,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const getRecapInfoById = async (req, res) => {
   const user = await User.find(
     { _id: ObjectId(req.params.id) },
-    "nickname username userRate friends avatar owning votedUsersList pendingFriendRequests"
+    "nickname username userRate friends avatar owning votedUsersList pendingFriendRequests shelves"
   );
   if (user) {
     res.json({ user: user, message: true });
@@ -439,6 +439,43 @@ const getFeedsById = async (req, res) => {
     res.json(feeds);
   } catch (err) {
     console.log(err);
+
+const toggleOwning = async (req, res) => {
+  try {
+    if (req.params.isAdd === "true") {
+      await User.updateOne(
+        { _id: req.params.userId },
+        {
+          $push: { owning: ObjectId(req.params.bookId) },
+        }
+      );
+    } else if (req.params.isAdd === "false") {
+      await User.updateOne(
+        { _id: req.params.userId },
+        {
+          $pull: { owning: ObjectId(req.params.bookId) },
+        }
+      );
+    }
+    return;
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+const addBookToShelves = async (req, _) => {
+  try {
+    await User.updateOne(
+      { username: req.params.username },
+      {
+        $push: { "shelves.$[element].bookList": req.body.bookId },
+      },
+      {
+        arrayFilters: [{ "element._id": { $in: req.body.checkedShelves } }],
+      }
+    );
+  } catch (err) {
+    throw new Error(err);
   }
 };
 
@@ -460,4 +497,6 @@ module.exports = {
   voteUser,
   sendFriendReq,
   getFeedsById,
+  toggleOwning,
+  addBookToShelves,
 };
