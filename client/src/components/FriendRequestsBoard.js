@@ -43,7 +43,6 @@ const FriendRequestsBoard = () => {
     update.pendingFriendRequests.splice(index, 1);
     update.friends.push(senderId);
     setCurrentUser(update);
-    handleUpdateCurrentUser();
   };
 
   const handleDeclineFriendReq = (senderUsername) => {
