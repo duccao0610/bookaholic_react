@@ -27,7 +27,7 @@ const Shelf = ({
   const handleEditShelfName = () => {
     if (!editShelfNameBtn) {
       fetch(
-        `http://localhost:5000/user/${params.username}/shelves/${shelfId}/editShelfName`,
+        `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/${shelfId}/editShelfName`,
         {
           method: "PUT",
           headers: { "Content-type": "application/json" },

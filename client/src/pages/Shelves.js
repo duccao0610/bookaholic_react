@@ -15,7 +15,9 @@ const Shelves = () => {
   // Show shelves list
   const [userShelves, setUserShelves] = useState([]);
   useEffect(() => {
-    fetch(`http://localhost:5000/user/${params.username}/shelves`)
+    fetch(
+      `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves`
+    )
       .then((res) => res.json())
       .then((resJson) => {
         setUserShelves(resJson[0].shelves);
@@ -32,7 +34,7 @@ const Shelves = () => {
 
   const handleShowBooksOnShelf = async (shelfId) => {
     await fetch(
-      `http://localhost:5000/user/${params.username}/shelves/${shelfId}`
+      `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/${shelfId}`
     )
       .then((res) => res.json())
       .then((resJson) => {
@@ -56,7 +58,7 @@ const Shelves = () => {
     const newShelf = { shelfName: inputShelfNameVal, bookList: [] };
     if (!addShelfBtn) {
       await fetch(
-        `http://localhost:5000/user/${params.username}/shelves/addShelf`,
+        `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/addShelf`,
         {
           method: "PUT",
           headers: { "Content-type": "application/json" },
@@ -73,7 +75,7 @@ const Shelves = () => {
   // Delete shelf
   const handleDeleteShelf = async (shelfId) => {
     await fetch(
-      `http://localhost:5000/user/${params.username}/shelves/${shelfId}/deleteShelf`,
+      `https://polar-savannah-23530.herokuapp.com/user/${params.username}/shelves/${shelfId}/deleteShelf`,
       {
         method: "PUT",
       }

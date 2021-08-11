@@ -29,7 +29,7 @@ const Home = () => {
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
     };
-    fetch("http://localhost:5000/book/", requestOptions)
+    fetch("https://polar-savannah-23530.herokuapp.com/book/", requestOptions)
       .then((res) => res.json())
       .then((resJson) => {
         if (
@@ -61,9 +61,9 @@ const Home = () => {
     };
     if (currentUser) {
       fetch(
-        `http://localhost:5000/user/feeds/${currentUser._id}/skip/${Number(
-          skip
-        )}`,
+        `https://polar-savannah-23530.herokuapp.com/user/feeds/${
+          currentUser._id
+        }/skip/${Number(skip)}`,
         requestOptions
       )
         .then((res) => res.json())
@@ -80,25 +80,25 @@ const Home = () => {
   return (
     <>
       {!sessionStorage.getItem("token") ? null : (
-        <div className="w-100 d-flex">
-          <div className="px-3 py-4 d-none d-md-inline-block d-lg-inline-block vh-100 col-md-4 col-lg-3">
+        <div className='w-100 d-flex'>
+          <div className='px-3 py-4 d-none d-md-inline-block d-lg-inline-block vh-100 col-md-4 col-lg-3'>
             <ProfileRecap />
-            <div className="d-md-block d-lg-none">
+            <div className='d-md-block d-lg-none'>
               <TopUsers />
             </div>
           </div>
-          <div className="w-100 d-flex flex-column align-items-center py-3 col-12 col-md-8 col-lg-6">
+          <div className='w-100 d-flex flex-column align-items-center py-3 col-12 col-md-8 col-lg-6'>
             <Tabs
-              variant="pills"
-              defaultActiveKey="trending"
-              className="row tabs_container w-100 justify-content-center"
+              variant='pills'
+              defaultActiveKey='trending'
+              className='row tabs_container w-100 justify-content-center'
             >
               <Tab
-                eventKey="info"
-                title="Info"
-                tabClassName="d-flex justify-content-center col-3 d-md-none"
+                eventKey='info'
+                title='Info'
+                tabClassName='d-flex justify-content-center col-3 d-md-none'
               >
-                <div className="d-md-none">
+                <div className='d-md-none'>
                   <ProfileRecap />
                 </div>
               </Tab>
@@ -111,22 +111,22 @@ const Home = () => {
                   setFeedsData([]);
                   setNoMore(false);
                 }}
-                eventKey="feeds"
-                title="Feeds"
-                tabClassName="d-flex justify-content-center col-md-2 col-3"
+                eventKey='feeds'
+                title='Feeds'
+                tabClassName='d-flex justify-content-center col-md-2 col-3'
               >
                 <div
                   style={{ width: "400px" }}
-                  className="mt-3 d-flex flex-column row"
+                  className='mt-3 d-flex flex-column row'
                 >
                   {loadingFeeds ? (
-                    <div className="text-center">
-                      <Spinner animation="border" variant="primary" />
+                    <div className='text-center'>
+                      <Spinner animation='border' variant='primary' />
                     </div>
                   ) : (
                     <>
                       {feedsData.length === 0 ? (
-                        <div className="d-flex align-items-center gap-1 font-italic justify-content-center">
+                        <div className='d-flex align-items-center gap-1 font-italic justify-content-center'>
                           <FaExclamationTriangle />
                           No Feeds
                         </div>
@@ -151,7 +151,7 @@ const Home = () => {
                           {!noMore ? (
                             <div
                               style={{ cursor: "pointer" }}
-                              className="text-center text-primary font-italic"
+                              className='text-center text-primary font-italic'
                               onClick={() => fetchFeeds(feedsData.length)}
                             >
                               Load more...
@@ -164,18 +164,18 @@ const Home = () => {
                 </div>
               </Tab>
               <Tab
-                eventKey="trending"
-                title="Trending"
-                tabClassName="col-3 col-md-2 d-flex justify-content-center"
+                eventKey='trending'
+                title='Trending'
+                tabClassName='col-3 col-md-2 d-flex justify-content-center'
               >
-                <div className="tab_trending_content mt-3 text-center">
+                <div className='tab_trending_content mt-3 text-center'>
                   {loading ? (
-                    <div className="vh-100">
-                      <Spinner animation="border" variant="primary" />
+                    <div className='vh-100'>
+                      <Spinner animation='border' variant='primary' />
                     </div>
                   ) : (
                     <Container>
-                      <Row className="justify-content-center">
+                      <Row className='justify-content-center'>
                         {booksData.map((book) => (
                           <Col
                             key={book._id}
@@ -195,17 +195,17 @@ const Home = () => {
               </Tab>
 
               <Tab
-                eventKey="ranking"
-                title="Ranking"
-                tabClassName="d-flex justify-content-center col-3 d-md-none"
+                eventKey='ranking'
+                title='Ranking'
+                tabClassName='d-flex justify-content-center col-3 d-md-none'
               >
-                <div className="d-md-none">
+                <div className='d-md-none'>
                   <TopUsers onTab />
                 </div>
               </Tab>
             </Tabs>
           </div>
-          <div className="position-relative pl-3 pl-lg-4 pr-3 py-2 d-none d-md-inline-block d-lg-inline-block col-md-0 col-lg-3 vh-100">
+          <div className='position-relative pl-3 pl-lg-4 pr-3 py-2 d-none d-md-inline-block d-lg-inline-block col-md-0 col-lg-3 vh-100'>
             <TopUsers />
           </div>
         </div>
