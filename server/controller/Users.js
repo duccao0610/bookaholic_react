@@ -439,6 +439,8 @@ const getFeedsById = async (req, res) => {
     res.json(feeds);
   } catch (err) {
     console.log(err);
+  }
+};
 
 const toggleOwning = async (req, res) => {
   try {
