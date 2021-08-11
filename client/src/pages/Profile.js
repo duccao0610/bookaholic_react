@@ -99,11 +99,12 @@ const Profile = () => {
     handleUpdateCurrentUser();
   };
 
+  console.log(userData);
   return (
     <div>
       {loading ? (
-        <div className="text-center">
-          <Spinner animation="border" variant="primary" className="mt-3" />
+        <div className='text-center'>
+          <Spinner animation='border' variant='primary' className='mt-3' />
         </div>
       ) : (
         <div className='d-flex col-12 col-md-8 col-lg-8 justify-content-center container px-0 pt-3'>
@@ -119,7 +120,7 @@ const Profile = () => {
               downvote={userData.userRate.downvote}
               nickname={userData.nickname}
               owningQuant={userData.owning.length}
-              reviewsQuant={120}
+              reviewsQuant={reviews.length}
               bio={userData.bio}
               username={userData.username}
               isMyProfile={
@@ -179,13 +180,13 @@ const Profile = () => {
                   pageRangeDisplayed={shelvesPerGroup}
                   marginPagesDisplayed={1}
                   containerClassName='d-flex align-items-center'
-                  previousClassName='fw-bold py-0 px-2 me-2 btn border border-dark paginate-style'
+                  previousClassName='fw-bold py-0 px-2 me-2 btn border border-dark'
                   previousLabel='Prev'
-                  nextClassName='fw-bold py-0 px-2 ms-2 btn border border-dark paginate-style'
+                  nextClassName='fw-bold py-0 px-2 ms-2 btn border border-dark'
                   nextLabel='Next'
-                  pageClassName='list-group-item fw-bold py-0 px-2 border border-dark rounded '
+                  pageClassName='list-group-item fw-bold py-0 px-2 border border-dark rounded'
                   breakClassName='list-group-item fw-bold py-0 px-2'
-                  activeClassName='rounded paginate-style'
+                  activeClassName='rounded active'
                   onPageChange={handleClickShelvesList}
                 />
               </div>
