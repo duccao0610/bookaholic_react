@@ -24,6 +24,7 @@ const FriendRequest = ({
       <div className='btn-group'>
         <div
           className='btn btn-sm btn-primary'
+          style={{ background: "#5A3434", color: "white" }}
           onClick={() => {
             handleAcceptFriendReq();
           }}
@@ -32,6 +33,11 @@ const FriendRequest = ({
         </div>
         <div
           className='btn btn-sm btn-secondary'
+          style={{
+            background: "white",
+            color: "#5A3434",
+            borderColor: "#5A3434",
+          }}
           onClick={handleDeclineFriendReq}
         >
           Decline

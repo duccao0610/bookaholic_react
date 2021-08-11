@@ -45,7 +45,11 @@ const AddFriendStatus = ({ nickname, friendStatus, onSendFriendReq }) => {
         <>
           <h5>Do you know {nickname}?</h5>
           <p>You can send {nickname} a friend request.</p>
-          <div className='btn btn-primary' onClick={handleSendFriendReq}>
+          <div
+            className='btn'
+            onClick={handleSendFriendReq}
+            style={{ background: "#5A3434", color: "white" }}
+          >
             Add friend
           </div>
         </>

@@ -106,6 +106,7 @@ const getBooksOnShelf = async (req, res) => {
     {
       $project: {
         bookDetailList: true,
+        shelves: true,
       },
     },
   ]);
