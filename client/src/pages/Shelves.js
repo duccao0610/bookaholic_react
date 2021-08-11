@@ -8,7 +8,8 @@ const Shelves = () => {
   const [loading, setLoading] = useState(true);
   const [triggerFetchShelvesList, setTriggerFetchShelvesList] = useState(false);
   const params = useParams();
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, handleUpdateCurrentUser, setCurrentUser } =
+    useContext(UserContext);
   const isMyShelves = currentUser.username === params.username;
 
   // Show shelves list
@@ -64,6 +65,7 @@ const Shelves = () => {
     }
     setInputShelfNameVal("");
     setAddShelfBtn(!addShelfBtn);
+    handleUpdateCurrentUser();
   };
 
   // Delete shelf
@@ -75,6 +77,7 @@ const Shelves = () => {
       }
     );
     setTriggerFetchShelvesList(!triggerFetchShelvesList);
+    handleUpdateCurrentUser();
   };
 
   // Delete book on shelf
@@ -89,6 +92,17 @@ const Shelves = () => {
     setCurrShowingShelf((prev) => {
       return { ...prev };
     });
+
+    const update = { ...currentUser };
+    update.shelves[
+      update.shelves.findIndex(
+        (shelf) => shelf._id === currShowingShelf.shelfId
+      )
+    ] = [...currShowingShelf.bookList];
+    setCurrentUser(update);
+    console.log(currShowingShelf.bookList);
+
+    handleUpdateCurrentUser();
   };
 
   return loading ? (

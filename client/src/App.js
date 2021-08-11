@@ -63,6 +63,12 @@ function App() {
         handleUpdateCurrentUser();
       }
     );
+    socketRef.current.on("acceptFriendReq", () => {
+      handleUpdateCurrentUser();
+    });
+    socketRef.current.on("declineFriendReq", () => {
+      handleUpdateCurrentUser();
+    });
   }, [currentUser]);
 
   const showAlert = (type, status, detail) => {

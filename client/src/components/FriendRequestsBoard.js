@@ -41,7 +41,19 @@ const FriendRequestsBoard = () => {
     );
 
     update.pendingFriendRequests.splice(index, 1);
+    update.friends.push(senderId);
     setCurrentUser(update);
+  };
+
+  const handleDeclineFriendReq = (senderUsername) => {
+    const update = { ...currentUser };
+    const index = update.pendingFriendRequests.findIndex(
+      (item) => item.senderUsername === senderUsername
+    );
+    socketRef.emit("declineFriendReq", senderUsername, currentUser.username);
+    update.pendingFriendRequests.splice(index, 1);
+    setCurrentUser(update);
+    handleUpdateCurrentUser();
   };
 
   return (
@@ -94,6 +106,7 @@ const FriendRequestsBoard = () => {
                     senderUsername={item.senderUsername}
                     senderId={item.senderId}
                     onAcceptFriendReq={handleAcceptFriendReq}
+                    onDeclineFriendReq={handleDeclineFriendReq}
                   />
                 );
               } else return null;
