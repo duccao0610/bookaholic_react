@@ -199,32 +199,9 @@ const Activity = ({
                 <div className="fw-bold">{bookName}</div>
               </Link>
               <div className="fst-italic fw-light">by {authors.join(", ")}</div>
-              {editReviewBtn === "Save" ? (
-                <div className="form">
-                  <textarea
-                    className="w-100 form-control"
-                    style={{ minHeight: "300px" }}
-                    value={reviewContent}
-                    onChange={(e) => {
-                      setReviewContent(e.target.value);
-                    }}
-                  ></textarea>
-                </div>
-              ) : (
-                <div>{reviewContent}</div>
-              )}
+              <div>{reviewContent}</div>
 
-              <div className="d-flex justify-content-between">
-                <div
-                  className={
-                    editReviewBtn === "Edit"
-                      ? "btn btn-sm btn-secondary"
-                      : "btn btn-sm btn-primary"
-                  }
-                  onClick={handleEditReview}
-                >
-                  {editReviewBtn}
-                </div>
+              <div className="d-flex justify-content-end">
                 <div className="font-italic" style={{ fontSize: "12px" }}>
                   Review date: {date}
                 </div>
