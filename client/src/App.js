@@ -64,10 +64,23 @@ function App() {
         handleUpdateCurrentUser();
       }
     );
-    socketRef.current.on("acceptFriendReq", () => {
+    socketRef.current.on("acceptFriendReq", (senderId) => {
+      const update = { ...currentUser };
+      const index = update.pendingFriendRequests.findIndex(
+        (frReq) => frReq.senderId === senderId
+      );
+      update.pendingFriendRequests.splice(index, 1);
+      update.friends.push(senderId);
+      setCurrentUser(update);
       handleUpdateCurrentUser();
     });
-    socketRef.current.on("declineFriendReq", () => {
+    socketRef.current.on("declineFriendReq", (senderUsername) => {
+      const update = { ...currentUser };
+      const index = update.pendingFriendRequests.findIndex(
+        (frReq) => frReq.senderUsername === senderUsername
+      );
+      setCurrentUser(update);
+      update.pendingFriendRequests.splice(index, 1);
       handleUpdateCurrentUser();
     });
   }, [currentUser]);
@@ -119,11 +132,11 @@ function App() {
         setExpTime: handleSetExpTime,
       }}
     >
-      <div className="App bg-white min-vh-100  border border-light px-0">
+      <div className='App bg-white min-vh-100  border border-light px-0'>
         {pathname === "/" && !sessionStorage.getItem("token") ? null : (
           <NavBar />
         )}
-        <div className="content">
+        <div className='content'>
           <Alert
             alertClose={alertClose}
             alertVisibility={alertVisibility}
@@ -131,13 +144,13 @@ function App() {
             alertStatus={alertStatus}
             alertDetail={alertDetail}
           />
-          <Route path="/user/:username/shelves" component={Shelves} />
-          <Route path="/user/:username" exact component={Profile} />
-          <Route path="/book/:id" component={BookDetail} />
-          <Route path="/category/:category" component={Category} />
-          <Route path="/auth/login" component={Login} />
-          <Route path="/auth/register" component={Register} />
-          <Route path="/" exact component={Home} />
+          <Route path='/user/:username/shelves' component={Shelves} />
+          <Route path='/user/:username' exact component={Profile} />
+          <Route path='/book/:id' component={BookDetail} />
+          <Route path='/category/:category' component={Category} />
+          <Route path='/auth/login' component={Login} />
+          <Route path='/auth/register' component={Register} />
+          <Route path='/' exact component={Home} />
         </div>
         {pathname === "/auth/login" ? null : pathname ===
           "/auth/register" ? null : (

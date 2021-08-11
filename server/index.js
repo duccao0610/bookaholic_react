@@ -56,7 +56,7 @@ io.on("connection", (socket) => {
     acceptFriendReq(senderId, receiverId, requestId);
     const sender = await User.findOne({ _id: senderId });
     if (sender.onlineStatus.isOnline) {
-      io.to(sender.onlineStatus.socketId).emit("acceptFriendReq");
+      io.to(sender.onlineStatus.socketId).emit("acceptFriendReq", senderId);
     }
   });
 
@@ -64,8 +64,10 @@ io.on("connection", (socket) => {
     declineFriendReq(senderUsername, receiverUsername);
     const sender = await User.findOne({ username: senderUsername });
     if (sender.onlineStatus.isOnline) {
-      io.to(sender.onlineStatus.socketId).emit("declineFriendReq");
-      console.log(1);
+      io.to(sender.onlineStatus.socketId).emit(
+        "declineFriendReq",
+        senderUsername
+      );
     }
   });
 

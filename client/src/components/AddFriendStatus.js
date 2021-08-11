@@ -70,8 +70,10 @@ const AddFriendStatus = ({ nickname, friendStatus, onSendFriendReq }) => {
             above
           </div>
         </>
-      ) : (
+      ) : friendStatus === "friend" ? (
         <h5>You are now friends</h5>
+      ) : (
+        <></>
       )}
     </div>
   );
