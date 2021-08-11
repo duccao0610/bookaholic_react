@@ -369,6 +369,77 @@ const sendFriendReq = async (req, res) => {
   }
 };
 
+const getFeedsById = async (req, res) => {
+  try {
+    const feeds = await User.aggregate([
+      {
+        $match: {
+          _id: ObjectId(req.params.id),
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          as: "feed",
+          let: { friends_arr: "$friends" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ["$userId", "$$friends_arr"],
+                },
+              },
+            },
+            {
+              $sort: {
+                date: -1,
+              },
+            },
+            {
+              $skip: Number(req.params.skip),
+            },
+            {
+              $limit: 4,
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$feed",
+        },
+      },
+      {
+        $lookup: {
+          from: "books",
+          localField: "feed.bookId",
+          foreignField: "_id",
+          as: "book",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "feed.userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $project: {
+          feed: 1,
+          "book.title": 1,
+          "book.cover": 1,
+          "book.authors": 1,
+          "user.nickname": 1,
+          "user.avatar": 1,
+        },
+      },
+    ]);
+    res.json(feeds);
+  } catch (err) {
+    console.log(err);
+
 const toggleOwning = async (req, res) => {
   try {
     if (req.params.isAdd === "true") {
@@ -425,6 +496,7 @@ module.exports = {
   editShelfName,
   voteUser,
   sendFriendReq,
+  getFeedsById,
   toggleOwning,
   addBookToShelves,
 };

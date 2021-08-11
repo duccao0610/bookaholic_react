@@ -5,7 +5,7 @@ import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
 const UserItem = ({ user, inRank, idx }) => {
   return (
     <div
-      className="justify-content-start px-3 py-2 mx-1 row mb-3 mb-lg-2"
+      className="justify-content-center gap-3 px-3 py-2 row mb-3 mb-lg-2 col-10 mx-auto"
       style={
         inRank
           ? {
@@ -20,7 +20,7 @@ const UserItem = ({ user, inRank, idx }) => {
             }
       }
     >
-      <div className="col-3 d-flex align-items-center justify-content-center position-relative">
+      <div className="col-2 col-md-3 col-lg-3 d-flex align-items-center justify-content-center position-relative">
         {idx <= 2 ? (
           <div
             style={{
@@ -38,7 +38,7 @@ const UserItem = ({ user, inRank, idx }) => {
         ) : null}
 
         <img
-          className="rounded-circle"
+          className="rounded-circle border"
           width="50px"
           height="50px"
           alt="avatar"
@@ -46,7 +46,7 @@ const UserItem = ({ user, inRank, idx }) => {
           // style={{ objectFit: "fill" }}
         />
       </div>
-      <div className="col-8">
+      <div className="col-6 col-md-7 col-lg-7 p-0 ">
         <Link
           to={`/user/${user.username}`}
           className="fw-bold"
@@ -56,7 +56,7 @@ const UserItem = ({ user, inRank, idx }) => {
         </Link>
         {inRank ? (
           <div className="row">
-            <div className="col-6 d-flex align-items-center gap-1">
+            <div className="col-6 d-flex align-items-center gap-1 p-0 justify-content-center">
               <div className="d-flex align-items-center">
                 <FaArrowCircleUp color="green" size={10} />
               </div>
@@ -64,7 +64,7 @@ const UserItem = ({ user, inRank, idx }) => {
                 {user.userRate.upvote}
               </span>
             </div>
-            <div className="col-6 d-flex align-items-center gap-1">
+            <div className="col-6 d-flex align-items-center gap-1 p-0 justify-content-center">
               <div className="d-flex align-items-center">
                 <FaArrowCircleDown color="red" size={10} />
               </div>

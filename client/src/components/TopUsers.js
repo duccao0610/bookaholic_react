@@ -29,8 +29,8 @@ const TopUsers = ({ onTab }) => {
         </div>
       ) : (
         <div
-          className="border rounded pt-3 px-3 px-lg-2 rank"
-          style={{ background: "rgba(95, 42, 42,0.9)" }}
+          className="border rounded pt-3 px-3 px-lg-2 rank d-flex flex-column justify-content-around"
+          style={{ background: "rgba(85, 42, 42,0.9)" }}
         >
           {topUsersData.map((user, idx) => {
             return <UserItem key={idx} user={user} idx={idx} inRank />;

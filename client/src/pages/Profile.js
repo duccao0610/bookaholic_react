@@ -188,23 +188,31 @@ const Profile = () => {
               >
                 {`${userData.nickname}'s recent activities`}
               </div>
-              <div id='activities-list'>
-                {reviews.map((review, idx) => {
-                  return (
-                    <Activity
-                      inPage='profile'
-                      username={userData.nickname}
-                      bookName={review.book[0].title}
-                      authors={review.book[0].authors}
-                      rating={review.rating}
-                      cover={review.book[0].cover}
-                      review={review.content}
-                      date={review.date.slice(0, 10)}
-                      bookId={review.bookId}
-                      key={idx}
-                    />
-                  );
-                })}
+              <div id="activities-list">
+                {reviews.length === 0 ? (
+                  <div className="mt-2 text-center font-italic">
+                    Not have any activities
+                  </div>
+                ) : (
+                  <>
+                    {reviews.map((review, idx) => {
+                      return (
+                        <Activity
+                          inPage="profile"
+                          username={userData.nickname}
+                          bookName={review.book[0].title}
+                          authors={review.book[0].authors}
+                          rating={review.rating}
+                          cover={review.book[0].cover}
+                          review={review.content}
+                          date={review.date.slice(0, 10)}
+                          bookId={review.bookId}
+                          key={idx}
+                        />
+                      );
+                    })}
+                  </>
+                )}
               </div>
             </div>
           </div>

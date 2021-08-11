@@ -15,15 +15,19 @@ const {
   getTopUsers,
   voteUser,
   sendFriendReq,
+  getFeedsById,
   toggleOwning,
   addBookToShelves,
 } = require("../controller/Users.js");
+
+const authentication = require("../middlewares/authentication");
 
 const router = express.Router();
 router.get("/id/:id", getRecapInfoById);
 router.get("/:username", getUserByUsername);
 router.get("/search/:searchValue", getUsersBySearch);
 router.get("/ranking/:top", getTopUsers);
+router.get("/feeds/:id/skip/:skip", authentication, getFeedsById);
 
 router.get("/:username/shelves", getUserShelves);
 router.get("/:username/shelves/:shelfId", getBooksOnShelf);

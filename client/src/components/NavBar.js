@@ -59,7 +59,7 @@ const NavBar = () => {
       <Link
         key={Math.random()}
         to={`${currentUser ? "/" : "/auth/login"}`}
-        className="text-decoration-none col-2 col-lg-2 col-md-2 ml-2 mr-5 pl-0"
+        className="text-decoration-none col-2 col-lg-2 col-md-2 ml-2 mr-4 pl-0"
       >
         <img style={{ width: "100px" }} alt="" src={Logo} />
       </Link>
@@ -107,7 +107,7 @@ const NavBar = () => {
         </Button>
       </Link>
       {currentUser ? (
-        <div className="px-0 col-5 col-lg-2 col-md-3 d-flex">
+        <div className="px-0 col-6 col-lg-2 col-md-3 d-flex">
           <Dropdown className="w-100 d-flex align-items-center justify-content-around">
             <Link
               className="fw-bold"

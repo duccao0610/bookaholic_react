@@ -59,7 +59,7 @@ const FriendRequestsBoard = () => {
   return (
     <div>
       <div
-        className='position-relative fs-3 d-inline-flex pointer rounded'
+        className="position-relative fs-3 d-inline-flex pointer rounded"
         style={
           showBoard
             ? { backgroundColor: "lightGrey" }
@@ -69,7 +69,7 @@ const FriendRequestsBoard = () => {
       >
         <AiOutlineUsergroupAdd />
         <div
-          className='p-1 position-absolute rounded-pill bg-danger d-flex align-items-center justify-content-center'
+          className="p-1 position-absolute rounded-pill bg-danger d-flex align-items-center justify-content-center"
           style={{
             width: "auto",
             height: "1.2rem",
@@ -78,7 +78,7 @@ const FriendRequestsBoard = () => {
           }}
         >
           {isDataLoaded ? (
-            <span className='text-white' style={{ fontSize: ".8rem" }}>
+            <span className="text-white" style={{ fontSize: ".8rem" }}>
               {friendRequestsCount}
             </span>
           ) : null}
@@ -94,7 +94,7 @@ const FriendRequestsBoard = () => {
           }
         >
           {friendRequestsCount === 0 ? (
-            <div className='fst-italic p-3 text-black-50'>
+            <div className="fst-italic p-3 text-black-50">
               No pending friend request
             </div>
           ) : (
