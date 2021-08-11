@@ -11,7 +11,9 @@ const {
   loadMoreReviewsById,
 } = require("../controller/Reviews");
 
-router.post("/addReview", async (req, res) => {
+const authentication = require("../middlewares/authentication");
+
+router.post("/addReview", authentication, async (req, res) => {
   const message = reviewServices.addReview(
     req.body.content,
     req.body.rating,

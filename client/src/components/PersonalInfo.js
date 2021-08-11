@@ -210,7 +210,7 @@ const PersonalInfo = ({
                   className="border rounded-circle overflow-hidden"
                   width="150px"
                   height="150px"
-                  style={{ objectFit: "contain" }}
+                  style={{ objectFit: "cover" }}
                 />
               </div>
               {isMyProfile ? (

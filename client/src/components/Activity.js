@@ -24,6 +24,8 @@ const Activity = ({
   refreshReviewsData,
   refreshRatingsData,
   setNoMore,
+  avatar,
+  userId,
 }) => {
   const [reviewContent, setReviewContent] = useState(review);
   const [editReviewBtn, setEditReviewBtn] = useState("Edit");
@@ -96,10 +98,10 @@ const Activity = ({
         `http://localhost:5000/review/${reviewId}/deleteReview`,
         requestOptions
       ).catch((err) => console.log(err));
+      setNoMore();
+      refreshReviewsData();
+      refreshRatingsData();
     }
-    refreshReviewsData();
-    refreshRatingsData();
-    setNoMore();
     setAlertVisibility(false);
   };
 
@@ -112,11 +114,17 @@ const Activity = ({
     // Default = home
     default:
       return (
-        <div className="border border-dark rounded-3 p-3 mx-auto mb-3 w-100 col-md-10 col-lg-8">
+        <div
+          style={{
+            boxShadow:
+              "rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset",
+          }}
+          className="rounded-3 p-3 mx-auto mb-3 mb-lg-4 col-10 col-md-12 col-lg-12"
+        >
           {/* post's header */}
-          <div className="d-flex w-100">
+          <div className="d-flex ">
             <Image
-              src="https://cdn.tgdd.vn//GameApp/1331168//20-500x500.jpg"
+              src={avatar}
               width={35}
               height={35}
               roundedCircle
@@ -124,8 +132,13 @@ const Activity = ({
             />
             <div className="ml-2">
               <div>
-                <span className="fw-bold">{username}</span> <span>rated</span>{" "}
-                <span className="fw-bold">{bookName}</span>{" "}
+                <Link to={`/user/${userId}`} style={{ color: "#5a3434" }}>
+                  <span className="fw-bold">{username}</span>
+                </Link>{" "}
+                <span>rated</span>{" "}
+                <Link to={`/book/${bookId}`} style={{ color: "#5a3434" }}>
+                  <span className="fw-bold">{bookName}</span>
+                </Link>{" "}
                 <span>{rating}⭐</span>
               </div>
               <div className="fst-italic" style={{ fontSize: "13px" }}>
@@ -133,7 +146,20 @@ const Activity = ({
               </div>
             </div>
           </div>
-          <div className="my-2">{review}</div>
+          <div className="my-2">
+            <>
+              {showMore ? review : review.substring(0, 200)}
+              {review.length > 300 ? (
+                <span
+                  style={{ cursor: "pointer" }}
+                  className="text-info"
+                  onClick={() => setShowMore((prev) => !prev)}
+                >
+                  {showMore ? " (less)" : " ...more"}
+                </span>
+              ) : null}
+            </>
+          </div>
           <div className="d-flex justify-content-center">
             <Image
               src={cover}

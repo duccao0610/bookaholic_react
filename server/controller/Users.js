@@ -355,19 +355,92 @@ const sendFriendReq = async (req, res) => {
   try {
     await User.updateMany(
       {
-        username: { $in: [req.body.sender, req.body.receiver] }
+        username: { $in: [req.body.sender, req.body.receiver] },
       },
       {
         $push: {
-          pendingFriendRequests: req.body
-        }
+          pendingFriendRequests: req.body,
+        },
       }
     );
     res.json({ request: req.body });
   } catch (err) {
     throw new Error(err);
   }
-}
+};
+
+const getFeedsById = async (req, res) => {
+  try {
+    const feeds = await User.aggregate([
+      {
+        $match: {
+          _id: ObjectId(req.params.id),
+        },
+      },
+      {
+        $lookup: {
+          from: "reviews",
+          as: "feed",
+          let: { friends_arr: "$friends" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ["$userId", "$$friends_arr"],
+                },
+              },
+            },
+            {
+              $sort: {
+                date: -1,
+              },
+            },
+            {
+              $skip: Number(req.params.skip),
+            },
+            {
+              $limit: 4,
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$feed",
+        },
+      },
+      {
+        $lookup: {
+          from: "books",
+          localField: "feed.bookId",
+          foreignField: "_id",
+          as: "book",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "feed.userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $project: {
+          feed: 1,
+          "book.title": 1,
+          "book.cover": 1,
+          "book.authors": 1,
+          "user.nickname": 1,
+          "user.avatar": 1,
+        },
+      },
+    ]);
+    res.json(feeds);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 module.exports = {
   getTopUsers,
@@ -385,5 +458,6 @@ module.exports = {
   deleteBookOnShelf,
   editShelfName,
   voteUser,
-  sendFriendReq
+  sendFriendReq,
+  getFeedsById,
 };
