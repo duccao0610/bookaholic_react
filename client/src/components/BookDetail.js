@@ -138,11 +138,7 @@ const BookDetail = () => {
           setBook(resJson.info[0]);
           setRelatedGenres(resJson.relatedGenres);
           setRelatedBooks(resJson.relatedBooks);
-          setAvailability(
-            currentUser
-              ? currentUser.owning.includes(resJson.info[0]._id)
-              : false
-          );
+          setAvailability(currentUser.owning.includes(resJson.info[0]._id));
         }
       });
 
@@ -168,6 +164,9 @@ const BookDetail = () => {
         });
     }
   }, [currentUser, params.id]);
+  useEffect(() => {
+    setAvailability((prev) => prev);
+  }, []);
 
   const toggleOwning = (isAdd) => {
     fetch(
@@ -264,8 +263,6 @@ const BookDetail = () => {
                     <div
                       className="position-relative "
                       onClick={handleShowDetailRating}
-                      onMouseOver={handleShowDetailRating}
-                      onMouseLeave={handleShowDetailRating}
                     >
                       <span className="text-success ">Rating detail</span>
                       {showDetailRating ? (
@@ -470,19 +467,21 @@ const BookDetail = () => {
                 ) : null}
               </div>
               {isReviewed ? null : (
-                <AddReviewForm
-                  refreshReviewsData={() =>
-                    setTriggerFetchReviews((prev) => !prev)
-                  }
-                  refreshRatingsData={() => {
-                    setTriggerFetchRatings((prev) => !prev);
-                  }}
-                  refreshReviewed={() => {
-                    setIsReviewed(true);
-                  }}
-                  bookId={book._id}
-                  setNoMore={() => setNoMore(false)}
-                />
+                <div ref={reviewInputRef}>
+                  <AddReviewForm
+                    refreshReviewsData={() =>
+                      setTriggerFetchReviews((prev) => !prev)
+                    }
+                    refreshRatingsData={() => {
+                      setTriggerFetchRatings((prev) => !prev);
+                    }}
+                    refreshReviewed={() => {
+                      setIsReviewed(true);
+                    }}
+                    bookId={book._id}
+                    setNoMore={() => setNoMore(false)}
+                  />
+                </div>
               )}
             </div>
           </div>
